@@ -38,14 +38,17 @@ dependencies:
   uuid: ^4.5.1
   image_picker: ^1.1.2
   crypto: ^3.0.6
-  get:
+  get_it:
   share_plus:
   google_fonts: ^6.2.1
+  go_router:
+  flutter_bloc:
+  equatable:
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  mockito: ^5.4.4
+  mocktail:
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

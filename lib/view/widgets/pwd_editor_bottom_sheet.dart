@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:pwd_gen/core/app_pallet.dart';
 import 'package:pwd_gen/domain/pwd_entity.dart';
 import 'package:pwd_gen/view/widgets/edit_pwd_textfield.dart';
@@ -67,12 +66,12 @@ class _PwdEditorBottomSheetState extends State<PwdEditorBottomSheet> {
                       onPressed: () {
                         widget.saveChanges(
                             hintController.text, pwdController.text);
-                        Get.back();
+                        //Get.back();
                       },
                       child: Text('Apply')),
                   ElevatedButton(
                       onPressed: () {
-                        Get.back();
+                        //Get.back();
                       },
                       child: Text('Dismiss')),
                 ],

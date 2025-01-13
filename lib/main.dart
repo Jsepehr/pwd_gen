@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:pwd_gen/data/local/datbase_helper.dart';
-import 'package:pwd_gen/data/local/password_repository.dart';
-import 'package:pwd_gen/view/animated_list_works.dart';
-import 'package:pwd_gen/view/pwd_list_view.dart';
+
+import 'package:pwd_gen/core/ingector.dart';
+import 'package:pwd_gen/core/routs.dart';
+
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  setupDependencies();
+  setupLocator();
   runApp(
-    GetMaterialApp(
-      home: PwdListView(),
+    MaterialApp.router(
+      routerConfig: router,
       darkTheme: ThemeData.dark().copyWith(
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
@@ -49,8 +48,5 @@ void main() {
   );
 }
 
-void setupDependencies() {
-  Get.lazyPut<PasswordRepository>(() => PasswordRepository(
-        DatabaseHelper(),
-      ));
-}
+
+

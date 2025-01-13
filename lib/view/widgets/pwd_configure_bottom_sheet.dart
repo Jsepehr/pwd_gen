@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pwd_gen/core/app_pallet.dart';
-import 'package:pwd_gen/domain/pwd_entity.dart';
+import 'package:pwd_gen/cubit/pwd_list_cubit.dart';
 import 'package:pwd_gen/view/widgets/edit_pwd_textfield.dart';
 
 class PwdConfigureBottomSheet extends StatefulWidget {
@@ -16,7 +16,7 @@ class PwdConfigureBottomSheet extends StatefulWidget {
 
 class _PwdConfigureBottomSheetState extends State<PwdConfigureBottomSheet> {
   TextEditingController pwdController = TextEditingController();
-  bool isGenerateBtnEnabled = false;
+  bool isGenerateBtnEnabled = true;
   bool isImageBtnEnabled = false;
 
   @override
@@ -126,7 +126,11 @@ class _PwdConfigureBottomSheetState extends State<PwdConfigureBottomSheet> {
                                 ),
                               ),
                               onPressed: isGenerateBtnEnabled
-                                  ? () => print('Button Pressed')
+                                  ? () {
+                                      context
+                                          .read<PwdListCubit>()
+                                          .generatePwds();
+                                    }
                                   : null,
                               child: Text('Generate'),
                             ),

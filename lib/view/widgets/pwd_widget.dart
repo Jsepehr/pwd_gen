@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pwd_gen/cubit/pwd_list_cubit.dart';
 import 'package:pwd_gen/data/models/pwd_model.dart';
 import 'package:pwd_gen/domain/pwd_entity.dart';
-import 'package:pwd_gen/view/pwd_list_viewmodel.dart';
+import 'package:pwd_gen/repository/pwd_repository.dart';
 import 'package:pwd_gen/view/widgets/pwd_editor_bottom_sheet.dart';
 import 'package:share_plus/share_plus.dart';
 
 class PwdWidget extends StatefulWidget {
-  final PwdModel pwd;
+  final PwdEntity pwd;
   const PwdWidget({super.key, required this.pwd});
   @override
   State<PwdWidget> createState() => _PwdWidgetState();
 }
 
 class _PwdWidgetState extends State<PwdWidget> {
-  final PwdListViewModel _viewModel = Get.put(PwdListViewModel());
 
   TextEditingController controller = TextEditingController();
   bool _isVisible = false;
@@ -61,7 +61,7 @@ class _PwdWidgetState extends State<PwdWidget> {
                       children: [
                         IconButton(
                             onPressed: () async {
-                              await Get.bottomSheet(PwdEditorBottomSheet(
+                              /* await Get.bottomSheet(PwdEditorBottomSheet(
                                 saveChanges: (hint, pwd) {
                                   final index = _viewModel.pwdListShow
                                       .indexOf(widget.pwd);
@@ -71,7 +71,7 @@ class _PwdWidgetState extends State<PwdWidget> {
                                   _viewModel.editPwdById(widget.pwd);
                                 },
                                 pwd: widget.pwd,
-                              ));
+                              )); */
                             },
                             icon: Icon(Icons.edit)),
                         IconButton(
@@ -82,7 +82,7 @@ class _PwdWidgetState extends State<PwdWidget> {
                         IconButton(
                             onPressed: () {
                               _isVisible = !_isVisible;
-
+    
                               setState(() {});
                             },
                             icon: _isVisible
@@ -100,6 +100,3 @@ class _PwdWidgetState extends State<PwdWidget> {
     );
   }
 }
-
-
-

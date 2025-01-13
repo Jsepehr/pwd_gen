@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+/* import 'package:flutter/material.dart';
 import 'package:pwd_gen/core/utility.dart';
 import 'package:pwd_gen/data/local/password_repository.dart';
 import 'package:pwd_gen/data/models/pwd_model.dart';
@@ -117,3 +116,4 @@ class PwdListViewModel extends GetxController {
 
 
 }
+ */
