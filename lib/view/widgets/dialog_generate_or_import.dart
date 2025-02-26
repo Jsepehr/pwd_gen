@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pwd_gen/cubit/pwd_list_cubit.dart';
+import 'package:pwd_gen/cubit_pwds_list/pwd_list_cubit.dart';
 import 'package:pwd_gen/view/widgets/pwd_configure_bottom_sheet.dart';
 
 class DialogGenerateOrImport extends StatelessWidget {

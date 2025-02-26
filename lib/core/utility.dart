@@ -57,15 +57,15 @@ List<String> spiltList(List inputList) {
   return listOfLists;
 }
 
-combineStrings(List elle1, List elle2) {
-  var listaFinale = [];
+List<String> combineStrings(List<String> list1, List<String> list2) {
+  List<String> finalList = [];
   var tmpStr = "";
   for (var i = 0; i < 50; i++) {
-    tmpStr = elle1[i] + elle2[i];
-    listaFinale.add(tmpStr);
+    tmpStr = list1[i] + list2[i];
+    finalList.add(tmpStr);
     tmpStr = "";
   }
-  return listaFinale;
+  return finalList;
 }
 
 // list to string
@@ -200,21 +200,20 @@ List<int> indexAnalyses(String s) {
   return result;
 }
 
-Future<String> generateImageHash(File file) async {
+String generateImageHash(File file) {
   var imageByte = file.readAsBytesSync().toString();
   var bytes = utf8.encode(imageByte); // data being hashed
   String digest = sha256.convert(bytes).toString();
   return digest;
 }
 
-String? generateStringHash(String str) {
-  if (str == '') return null;
+String generateStringHash(String str) {
   var bytes1 = utf8.encode(str); // data being hashed
   var digest1 = sha256.convert(bytes1).toString();
   return digest1;
 }
 
-Future<String?> selectImage() async {
+Future<File?> selectImage() async {
   final first = ImagePicker();
   final imageFile = await first.pickImage(
     source: ImageSource.gallery,
@@ -224,7 +223,7 @@ Future<String?> selectImage() async {
   if (imageFile == null) return null;
 
   File storedImage = File(imageFile.path);
-  return await generateImageHash(storedImage);
+  return storedImage;
 }
 
 List<PwdEntity> filterListOfPwd(String needle, List<PwdEntity> lPwd) {

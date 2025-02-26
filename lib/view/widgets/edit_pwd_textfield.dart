@@ -4,8 +4,8 @@ class EditPwdTextField extends StatelessWidget {
   const EditPwdTextField({
     super.key,
     required this.controller,
+    required this.onChange,
     this.hintText,
-    this.onChange,
   });
 
   final TextEditingController controller;
