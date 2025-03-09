@@ -21,6 +21,7 @@ class PwdListCubit extends Cubit<PwdListState> {
   List<bool> opacityFlags = [];
   bool isSearching = false;
   int addingIndex = 0;
+  int _len = 0;
 
   void loadPwdsFromDb() async {
     await loadPwdsFromLocalDb();
@@ -33,8 +34,37 @@ class PwdListCubit extends Cubit<PwdListState> {
     emit(PwdListLoaded(
       pwdListShow: pwdListSaved,
       opacityFlags: opacityFlags,
-      isSearching: false,
-      pwdFilteredList: pwdListSaved,
+      isSearching: isSearching,
+    ));
+  }
+
+  void toggleSearch() {
+    isSearching = !isSearching;
+    emit(PwdListLoaded(
+      pwdListShow: pwdListShow, // Lista attuale senza il nuovo elemento
+      opacityFlags: opacityFlags,
+      isSearching: isSearching,
+    ));
+  }
+
+  void searchThis(String inputString) {
+    List<PwdEntity> filteredList = [];
+
+    if (inputString.isEmpty || !isSearching) {
+      pwdListShow = pwdList;
+      return;
+    }
+    for (int i = 0; i < _len; i++) {
+      if (pwdList[i].hint.toLowerCase().contains(inputString.toLowerCase())) {
+        filteredList.add(pwdList[i]);
+      }
+    }
+    pwdListShow = filteredList;
+
+    emit(PwdListLoaded(
+      pwdListShow: pwdListShow, // Lista attuale senza il nuovo elemento
+      opacityFlags: opacityFlags,
+      isSearching: isSearching,
     ));
   }
 
@@ -59,8 +89,7 @@ class PwdListCubit extends Cubit<PwdListState> {
           pwdListShow:
               List.from(pwdListShow), // Lista attuale senza il nuovo elemento
           opacityFlags: List.from(opacityFlags),
-          isSearching: false,
-          pwdFilteredList: List.from(pwdList),
+          isSearching: isSearching,
         ));
       }
       await Future.delayed(const Duration(milliseconds: 50));
@@ -71,8 +100,7 @@ class PwdListCubit extends Cubit<PwdListState> {
         pwdListShow:
             List.from(pwdListShow), // Lista attuale senza il nuovo elemento
         opacityFlags: List.from(opacityFlags),
-        isSearching: false,
-        pwdFilteredList: List.from(pwdList),
+        isSearching: isSearching,
       ));
     }
   }
@@ -91,8 +119,7 @@ class PwdListCubit extends Cubit<PwdListState> {
     emit(PwdListLoaded(
       pwdListShow: List.from(pwdList),
       opacityFlags: List.from(opacityFlags),
-      isSearching: false,
-      pwdFilteredList: List.from(pwdList),
+      isSearching: isSearching,
     ));
   }
 
@@ -120,6 +147,7 @@ class PwdListCubit extends Cubit<PwdListState> {
       opacityFlags.add(false);
       i++;
     }
+    _len = pwdList.length;
     await showPwds(List.from(pwdList));
   }
 }

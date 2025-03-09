@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pwd_gen/core/app_pallet.dart';
 import 'package:pwd_gen/core/injector.dart';
-import 'package:pwd_gen/cubit_pwds_list/pwd_list_cubit.dart';
+import 'package:pwd_gen/view/widgets/main/cubit_pwds_list/pwd_list_cubit.dart';
 import 'package:pwd_gen/domain/pwd_entity.dart';
 
-import 'package:pwd_gen/view/widgets/cubit_pwd_editor/pwd_editor_cubit.dart';
-import 'package:pwd_gen/view/widgets/edit_pwd_textfield.dart';
+import 'package:pwd_gen/view/widgets/pwd_edit/cubit_pwd_editor/pwd_editor_cubit.dart';
+import 'package:pwd_gen/view/widgets/shared/edit_pwd_textfield.dart';
 
 class PwdEditorBottomSheet extends StatefulWidget {
   final int index;

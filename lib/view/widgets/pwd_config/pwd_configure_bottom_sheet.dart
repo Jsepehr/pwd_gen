@@ -1,18 +1,46 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pwd_gen/core/app_pallet.dart';
-import 'package:pwd_gen/cubit_pwds_list/pwd_list_cubit.dart';
-import 'package:pwd_gen/view/widgets/cubit_config_pwds/config_pwds_cubit.dart';
-import 'package:pwd_gen/view/widgets/edit_pwd_textfield.dart';
+import 'package:pwd_gen/core/utility.dart';
+import 'package:pwd_gen/view/widgets/main/cubit_pwds_list/pwd_list_cubit.dart';
+import 'package:pwd_gen/view/widgets/pwd_config/cubit_config_pwds/config_pwds_cubit.dart';
+import 'package:pwd_gen/view/widgets/shared/edit_pwd_textfield.dart';
 
-class PwdConfigureBottomSheet extends StatelessWidget {
+class PwdConfigureBottomSheet extends StatefulWidget {
   const PwdConfigureBottomSheet({
     super.key,
   });
 
   @override
+  State<PwdConfigureBottomSheet> createState() =>
+      _PwdConfigureBottomSheetState();
+}
+
+class _PwdConfigureBottomSheetState extends State<PwdConfigureBottomSheet> {
+  TextEditingController secretPhraseCtl = TextEditingController();
+  File? image;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      context.read<ConfigPwdsCubit>().emitState(image);
+    });
+  }
+
+  @override
+  void dispose() {
+    secretPhraseCtl.dispose();
+    image = null;
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final cubit = context.read<ConfigPwdsCubit>();
+    cubit.secretPhrase = secretPhraseCtl.text;
     final width = MediaQuery.of(context).size.width;
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
@@ -46,11 +74,11 @@ class PwdConfigureBottomSheet extends StatelessWidget {
                           SizedBox(
                             height: 50,
                             child: EditPwdTextField(
-                              controller: cubit.secretPhraseCtl,
+                              controller: secretPhraseCtl,
                               hintText: 'Secret phrase...',
                               onChange: (p0) {
-                                debugPrint(cubit.secretPhraseCtl.text);
-                                cubit.enableImageBtn();
+                                cubit.secretPhrase = p0;
+                                cubit.emitState(image);
                               },
                             ),
                           ),
@@ -92,8 +120,10 @@ class PwdConfigureBottomSheet extends StatelessWidget {
                                         ),
                                       ),
                                       onPressed: state.isImageBtnEnabled
-                                          ? () async =>
-                                              await cubit.openGallery()
+                                          ? () async {
+                                              image = await selectImage();
+                                              cubit.emitState(image);
+                                            }
                                           : null,
                                       child: Row(
                                         mainAxisAlignment:
@@ -126,16 +156,15 @@ class PwdConfigureBottomSheet extends StatelessWidget {
                                     ),
                                     onPressed: state.isGenerateBtnEnabled
                                         ? () async {
+                                            await context
+                                                .read<PwdListCubit>()
+                                                .generatePwds(
+                                                    state.secretPhrase, image);
                                             WidgetsBinding.instance
                                                 .addPostFrameCallback(
                                                     (_) async {
                                               Navigator.pop(context);
                                             });
-                                            await context
-                                                .read<PwdListCubit>()
-                                                .generatePwds(
-                                                    state.secretPhrase,
-                                                    state.image);
                                           }
                                         : null,
                                     child: Text('Generate'),

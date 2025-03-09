@@ -12,7 +12,6 @@ final class PwdListInitial extends PwdListState {}
 class PwdListLoading extends PwdListState {}
 
 class PwdListLoaded extends PwdListState {
-  final List<PwdEntity> pwdFilteredList;
   final List<PwdEntity> pwdListShow;
   final List<bool> opacityFlags;
   final bool isSearching;
@@ -21,7 +20,6 @@ class PwdListLoaded extends PwdListState {
     required this.pwdListShow,
     required this.opacityFlags,
     required this.isSearching,
-    required this.pwdFilteredList,
   });
 
   @override
@@ -29,7 +27,6 @@ class PwdListLoaded extends PwdListState {
         pwdListShow,
         opacityFlags,
         isSearching,
-        pwdFilteredList,
       ];
 }
 

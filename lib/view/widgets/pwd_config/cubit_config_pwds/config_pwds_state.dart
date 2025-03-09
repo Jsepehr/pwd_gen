@@ -17,16 +17,15 @@ class ConfigPwdsLoaded extends ConfigPwdsState {
   final String secretPhrase;
   bool isGenerateBtnEnabled;
   bool isImageBtnEnabled;
-  File? image;
 
   ConfigPwdsLoaded({
     required this.secretPhrase,
     required this.isGenerateBtnEnabled,
     required this.isImageBtnEnabled,
-    this.image,
   });
   @override
-  List<Object> get props => [isImageBtnEnabled, isGenerateBtnEnabled];
+  List<Object> get props =>
+      [isImageBtnEnabled, isGenerateBtnEnabled, secretPhrase,  ];
 }
 
 class ConfigPwdsError extends ConfigPwdsState {

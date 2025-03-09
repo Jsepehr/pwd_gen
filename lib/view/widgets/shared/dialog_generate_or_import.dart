@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pwd_gen/cubit_pwds_list/pwd_list_cubit.dart';
-import 'package:pwd_gen/view/widgets/pwd_configure_bottom_sheet.dart';
+import 'package:pwd_gen/view/widgets/main/cubit_pwds_list/pwd_list_cubit.dart';
+import 'package:pwd_gen/view/widgets/pwd_config/pwd_configure_bottom_sheet.dart';
 
 class DialogGenerateOrImport extends StatelessWidget {
   const DialogGenerateOrImport({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -24,15 +23,16 @@ class DialogGenerateOrImport extends StatelessWidget {
                 ),
               ),
             ),
-            onPressed: () {
+            onPressed: () async {
               Navigator.of(context).pop();
               showModalBottomSheet(
-                context: context,
-                builder: (BuildContext bottomSheetContext) => BlocProvider.value(
-                  value: bottomSheetContext.read<PwdListCubit>(),
-                  child: PwdConfigureBottomSheet(),
-                ),
-              );
+                  context: context,
+                  builder: (BuildContext bottomSheetContext) {
+                    return BlocProvider.value(
+                      value: bottomSheetContext.read<PwdListCubit>(),
+                      child: PwdConfigureBottomSheet(),
+                    );
+                  });
             },
             child: const Text('Generate'),
           ),

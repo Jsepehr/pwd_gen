@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pwd_gen/core/injector.dart';
-import 'package:pwd_gen/cubit_pwds_list/pwd_list_cubit.dart';
+import 'package:pwd_gen/view/widgets/main/cubit_pwds_list/pwd_list_cubit.dart';
 import 'package:pwd_gen/data/local/password_repository.dart';
 import 'package:pwd_gen/domain/pwd_entity.dart';
-import 'package:pwd_gen/view/widgets/dialog_generate_or_import.dart';
-import 'package:pwd_gen/view/widgets/pwd_editor_bottom_sheet.dart';
-import 'package:pwd_gen/view/widgets/pwd_widget.dart';
+import 'package:pwd_gen/view/widgets/shared/dialog_generate_or_import.dart';
+import 'package:pwd_gen/view/widgets/pwd_edit/pwd_editor_bottom_sheet.dart';
+import 'package:pwd_gen/view/widgets/shared/pwd_widget.dart';
+import 'package:pwd_gen/view/widgets/shared/search_field.dart';
 
 class PwdListView extends StatelessWidget {
   PwdListView({super.key});
@@ -21,7 +22,9 @@ class PwdListView extends StatelessWidget {
         title: Text('Passwords List'),
         actions: [
           IconButton(
-            onPressed: () {}, //_viewModel.toggleSearch,
+            onPressed: () {
+              context.read<PwdListCubit>().toggleSearch();
+            },
             icon: Icon(Icons.search),
           ),
         ],
@@ -32,6 +35,29 @@ class PwdListView extends StatelessWidget {
             return Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                AnimatedSwitcher(
+                  duration: Duration(milliseconds: 500),
+                  transitionBuilder:
+                      (Widget child, Animation<double> animation) {
+                    return FadeTransition(
+                      opacity: animation,
+                      child: SizeTransition(
+                        sizeFactor: animation,
+                        axisAlignment: -1.0,
+                        child: child,
+                      ),
+                    );
+                  },
+                  child: state.isSearching
+                      ? SearchField(
+                          key: ValueKey(1), // Important for AnimatedSwitcher
+                          onChange: (value) {
+                            context.read<PwdListCubit>().searchThis(value);
+                          },
+                        )
+                      : SizedBox.shrink(
+                          key: ValueKey(2)), // Ensures transition happens
+                ),
                 Expanded(
                   child: ListView.builder(
                     itemCount: state.pwdListShow.length + 1,
@@ -78,7 +104,6 @@ class PwdListView extends StatelessWidget {
                                     );
                                   },
                                 );
-                  
                               },
                             ),
                           ),

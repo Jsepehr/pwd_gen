@@ -19,6 +19,8 @@ class EditPwdTextField extends StatelessWidget {
         hintText: hintText,
       ),
       controller: controller,
+      autocorrect: false,
+      enableSuggestions: false,
     );
   }
 }

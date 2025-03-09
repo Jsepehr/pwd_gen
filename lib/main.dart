@@ -3,10 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:pwd_gen/core/injector.dart';
 import 'package:pwd_gen/core/routs.dart';
-import 'package:pwd_gen/cubit_pwds_list/pwd_list_cubit.dart';
+import 'package:pwd_gen/view/widgets/main/cubit_pwds_list/pwd_list_cubit.dart';
 import 'package:pwd_gen/data/local/password_repository.dart';
-import 'package:pwd_gen/view/widgets/cubit_config_pwds/config_pwds_cubit.dart';
-import 'package:pwd_gen/view/widgets/cubit_pwd_editor/pwd_editor_cubit.dart';
+import 'package:pwd_gen/view/widgets/pwd_config/cubit_config_pwds/config_pwds_cubit.dart';
+import 'package:pwd_gen/view/widgets/pwd_edit/cubit_pwd_editor/pwd_editor_cubit.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,8 +17,7 @@ void main() {
       providers: [
         BlocProvider<PwdListCubit>(
             create: (context) => PwdListCubit(myService)..loadPwdsFromDb()),
-        BlocProvider<ConfigPwdsCubit>(
-            create: (context) => ConfigPwdsCubit()..emitState()),
+        BlocProvider<ConfigPwdsCubit>(create: (context) => ConfigPwdsCubit()),
         BlocProvider<PwdEditorCubit>(
             create: (context) => PwdEditorCubit()..init()),
       ],
