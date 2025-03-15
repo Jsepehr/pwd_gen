@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:crypto/crypto.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pwd_gen/domain/pwd_entity.dart';
 
@@ -242,4 +243,33 @@ List<PwdEntity> filterListOfPwd(String needle, List<PwdEntity> lPwd) {
   } else {
     return lPwd;
   }
+}
+
+///the function splitList generates a list of lists
+List<List<String>> splitList(List<String> input, int chunkSize) {
+  final tmpLists = List<String>.filled(chunkSize, '');
+  List<List<String>> result = [];
+
+  for (int i = 0; i < input.length - 1; i = chunkSize + i) {
+    for (int k = 0; k < tmpLists.length; k++) {
+      tmpLists[k] = input[i + k];
+    }
+    result.add(tmpLists.toList());
+  }
+  return result;
+}
+
+Future<List<List<String>>?> readContentFromFile() async {
+  final result = await FilePicker.platform.pickFiles();
+  if (result == null) {
+    return null;
+  }
+  final file = result.files;
+  String fileName = file[0].name;
+  RegExp exp = RegExp(r'Notepass_pwdc\d{5,}\.txt');
+  if (file[0].extension! == 'txt' && exp.firstMatch(fileName) != null) {
+    var myFile = await File(file[0].path!).readAsString();
+    return splitList(myFile.split('<|||>'), 3);
+  }
+  return null;
 }

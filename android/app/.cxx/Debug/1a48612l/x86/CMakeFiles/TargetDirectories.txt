@@ -1,0 +1,2 @@
+/Users/mymac/projects/pwd_gen/android/app/.cxx/Debug/1a48612l/x86/CMakeFiles/edit_cache.dir
+/Users/mymac/projects/pwd_gen/android/app/.cxx/Debug/1a48612l/x86/CMakeFiles/rebuild_cache.dir

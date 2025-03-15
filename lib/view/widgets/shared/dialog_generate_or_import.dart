@@ -25,7 +25,9 @@ class DialogGenerateOrImport extends StatelessWidget {
             ),
             onPressed: () async {
               Navigator.of(context).pop();
-              showModalBottomSheet(
+              await showModalBottomSheet(
+                  enableDrag: !context.read<PwdListCubit>().isLoading,
+                  isDismissible: !context.read<PwdListCubit>().isLoading,
                   context: context,
                   builder: (BuildContext bottomSheetContext) {
                     return BlocProvider.value(
@@ -55,7 +57,7 @@ class DialogGenerateOrImport extends StatelessWidget {
             ),
             onPressed: () {
               Navigator.pop(context); // Handle Import action
-              print('Import button pressed');
+              context.read<PwdListCubit>().loadPwdsFromFile();
             },
             child: const Text('Import'),
           ),

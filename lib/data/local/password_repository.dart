@@ -1,10 +1,10 @@
+import 'package:pwd_gen/core/injector.dart';
+import 'package:pwd_gen/data/local/datbase_helper.dart';
 import 'package:pwd_gen/domain/pwd_entity.dart';
 import 'package:pwd_gen/repository/pwd_repository.dart';
 
 class PwdRepositoryImpl implements PwdRepository {
-  final IDatabaseHelper _dbHelper;
-
-  PwdRepositoryImpl(this._dbHelper);
+  final _dbHelper = getIt<DatabaseHelper>();
   @override
   Future<int> insertPwd(PwdEntity pwd) async {
     final db = await _dbHelper.database;

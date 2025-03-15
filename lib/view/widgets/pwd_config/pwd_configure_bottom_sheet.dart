@@ -119,7 +119,10 @@ class _PwdConfigureBottomSheetState extends State<PwdConfigureBottomSheet> {
                                           ),
                                         ),
                                       ),
-                                      onPressed: state.isImageBtnEnabled
+                                      onPressed: state.isImageBtnEnabled &&
+                                              !context
+                                                  .watch<PwdListCubit>()
+                                                  .isLoading
                                           ? () async {
                                               image = await selectImage();
                                               cubit.emitState(image);
@@ -154,7 +157,10 @@ class _PwdConfigureBottomSheetState extends State<PwdConfigureBottomSheet> {
                                         ),
                                       ),
                                     ),
-                                    onPressed: state.isGenerateBtnEnabled
+                                    onPressed: state.isGenerateBtnEnabled &&
+                                            !context
+                                                .watch<PwdListCubit>()
+                                                .isLoading
                                         ? () async {
                                             await context
                                                 .read<PwdListCubit>()
