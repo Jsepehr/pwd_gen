@@ -5,37 +5,34 @@ class PwdEntity {
   final String id;
   String hint;
   String password;
-  int usageCount;
+  String usageDate;
   PwdEntity({
     required this.id,
     required this.hint,
     required this.password,
-    required this.usageCount,
+    required this.usageDate,
   });
-
-   
 
   PwdEntity copyWith({
     String? id,
     String? hint,
     String? password,
-    int? usageCount,
+    String? usageDate,
   }) {
     return PwdEntity(
       id: id ?? this.id,
       hint: hint ?? this.hint,
       password: password ?? this.password,
-      usageCount: usageCount ?? this.usageCount,
+      usageDate: usageDate ?? this.usageDate,
     );
   }
-  PwdEntity from({
-    required  PwdEntity pwd
-  }) {
+
+  PwdEntity from({required PwdEntity pwd}) {
     return PwdEntity(
       id: pwd.id,
-      hint: pwd. hint ,
-      password: pwd. password ,
-      usageCount: pwd. usageCount ,
+      hint: pwd.hint,
+      password: pwd.password,
+      usageDate: pwd.usageDate,
     );
   }
 
@@ -44,7 +41,7 @@ class PwdEntity {
       'id': id,
       'hint': hint,
       'password': password,
-      'usageCount': usageCount,
+      'usageDate': usageDate,
     };
   }
 
@@ -53,36 +50,33 @@ class PwdEntity {
       id: map['id'] as String,
       hint: map['hint'] as String,
       password: map['password'] as String,
-      usageCount: map['usageCount'] as int,
+      usageDate: map['usageDate'].toString(),
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory PwdEntity.fromJson(String source) => PwdEntity.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory PwdEntity.fromJson(String source) =>
+      PwdEntity.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   String toString() {
-    return 'PwdEntity(id: $id, hint: $hint, password: $password, usageCount: $usageCount)';
+    return 'PwdEntity(id: $id, hint: $hint, password: $password, usageDate: $usageDate)';
   }
 
   @override
   bool operator ==(covariant PwdEntity other) {
     if (identical(this, other)) return true;
-  
-    return 
-      other.id == id &&
-      other.hint == hint &&
-      other.password == password &&
-      other.usageCount == usageCount;
+
+    return other.id == id &&
+        other.hint == hint &&
+        other.password == password &&
+        other.usageDate == usageDate;
   }
 
   @override
   int get hashCode {
-    return id.hashCode ^
-      hint.hashCode ^
-      password.hashCode ^
-      usageCount.hashCode;
+    return id.hashCode ^ hint.hashCode ^ password.hashCode ^ usageDate.hashCode;
   }
 }
 

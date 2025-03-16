@@ -1,5 +1,4 @@
 import 'package:get_it/get_it.dart';
-import 'package:pwd_gen/core/static_data.dart';
 import 'package:pwd_gen/data/local/datbase_helper.dart';
 import 'package:pwd_gen/data/local/password_repository.dart';
 import 'package:pwd_gen/domain/pwd_entity.dart';
@@ -8,7 +7,7 @@ final getIt = GetIt.instance;
 
 void setupLocator() {
   getIt.registerLazySingleton<PwdRepositoryImpl>(() => PwdRepositoryImpl());
-  getIt.registerLazySingleton<DatabaseHelper>(() => DatabaseHelper());
+  getIt.registerSingleton<DatabaseHelper>(DatabaseHelper());
   getIt.registerSingleton<FixedString>(FixedString._instance);
   getIt.registerSingleton<PwdEntityEdit>(PwdEntityEdit(
     password: "",
@@ -18,7 +17,6 @@ void setupLocator() {
 
 class FixedString {
   static final FixedString _instance = FixedString._internal();
-
 
   FixedString._internal();
 
@@ -39,4 +37,3 @@ class FixedString {
   // Metodo di esempio
   String get() => fixedString;
 }
-

@@ -1,3 +1,4 @@
+import 'package:path/path.dart';
 import 'package:pwd_gen/repository/pwd_repository.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -14,18 +15,26 @@ class DatabaseHelper implements IDatabaseHelper {
   }
 
   Future<Database> _initDb() async {
+    final dbPath = await getDatabasesPath(); // Get proper path
+    final path = join(dbPath, _dbName); // Combine with db name
     return openDatabase(
-      _dbName,
-      version: 1,
+      path,
+      version: 3,
       onCreate: (db, version) async {
         await db.execute('''
           CREATE TABLE $_tableName (
-            id TEXT NOT NULL,
+            id TEXT PRIMARY KEY,
             hint TEXT NOT NULL,
             password TEXT NOT NULL,
-            usageCount TEXT NOT NULL
+            usageDate TEXT NOT NULL
           )
         ''');
+      },
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < newVersion) {
+          await db
+              .execute('ALTER TABLE $_tableName ADD COLUMN lastUsed INTEGER');
+        }
       },
     );
   }
