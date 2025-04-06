@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import 'package:google_fonts/google_fonts.dart';
@@ -8,7 +7,12 @@ import 'package:share_plus/share_plus.dart';
 class PwdWidget extends StatefulWidget {
   final PwdEntity pwd;
   final VoidCallback onEdit;
-  const PwdWidget({super.key, required this.pwd, required this.onEdit});
+  final VoidCallback onShareOrOnVisibilityChanged;
+  const PwdWidget(
+      {super.key,
+      required this.pwd,
+      required this.onEdit,
+      required this.onShareOrOnVisibilityChanged});
   @override
   State<PwdWidget> createState() => _PwdWidgetState();
 }
@@ -52,16 +56,19 @@ class _PwdWidgetState extends State<PwdWidget> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
-                        onPressed: widget.onEdit,
-                        icon: Icon(Icons.edit)),
+                        onPressed: widget.onEdit, icon: Icon(Icons.edit)),
                     IconButton(
-                        onPressed: () {
-                          Share.share(widget.pwd.password);
+                        onPressed: () async {
+                          await Share.share(widget.pwd.password);
+                          widget.onShareOrOnVisibilityChanged();
                         },
                         icon: Icon(Icons.share)),
                     IconButton(
                         onPressed: () {
                           _isVisible = !_isVisible;
+                          if (!_isVisible) {
+                            widget.onShareOrOnVisibilityChanged();
+                          }
                           setState(() {});
                         },
                         icon: _isVisible

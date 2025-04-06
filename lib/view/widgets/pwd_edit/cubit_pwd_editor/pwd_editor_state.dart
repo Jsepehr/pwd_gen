@@ -16,8 +16,10 @@ class PwdEditorLoaded extends PwdEditorState {
   final String hint;
   final TextEditingController hintController;
   final TextEditingController pwdController;
+  final FocusNode focusNode;
 
   const PwdEditorLoaded({
+    required this.focusNode,
     required this.pwd,
     required this.hint,
     required this.hintController,
@@ -25,7 +27,7 @@ class PwdEditorLoaded extends PwdEditorState {
   });
 
   @override
-  List<Object> get props => [pwd, hint];
+  List<Object> get props => [pwd, hint, focusNode];
 }
 
 class PwdEditorError extends PwdEditorState {

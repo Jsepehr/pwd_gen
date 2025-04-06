@@ -17,15 +17,21 @@ class ConfigPwdsLoaded extends ConfigPwdsState {
   final String secretPhrase;
   bool isGenerateBtnEnabled;
   bool isImageBtnEnabled;
+  final FocusNode focusNode;
 
   ConfigPwdsLoaded({
+    required this.focusNode,
     required this.secretPhrase,
     required this.isGenerateBtnEnabled,
     required this.isImageBtnEnabled,
   });
   @override
-  List<Object> get props =>
-      [isImageBtnEnabled, isGenerateBtnEnabled, secretPhrase,  ];
+  List<Object> get props => [
+        isImageBtnEnabled,
+        isGenerateBtnEnabled,
+        secretPhrase,
+        focusNode,
+      ];
 }
 
 class ConfigPwdsError extends ConfigPwdsState {

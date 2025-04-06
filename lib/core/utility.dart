@@ -260,12 +260,15 @@ List<List<String>> splitList(List<String> input, int chunkSize) {
 }
 
 Future<List<List<String>>?> readContentFromFile() async {
-  final result = await FilePicker.platform.pickFiles();
+  final directory = Directory('/storage/emulated/0/Download');
+  final folderPath = '${directory.path}/Notepass';
+  final result = await FilePicker.platform
+      .pickFiles(allowMultiple: false, initialDirectory: folderPath);
   if (result == null) {
     return null;
   }
   final file = result.files;
-  String fileName = file[0].name;
+  String fileName = file.first.name;
   RegExp exp = RegExp(r'Notepass_pwdc\d{5,}\.txt');
   if (file[0].extension! == 'txt' && exp.firstMatch(fileName) != null) {
     var myFile = await File(file[0].path!).readAsString();

@@ -9,6 +9,7 @@ import 'package:pwd_gen/core/injector.dart';
 import 'package:pwd_gen/core/utility.dart';
 import 'package:pwd_gen/data/local/password_repository.dart';
 import 'package:pwd_gen/domain/pwd_entity.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
 part 'pwd_list_state.dart';
@@ -16,8 +17,7 @@ part 'pwd_list_state.dart';
 class PwdListCubit extends Cubit<PwdListState> {
   PwdListCubit() : super(PwdListInitial());
   List<PwdEntity> _pwdListSaved = []; // read from db
-  List<PwdEntity> _pwdListShow = []; // this is animated
-
+  List<PwdEntity> _pwdListShow = []; // u see this on the list view
   bool isSearching = false;
   bool isLoading = false;
 
@@ -30,17 +30,13 @@ class PwdListCubit extends Cubit<PwdListState> {
     await loadPwdsFromLocalDb();
     _pwdListShow = List.from(_pwdListSaved);
     _len = _pwdListShow.length;
+    _pwdListShow.sort(
+        (a, b) => int.parse(b.usageDate).compareTo(int.parse(a.usageDate)));
     _emitState();
   }
 
   Future<void> _saveAllToLocalDb(PwdEntity pwd) async {
     await db.insertPwd(pwd);
-  }
-
-  Future<void> _updatePwdOnDb(PwdEntity pwd) async {
-    debugPrint(pwd.toString());
-    final res = await db.updatePwd(pwd);
-    debugPrint('$res');
   }
 
   void loadPwdsFromFile() async {
@@ -77,6 +73,7 @@ class PwdListCubit extends Cubit<PwdListState> {
 
     if (inputString.isEmpty || !isSearching) {
       _pwdListShow = _pwdListSaved;
+      _emitState();
       return;
     }
     for (int i = 0; i < _len; i++) {
@@ -101,10 +98,18 @@ class PwdListCubit extends Cubit<PwdListState> {
     }
   }
 
-  void editPwd(PwdEntityEdit pwdModified, int index) async {
-    _usageCount = _usageCount + _len + 1;
+  Future<void> updateHintAndPwds(PwdEntityEdit pwdModified, int index) async {
+    _usageCount = DateTime.now().millisecondsSinceEpoch;
     _pwdListShow[index].usageDate = _usageCount.toString();
     _pwdListShow[index].hint = pwdModified.hint;
+    _pwdListShow[index].password = pwdModified.password;
+    await db.updatePwd(_pwdListShow[index]);
+    _emitState();
+  }
+
+  Future<void> updateDateTime(int index) async {
+    _usageCount = DateTime.now().millisecondsSinceEpoch;
+    _pwdListShow[index].usageDate = _usageCount.toString();
     await db.updatePwd(_pwdListShow[index]);
     _emitState();
   }
@@ -128,10 +133,7 @@ class PwdListCubit extends Cubit<PwdListState> {
     final c = combineStrings(pass1, pass2);
     for (int k = 0; k < 50; k++) {
       _pwdListShow.add(PwdEntity(
-          id: Uuid().v4(),
-          hint: 'Hint $i',
-          password: c[k],
-          usageDate: i.toString()));
+          id: Uuid().v4(), hint: 'Hint $i', password: c[k], usageDate: '0'));
 
       await _saveAllToLocalDb(PwdEntity(
           id: _pwdListShow[k].id,
@@ -181,10 +183,37 @@ class PwdListCubit extends Cubit<PwdListState> {
     return folderPath;
   }
 
+  Future<void> _saveText(String filePath) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('path', filePath);
+  }
+
+  Future<String?> _loadSavedText() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    return prefs.getString('path');
+  }
+
   Future<File> get _localFile async {
+    final fileToDelete = await _loadSavedText();
+    if (fileToDelete != null) {
+      try {
+        final file = File(fileToDelete);
+        if (await file.exists()) {
+          await file.delete();
+          print('File eliminato con successo.');
+        } else {
+          print('Il file non esiste.');
+        }
+      } catch (e) {
+        print('Errore durante l\'eliminazione del file: $e');
+      }
+    }
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('yyyyMMddkkmm').format(now);
     final path = await _localPath;
+    await _saveText('$path/Notepass_pwdc$formattedDate.txt');
+
     return File('$path/Notepass_pwdc$formattedDate.txt');
   }
 
@@ -212,8 +241,6 @@ class PwdListCubit extends Cubit<PwdListState> {
   }
 
   _emitState() {
-    _pwdListShow.sort(
-        (a, b) => int.parse(b.usageDate).compareTo(int.parse(a.usageDate)));
     isLoading = true;
     emit(
       PwdListLoaded(
@@ -223,6 +250,7 @@ class PwdListCubit extends Cubit<PwdListState> {
       ),
     );
     isLoading = false;
+
     emit(
       PwdListLoaded(
         pwdListShow: [..._pwdListShow],

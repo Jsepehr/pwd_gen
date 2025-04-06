@@ -27,6 +27,7 @@ class _PwdConfigureBottomSheetState extends State<PwdConfigureBottomSheet> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       context.read<ConfigPwdsCubit>().emitState(image);
+      context.read<ConfigPwdsCubit>().focusNode.requestFocus();
     });
   }
 
@@ -74,6 +75,7 @@ class _PwdConfigureBottomSheetState extends State<PwdConfigureBottomSheet> {
                           SizedBox(
                             height: 50,
                             child: EditPwdTextField(
+                              focusNode: state.focusNode,
                               controller: secretPhraseCtl,
                               hintText: 'Secret phrase...',
                               onChange: (p0) {

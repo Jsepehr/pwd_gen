@@ -7,15 +7,18 @@ class EditPwdTextField extends StatelessWidget {
     super.key,
     required this.controller,
     required this.onChange,
+    required this.focusNode,
     this.hintText,
   });
 
   final TextEditingController controller;
   final String? hintText;
   final Function(String)? onChange;
+  final  FocusNode focusNode;
   @override
   Widget build(BuildContext context) {
     return TextField(
+      focusNode: focusNode,
       onChanged: onChange,
       decoration: InputDecoration(
         hintText: hintText,

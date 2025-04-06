@@ -61,7 +61,7 @@ class PwdListView extends StatelessWidget {
     overlay.insert(snackbar);
 
     // Remove the snackbar after 3 seconds
-    Future.delayed(Duration(seconds: 3), () {
+    Future.delayed(Duration(seconds: 5), () {
       snackbar.remove();
     });
   }
@@ -75,7 +75,6 @@ class PwdListView extends StatelessWidget {
         leading: IconButton(
           icon: Icon(Icons.save_outlined),
           onPressed: () async {
-
             final res =
                 await context.read<PwdListCubit>().requestStoragePermission();
             if (!res) {
@@ -92,7 +91,7 @@ class PwdListView extends StatelessWidget {
                 showCenteredSnackbar(
                     context,
                     res
-                        ? 'File stored on device successfully'
+                        ? 'File stored on Downloads > Notepass folder successfully'
                         : 'Something went wrong',
                     res);
               });
@@ -181,6 +180,7 @@ class PwdListView extends StatelessWidget {
                                       index: index);
 
                                   await showModalBottomSheet(
+                                    
                                     enableDrag: false,
                                     isDismissible: state.isLoading,
                                     context: context,
@@ -190,6 +190,11 @@ class PwdListView extends StatelessWidget {
                                       );
                                     },
                                   );
+                                },
+                                onShareOrOnVisibilityChanged: () {
+                                  context
+                                      .read<PwdListCubit>()
+                                      .updateDateTime(index);
                                 },
                               ),
                             ),

@@ -19,17 +19,13 @@ class PwdListLoaded extends PwdListState {
 
   const PwdListLoaded({
     required this.pwdListShow,
-
     required this.isSearching,
     required this.isLoading,
+
   });
 
   @override
-  List<Object> get props => [
-        pwdListShow,
-        isSearching,
-        isLoading
-      ];
+  List<Object> get props => [pwdListShow, isSearching, isLoading,];
 }
 
 class PwdListError extends PwdListState {

@@ -31,6 +31,7 @@ class _PwdEditorBottomSheetState extends State<PwdEditorBottomSheet> {
       cubit.pwdController.text = pwd.password;
       cubit.modifyPwd(pwd.password);
       cubit.modifyHint(pwd.hint);
+      cubit.focusNode.requestFocus();
     });
   }
 
@@ -62,6 +63,7 @@ class _PwdEditorBottomSheetState extends State<PwdEditorBottomSheet> {
                     height: 50,
                     child: state is PwdEditorLoaded
                         ? EditPwdTextField(
+                            focusNode: state.focusNode,
                             controller: state.hintController,
                             onChange: (p0) {
                               cubit.modifyHint(p0);
@@ -76,6 +78,7 @@ class _PwdEditorBottomSheetState extends State<PwdEditorBottomSheet> {
                     height: 50,
                     child: state is PwdEditorLoaded
                         ? EditPwdTextField(
+                            focusNode: FocusNode(),
                             controller: state.pwdController,
                             onChange: (p0) {
                               cubit.modifyPwd(p0);
@@ -91,14 +94,15 @@ class _PwdEditorBottomSheetState extends State<PwdEditorBottomSheet> {
                     children: [
                       state is PwdEditorLoaded
                           ? ElevatedButton(
-                              onPressed: () {
+                              onPressed: () async {
                                 getIt<PwdEntityEdit>().update(
                                     hint: cubit.hint,
                                     password: cubit.pwd,
                                     index: widget.index);
                                 PwdEntityEdit pwd = getIt<PwdEntityEdit>();
 
-                                cubitPwdsList.editPwd(pwd, widget.index);
+                                cubitPwdsList.updateHintAndPwds(
+                                    pwd, widget.index);
                                 Navigator.pop(context);
                               },
                               child: Text('Apply'))

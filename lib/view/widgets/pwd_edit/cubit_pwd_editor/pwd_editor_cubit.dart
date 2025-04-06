@@ -1,4 +1,4 @@
-import 'package:bloc/bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
@@ -9,6 +9,7 @@ class PwdEditorCubit extends Cubit<PwdEditorState> {
 
   TextEditingController hintController = TextEditingController();
   TextEditingController pwdController = TextEditingController();
+  FocusNode focusNode = FocusNode();
 
   String pwd = '';
   String hint = '';
@@ -27,6 +28,7 @@ class PwdEditorCubit extends Cubit<PwdEditorState> {
 
   _emitState() {
     emit(PwdEditorLoaded(
+      focusNode: focusNode,
         pwd: pwd,
         hint: hint,
         hintController: hintController,
