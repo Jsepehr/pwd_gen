@@ -33,39 +33,6 @@ class PwdListView extends StatelessWidget {
     );
   }
 
-  void showCenteredSnackbar(BuildContext context, String message, bool failed) {
-    final overlay = Overlay.of(context);
-    final snackbar = OverlayEntry(
-      builder: (context) => Positioned(
-        top: MediaQuery.of(context).size.height *
-            0.4, // Adjust this value to control the position
-        left: MediaQuery.of(context).size.width *
-            0.2, // Center the snackbar horizontally
-        child: Material(
-          color: Colors.transparent,
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            decoration: BoxDecoration(
-              color: !failed ? Colors.red : Colors.green,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Text(
-              message,
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ),
-      ),
-    );
-
-    overlay.insert(snackbar);
-
-    // Remove the snackbar after 3 seconds
-    Future.delayed(Duration(seconds: 5), () {
-      snackbar.remove();
-    });
-  }
-
   const PwdListView({super.key});
   @override
   Widget build(BuildContext context) {
@@ -86,14 +53,38 @@ class PwdListView extends StatelessWidget {
               final res =
                   await context.read<PwdListCubit>().wrightContentToFile();
 
-              WidgetsBinding.instance.addPostFrameCallback((_) {
+              WidgetsBinding.instance.addPostFrameCallback((_) async {
                 context.read<PwdListCubit>().isLoading = false;
-                showCenteredSnackbar(
-                    context,
-                    res
-                        ? 'File stored on Downloads > Notepass folder successfully'
-                        : 'Something went wrong',
-                    res);
+
+                await showDialog(
+                  context: context,
+                  builder: (context) => Center(
+                    child: SizedBox(
+                      width: 300,
+                      height: 150,
+                      child: Material(
+                        child: Container(
+                          color: Colors.black,
+                          child: res
+                              ? Center(
+                                  child: Text(
+                                    'File stored on\nDownloads > Notepass folder\nsuccessfully :)',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                )
+                              : Center(
+                                  child: Text(
+                                    'Something went wrong! :(',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                ),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
               });
             });
           },
@@ -180,7 +171,7 @@ class PwdListView extends StatelessWidget {
                                       index: index);
 
                                   await showModalBottomSheet(
-                                    
+                                    isScrollControlled: true,
                                     enableDrag: false,
                                     isDismissible: state.isLoading,
                                     context: context,

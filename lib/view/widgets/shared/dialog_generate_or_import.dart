@@ -26,6 +26,7 @@ class DialogGenerateOrImport extends StatelessWidget {
             onPressed: () async {
               Navigator.of(context).pop();
               await showModalBottomSheet(
+                  isScrollControlled: true,
                   enableDrag: !context.read<PwdListCubit>().isLoading,
                   isDismissible: !context.read<PwdListCubit>().isLoading,
                   context: context,

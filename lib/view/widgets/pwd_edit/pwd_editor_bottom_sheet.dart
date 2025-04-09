@@ -38,85 +38,91 @@ class _PwdEditorBottomSheetState extends State<PwdEditorBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final cubitPwdsList = context.read<PwdListCubit>();
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
-      child: Container(
-        color: AppPallet.bottomSheetBG,
-        height: 250,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 0),
-          child: BlocBuilder<PwdEditorCubit, PwdEditorState>(
-            builder: (context, state) {
-              return Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: Icon(
-                        Icons.edit,
-                        color: AppPallet.bottomSheetTitleIcon,
+    return Padding(
+      // 👇 Pushes content above the keyboard
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          color: AppPallet.bottomSheetBG,
+          height: 250,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 0),
+            child: BlocBuilder<PwdEditorCubit, PwdEditorState>(
+              builder: (context, state) {
+                return Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: Icon(
+                          Icons.edit,
+                          color: AppPallet.bottomSheetTitleIcon,
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 50,
-                    child: state is PwdEditorLoaded
-                        ? EditPwdTextField(
-                            focusNode: state.focusNode,
-                            controller: state.hintController,
-                            onChange: (p0) {
-                              cubit.modifyHint(p0);
-                            },
-                          )
-                        : CircularProgressIndicator(),
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  SizedBox(
-                    height: 50,
-                    child: state is PwdEditorLoaded
-                        ? EditPwdTextField(
-                            focusNode: FocusNode(),
-                            controller: state.pwdController,
-                            onChange: (p0) {
-                              cubit.modifyPwd(p0);
-                            },
-                          )
-                        : CircularProgressIndicator(),
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      state is PwdEditorLoaded
-                          ? ElevatedButton(
-                              onPressed: () async {
-                                getIt<PwdEntityEdit>().update(
-                                    hint: cubit.hint,
-                                    password: cubit.pwd,
-                                    index: widget.index);
-                                PwdEntityEdit pwd = getIt<PwdEntityEdit>();
-
-                                cubitPwdsList.updateHintAndPwds(
-                                    pwd, widget.index);
-                                Navigator.pop(context);
+                    SizedBox(
+                      height: 50,
+                      child: state is PwdEditorLoaded
+                          ? EditPwdTextField(
+                              focusNode: state.focusNode,
+                              controller: state.hintController,
+                              onChange: (p0) {
+                                cubit.modifyHint(p0);
                               },
-                              child: Text('Apply'))
+                            )
                           : CircularProgressIndicator(),
-                      ElevatedButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: Text('Dismiss')),
-                    ],
-                  )
-                ],
-              );
-            },
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    SizedBox(
+                      height: 50,
+                      child: state is PwdEditorLoaded
+                          ? EditPwdTextField(
+                              focusNode: FocusNode(),
+                              controller: state.pwdController,
+                              onChange: (p0) {
+                                cubit.modifyPwd(p0);
+                              },
+                            )
+                          : CircularProgressIndicator(),
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        state is PwdEditorLoaded
+                            ? ElevatedButton(
+                                onPressed: () async {
+                                  getIt<PwdEntityEdit>().update(
+                                      hint: cubit.hint,
+                                      password: cubit.pwd,
+                                      index: widget.index);
+                                  PwdEntityEdit pwd = getIt<PwdEntityEdit>();
+
+                                  cubitPwdsList.updateHintAndPwds(
+                                      pwd, widget.index);
+                                  Navigator.pop(context);
+                                },
+                                child: Text('Apply'))
+                            : CircularProgressIndicator(),
+                        ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: Text('Dismiss')),
+                      ],
+                    )
+                  ],
+                );
+              },
+            ),
           ),
         ),
       ),

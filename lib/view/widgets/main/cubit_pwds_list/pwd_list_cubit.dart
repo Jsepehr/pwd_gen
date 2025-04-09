@@ -4,6 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pwd_gen/core/injector.dart';
 import 'package:pwd_gen/core/utility.dart';
@@ -20,14 +21,34 @@ class PwdListCubit extends Cubit<PwdListState> {
   List<PwdEntity> _pwdListShow = []; // u see this on the list view
   bool isSearching = false;
   bool isLoading = false;
+  final LocalAuthentication _auth = LocalAuthentication();
+  bool res = false;
+
+  Future<void> authenticate() async {
+    emit(PwdListInitial());
+    try {
+      res = await _auth.authenticate(
+        localizedReason: 'Autenticati per continuare',
+        options: const AuthenticationOptions(
+          stickyAuth: true,
+        ),
+      );
+    } catch (e) {
+      return;
+    }
+  }
 
   int _len = 0;
   int i = 0;
   int _usageCount = 0;
   final db = getIt<PwdRepositoryImpl>();
 
-  void loadPwdsFromDb() async {
+  Future<void> loadPwdsFromDb() async {
     await loadPwdsFromLocalDb();
+    if (_pwdListSaved.isNotEmpty && !res) {
+      await authenticate();
+      await loadPwdsFromDb();
+    }
     _pwdListShow = List.from(_pwdListSaved);
     _len = _pwdListShow.length;
     _pwdListShow.sort(
@@ -40,6 +61,8 @@ class PwdListCubit extends Cubit<PwdListState> {
   }
 
   void loadPwdsFromFile() async {
+    isLoading = true;
+    _emitState();
     final res = await readContentFromFile();
     if (res == null) return;
 
@@ -59,7 +82,7 @@ class PwdListCubit extends Cubit<PwdListState> {
         usageDate: item[2],
       ));
     }
-
+    isLoading = false;
     _emitState();
   }
 
