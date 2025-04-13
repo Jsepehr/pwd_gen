@@ -231,7 +231,7 @@ List<PwdEntity> filterListOfPwd(String needle, List<PwdEntity> lPwd) {
   List<PwdEntity> tmp = [];
   if (needle != '') {
     for (var element in lPwd) {
-      if (element.hint.contains(needle)) {
+      if (element.hint!.contains(needle)) {
         tmp.add(element);
       }
     }
@@ -259,7 +259,7 @@ List<List<String>> splitList(List<String> input, int chunkSize) {
   return result;
 }
 
-Future<List<List<String>>?> readContentFromFile() async {
+Future<String?> readContentFromFile() async {
   final directory = Directory('/storage/emulated/0/Download');
   final folderPath = '${directory.path}/Notepass';
   final result = await FilePicker.platform
@@ -269,10 +269,10 @@ Future<List<List<String>>?> readContentFromFile() async {
   }
   final file = result.files;
   String fileName = file.first.name;
-  RegExp exp = RegExp(r'Notepass_pwdc\d{5,}\.txt');
-  if (file[0].extension! == 'txt' && exp.firstMatch(fileName) != null) {
-    var myFile = await File(file[0].path!).readAsString();
-    return splitList(myFile.split('<|||>'), 3);
+  RegExp exp = RegExp(r'Notepass_pwdc\d{5,}\.json');
+  if (file[0].extension! == 'json' && exp.firstMatch(fileName) != null) {
+    String myFile = await File(file[0].path!).readAsString();
+    return myFile;
   }
   return null;
 }

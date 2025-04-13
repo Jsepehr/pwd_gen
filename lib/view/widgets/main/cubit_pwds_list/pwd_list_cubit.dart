@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:equatable/equatable.dart';
@@ -52,7 +53,7 @@ class PwdListCubit extends Cubit<PwdListState> {
     _pwdListShow = List.from(_pwdListSaved);
     _len = _pwdListShow.length;
     _pwdListShow.sort(
-        (a, b) => int.parse(b.usageDate).compareTo(int.parse(a.usageDate)));
+        (a, b) => int.parse(b.usageDate!).compareTo(int.parse(a.usageDate!)));
     _emitState();
   }
 
@@ -60,27 +61,21 @@ class PwdListCubit extends Cubit<PwdListState> {
     await db.insertPwd(pwd);
   }
 
-  void loadPwdsFromFile() async {
+  void loadPwdsFromFile() async { // TODO if contains <|||>
     isLoading = true;
     _emitState();
     final res = await readContentFromFile();
     if (res == null) return;
-
-    for (var item in res) {
-      _pwdListShow.add(
-        PwdEntity(
-          id: Uuid().v4(),
-          password: item[1],
-          hint: item[0] == 'vuoto' ? '' : item[0],
-          usageDate: item[2],
-        ),
+    final jRes =  jsonEncode(res) as List;
+    for (var item in jRes) {
+      final pwd = PwdEntity(
+        id: item['id'],
+        password: item['password'],
+        hint: item['hint'] == 'vuoto' ? '' : item['hint'],
+        usageDate: item['usageDate'] ?? '0',
       );
-      await _saveAllToLocalDb(PwdEntity(
-        id: Uuid().v4(),
-        password: item[1],
-        hint: item[0] == 'vuoto' ? '' : item[0],
-        usageDate: item[2],
-      ));
+      _pwdListShow.add(pwd);
+      await _saveAllToLocalDb(pwd);
     }
     isLoading = false;
     _emitState();
@@ -101,7 +96,7 @@ class PwdListCubit extends Cubit<PwdListState> {
     }
     for (int i = 0; i < _len; i++) {
       if (_pwdListSaved[i]
-          .hint
+          .hint!
           .toLowerCase()
           .contains(inputString.toLowerCase())) {
         filteredList.add(_pwdListSaved[i]);
@@ -115,7 +110,7 @@ class PwdListCubit extends Cubit<PwdListState> {
   Future<void> loadPwdsFromLocalDb() async {
     try {
       _pwdListSaved = await db.getAllPwds();
-      _pwdListSaved.sort((a, b) => b.usageDate.compareTo(a.usageDate));
+      _pwdListSaved.sort((a, b) => b.usageDate!.compareTo(a.usageDate!));
     } catch (e) {
       print("Failed to load passwords: $e");
     }
@@ -156,7 +151,10 @@ class PwdListCubit extends Cubit<PwdListState> {
     final c = combineStrings(pass1, pass2);
     for (int k = 0; k < 50; k++) {
       _pwdListShow.add(PwdEntity(
-          id: Uuid().v4(), hint: 'Hint $i', password: c[k], usageDate: '0'));
+          id: Uuid().v4(),
+          hint: 'Your comment...',
+          password: c[k],
+          usageDate: '0'));
 
       await _saveAllToLocalDb(PwdEntity(
           id: _pwdListShow[k].id,
@@ -224,20 +222,20 @@ class PwdListCubit extends Cubit<PwdListState> {
         final file = File(fileToDelete);
         if (await file.exists()) {
           await file.delete();
-          print('File eliminato con successo.');
+          debugPrint('File eliminato con successo.');// TODO handle
         } else {
-          print('Il file non esiste.');
+          debugPrint('Il file non esiste.');
         }
       } catch (e) {
-        print('Errore durante l\'eliminazione del file: $e');
+        debugPrint('Errore durante l\'eliminazione del file: $e');
       }
     }
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('yyyyMMddkkmm').format(now);
     final path = await _localPath;
-    await _saveText('$path/Notepass_pwdc$formattedDate.txt');
+    await _saveText('$path/Notepass_pwdc$formattedDate.json');
 
-    return File('$path/Notepass_pwdc$formattedDate.txt');
+    return File('$path/Notepass_pwdc$formattedDate.json');
   }
 
   Future<bool> wrightContentToFile() async {
@@ -248,10 +246,7 @@ class PwdListCubit extends Cubit<PwdListState> {
       final file = await _localFile;
       String result = '';
 
-      for (var element in _pwdListShow) {
-        result +=
-            '${element.hint == '' ? 'vuoto' : element.hint}<|||>${element.password}<|||>${element.usageDate}<|||>';
-      }
+      result = PwdEntityList(_pwdListShow).toJsonList();
 
       file.writeAsString(result);
       isLoading = false;

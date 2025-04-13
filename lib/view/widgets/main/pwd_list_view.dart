@@ -3,12 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pwd_gen/core/injector.dart';
+import 'package:pwd_gen/view/welcome_dialog.dart';
 import 'package:pwd_gen/view/widgets/main/cubit_pwds_list/pwd_list_cubit.dart';
 import 'package:pwd_gen/domain/pwd_entity.dart';
 import 'package:pwd_gen/view/widgets/shared/dialog_generate_or_import.dart';
 import 'package:pwd_gen/view/widgets/pwd_edit/pwd_editor_bottom_sheet.dart';
 import 'package:pwd_gen/view/widgets/shared/pwd_widget.dart';
 import 'package:pwd_gen/view/widgets/shared/search_field.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PwdListView extends StatelessWidget {
   void _showSettingsDialog(BuildContext context) {
@@ -33,9 +35,28 @@ class PwdListView extends StatelessWidget {
     );
   }
 
+  Future<void> _showWelcomeDialog(BuildContext context) async {
+    await showDialog(
+      context: context,
+      builder: (context) => WelcomeDialog(),
+    );
+  }
+
   const PwdListView({super.key});
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final showWelcomePage = await SharedPreferences.getInstance();
+      final res = showWelcomePage.getBool('welcome');
+      if (res != null) {
+        return;
+      }
+
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        await _showWelcomeDialog(context);
+        showWelcomePage.setBool('welcome', true);
+      });
+    });
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -165,7 +186,7 @@ class PwdListView extends StatelessWidget {
                                 pwd: state.pwdListShow[index],
                                 onEdit: () async {
                                   getIt<PwdEntityEdit>().update(
-                                      hint: state.pwdListShow[index].hint,
+                                      hint: state.pwdListShow[index].hint!,
                                       password:
                                           state.pwdListShow[index].password,
                                       index: index);

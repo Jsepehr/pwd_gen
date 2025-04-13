@@ -5,7 +5,7 @@ class PwdEntity {
   final String id;
   String hint;
   String password;
-  String usageDate;
+  String? usageDate;
   PwdEntity({
     required this.id,
     required this.hint,
@@ -50,11 +50,12 @@ class PwdEntity {
       id: map['id'] as String,
       hint: map['hint'] as String,
       password: map['password'] as String,
-      usageDate: map['usageDate'].toString(),
+      usageDate: map['usageDate']?.toString() ?? '0',
     );
   }
 
   String toJson() => json.encode(toMap());
+  
 
   factory PwdEntity.fromJson(String source) =>
       PwdEntity.fromMap(json.decode(source) as Map<String, dynamic>);
@@ -77,6 +78,13 @@ class PwdEntity {
   @override
   int get hashCode {
     return id.hashCode ^ hint.hashCode ^ password.hashCode ^ usageDate.hashCode;
+  }
+}
+
+extension PwdEntityList on List<PwdEntity> {
+  String toJsonList() {
+    final listMap = map((e) => e.toMap()).toList();
+    return jsonEncode(listMap);
   }
 }
 
