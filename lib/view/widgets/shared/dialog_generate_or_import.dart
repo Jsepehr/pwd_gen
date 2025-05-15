@@ -57,8 +57,13 @@ class DialogGenerateOrImport extends StatelessWidget {
               ),
             ),
             onPressed: () {
+              try {
+                context.read<PwdListCubit>().loadPwdsFromFile();
+                
+              } on Exception catch (e) {
+                // TODO
+              }
               Navigator.pop(context); // Handle Import action
-              context.read<PwdListCubit>().loadPwdsFromFile();
             },
             child: const Text('Import'),
           ),

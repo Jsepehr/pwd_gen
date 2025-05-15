@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pwd_gen/core/injector.dart';
+import 'package:pwd_gen/core/utility.dart';
 import 'package:pwd_gen/view/welcome_dialog.dart';
 import 'package:pwd_gen/view/widgets/main/cubit_pwds_list/pwd_list_cubit.dart';
 import 'package:pwd_gen/domain/pwd_entity.dart';
@@ -71,41 +72,13 @@ class PwdListView extends StatelessWidget {
               });
             }
             WidgetsBinding.instance.addPostFrameCallback((_) async {
-              final res =
+              
                   await context.read<PwdListCubit>().wrightContentToFile();
 
               WidgetsBinding.instance.addPostFrameCallback((_) async {
                 context.read<PwdListCubit>().isLoading = false;
 
-                await showDialog(
-                  context: context,
-                  builder: (context) => Center(
-                    child: SizedBox(
-                      width: 300,
-                      height: 150,
-                      child: Material(
-                        child: Container(
-                          color: Colors.black,
-                          child: res
-                              ? Center(
-                                  child: Text(
-                                    'File stored on\nDownloads > Notepass folder\nsuccessfully :)',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                )
-                              : Center(
-                                  child: Text(
-                                    'Something went wrong! :(',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                ),
-                        ),
-                      ),
-                    ),
-                  ),
-                );
+                await appDialog(context, PwdListResState());
               });
             });
           },
@@ -163,6 +136,7 @@ class PwdListView extends StatelessWidget {
                                 padding: const EdgeInsets.all(16.0),
                                 child: SizedBox(
                                   height: 50,
+                                  width: 100,
                                   child: ElevatedButton(
                                     onPressed: () async {
                                       await showDialog(
@@ -186,7 +160,7 @@ class PwdListView extends StatelessWidget {
                                 pwd: state.pwdListShow[index],
                                 onEdit: () async {
                                   getIt<PwdEntityEdit>().update(
-                                      hint: state.pwdListShow[index].hint!,
+                                      hint: state.pwdListShow[index].hint,
                                       password:
                                           state.pwdListShow[index].password,
                                       index: index);
@@ -239,6 +213,52 @@ class PwdListView extends StatelessWidget {
           }
         },
       ),
+    );
+  }
+
+  Future<dynamic> appDialog(BuildContext context, PwdListResState res) {
+    const fileStoredOk =
+        'File stored on\nDownloads > Notepass folder\nsuccessfully :)';
+    const imageNotSelected = 'Image not selected';
+    const wrongImage = 'wrong image selected, try again';
+    const somethingWentWrong = 'Something went wrong! :(';
+
+    String finalRes = somethingWentWrong;
+    switch (PwdListResState.pwdListResponse) {
+      case PwdListResponse.pwdsGeneratedSuccess:
+        finalRes = fileStoredOk;
+        break;
+      case PwdListResponse.imageNotSelected:
+        finalRes = imageNotSelected;
+        break;
+      case PwdListResponse.wrongImageSelected:
+        finalRes = wrongImage;
+        break;
+      case PwdListResponse.somethingWentWrong:
+        break;
+      default:
+    }
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return Center(
+          child: SizedBox(
+            width: 300,
+            height: 150,
+            child: Material(
+              child: Container(
+                  color: Colors.black,
+                  child: Center(
+                    child: Text(
+                      finalRes,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  )),
+            ),
+          ),
+        );
+      },
     );
   }
 }

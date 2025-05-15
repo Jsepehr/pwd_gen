@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pwd_gen/core/injector.dart';
+import 'package:pwd_gen/core/notepass_encrypt.dart';
 import 'package:pwd_gen/core/utility.dart';
 import 'package:pwd_gen/data/local/password_repository.dart';
 import 'package:pwd_gen/domain/pwd_entity.dart';
@@ -61,22 +62,17 @@ class PwdListCubit extends Cubit<PwdListState> {
     await db.insertPwd(pwd);
   }
 
-  void loadPwdsFromFile() async { // TODO if contains <|||>
+  void loadPwdsFromFile() async {
     isLoading = true;
     _emitState();
-    final res = await readContentFromFile();
+    final res = await readContentFromFile(); // read from binary TODO
     if (res == null) return;
-    final jRes =  jsonEncode(res) as List;
-    for (var item in jRes) {
-      final pwd = PwdEntity(
-        id: item['id'],
-        password: item['password'],
-        hint: item['hint'] == 'vuoto' ? '' : item['hint'],
-        usageDate: item['usageDate'] ?? '0',
-      );
-      _pwdListShow.add(pwd);
+
+    _pwdListShow.addAll(res);
+    for (var pwd in res) {
       await _saveAllToLocalDb(pwd);
     }
+
     isLoading = false;
     _emitState();
   }
@@ -96,7 +92,7 @@ class PwdListCubit extends Cubit<PwdListState> {
     }
     for (int i = 0; i < _len; i++) {
       if (_pwdListSaved[i]
-          .hint!
+          .hint
           .toLowerCase()
           .contains(inputString.toLowerCase())) {
         filteredList.add(_pwdListSaved[i]);
@@ -145,6 +141,9 @@ class PwdListCubit extends Cubit<PwdListState> {
       return;
     }
     final stringHash = generateStringHash(secretText);
+    // save hashes on user prefs
+    await _saveImageHashes(imageHsh: imageHash);
+
     var pass1 = CreatePasswords.allDonePreDB(imageHash, numForRand);
     var pass2 = CreatePasswords.allDonePreDB(stringHash, numForRand);
 
@@ -209,6 +208,21 @@ class PwdListCubit extends Cubit<PwdListState> {
     await prefs.setString('path', filePath);
   }
 
+  Future<void> _saveImageHashes({required String imageHsh}) async {
+    final prefs = await SharedPreferences.getInstance();
+    final hashes = prefs.getString('imageHash');
+    if (hashes != null) {
+      final jsonD = json.decode(hashes) as List<String>;
+      jsonD.add(imageHsh);
+      final hashesString = json.encode(jsonD);
+      await prefs.setString('imageHash', hashesString);
+      return;
+    }
+    await prefs.setString('imageHash', imageHsh);
+  }
+
+
+
   Future<String?> _loadSavedText() async {
     final prefs = await SharedPreferences.getInstance();
 
@@ -222,7 +236,7 @@ class PwdListCubit extends Cubit<PwdListState> {
         final file = File(fileToDelete);
         if (await file.exists()) {
           await file.delete();
-          debugPrint('File eliminato con successo.');// TODO handle
+          debugPrint('File eliminato con successo.'); // TODO handle
         } else {
           debugPrint('Il file non esiste.');
         }
@@ -233,22 +247,25 @@ class PwdListCubit extends Cubit<PwdListState> {
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('yyyyMMddkkmm').format(now);
     final path = await _localPath;
-    await _saveText('$path/Notepass_pwdc$formattedDate.json');
+    await _saveText('$path/Notepass_pwdc$formattedDate.nps');
 
-    return File('$path/Notepass_pwdc$formattedDate.json');
+    return File('$path/Notepass_pwdc$formattedDate.nps');
   }
 
   Future<bool> wrightContentToFile() async {
+    // TODO save as binary
     try {
       /*  List<PwdEntity> data = await db.getAllPwds();
       if (data.isEmpty) return; */
 
       final file = await _localFile;
-      String result = '';
+      // String result = '';
 
-      result = PwdEntityList(_pwdListShow).toJsonList();
+      // result = PwdEntityList(_pwdListShow).toJsonList();
 
-      file.writeAsString(result);
+      await BinaryEncryptor.saveBinaryEncryptedFile(
+          passwords: _pwdListShow, filename: file.path.split('/').last);
+
       isLoading = false;
       _emitState();
       return true;

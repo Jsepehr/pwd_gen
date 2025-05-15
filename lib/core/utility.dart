@@ -3,7 +3,21 @@ import 'dart:io';
 import 'package:crypto/crypto.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:pwd_gen/core/notepass_encrypt.dart';
 import 'package:pwd_gen/domain/pwd_entity.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+enum PwdListResponse {
+  imageNotSelected,
+  wrongImageSelected,
+  somethingWentWrong,
+  pwdsGeneratedSuccess,
+  unknown,
+}
+
+class PwdListResState {
+  static PwdListResponse pwdListResponse = PwdListResponse.unknown;
+}
 
 class CreatePasswords {
   static List<String> allDonePreDB(String? digest, List<String> numsForRand) {
@@ -74,7 +88,8 @@ listToString(List l) {
   return l.join();
 }
 
-List<String> randomizeListString(List listaDaMescolare, List<int> seed) {
+List<String> randomizeListString(
+    List<String> listaDaMescolare, List<int> seed) {
   List<String> listaMescolata = [];
 
   for (var i = 0; i < seed.length; i++) {
@@ -85,7 +100,7 @@ List<String> randomizeListString(List listaDaMescolare, List<int> seed) {
   return listaMescolata;
 }
 
-List<int> randomizeList(List listaDaMescolare, List<int> seed) {
+List<int> randomizeList(List<int> listaDaMescolare, List<int> seed) {
   List<int> listaMescolata = [];
 
   for (var i = 0; i < seed.length; i++) {
@@ -231,7 +246,7 @@ List<PwdEntity> filterListOfPwd(String needle, List<PwdEntity> lPwd) {
   List<PwdEntity> tmp = [];
   if (needle != '') {
     for (var element in lPwd) {
-      if (element.hint!.contains(needle)) {
+      if (element.hint.contains(needle)) {
         tmp.add(element);
       }
     }
@@ -259,7 +274,7 @@ List<List<String>> splitList(List<String> input, int chunkSize) {
   return result;
 }
 
-Future<String?> readContentFromFile() async {
+Future<List<PwdEntity>?> readContentFromFile() async {
   final directory = Directory('/storage/emulated/0/Download');
   final folderPath = '${directory.path}/Notepass';
   final result = await FilePicker.platform
@@ -269,10 +284,30 @@ Future<String?> readContentFromFile() async {
   }
   final file = result.files;
   String fileName = file.first.name;
-  RegExp exp = RegExp(r'Notepass_pwdc\d{5,}\.json');
-  if (file[0].extension! == 'json' && exp.firstMatch(fileName) != null) {
-    String myFile = await File(file[0].path!).readAsString();
-    return myFile;
+  RegExp exp = RegExp(r'Notepass_pwdc\d{5,}\.nps'); // changed to nps format
+  if (file[0].extension! == 'nps' && exp.firstMatch(fileName) != null) {
+    // String myFile = await File(file[0].path!).readAsString();
+    File selectedFile = File(result.files.single.path!);
+    // TODO keyword: dovrebbe essere hash dell'immagine selezionato
+    // questo punto appri il file e chiedi l'immagine
+    final image = await selectImage();
+    if (image == null) {
+      PwdListResState.pwdListResponse = PwdListResponse.imageNotSelected;
+      return null;
+    }
+    final imageHash = generateImageHash(image);
+    final pwdList = await BinaryEncryptor.readBinaryEncryptedFile(
+        keyword: imageHash, file: selectedFile);
+    return pwdList;
   }
   return null;
+}
+
+Future<List<String>?> getImageHashes() async {
+  final prefs = await SharedPreferences.getInstance();
+  final imgHashes = prefs.getString(
+    'imageHash',
+  );
+  if (imgHashes == null) return null;
+  return json.decode(imgHashes) as List<String>;
 }

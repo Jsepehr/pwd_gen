@@ -109,80 +109,84 @@ class _PwdConfigureBottomSheetState extends State<PwdConfigureBottomSheet> {
                         child: BlocBuilder<ConfigPwdsCubit, ConfigPwdsState>(
                           builder: (context, state) {
                             if (state is ConfigPwdsLoaded) {
-                              return Row(
-                                children: [
-                                  SizedBox(
-                                    height: 50,
-                                    width: width / 1.8,
-                                    child: ElevatedButton(
+                              return SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  children: [
+                                    SizedBox(
+                                      height: 50,
+                                      width: width / 1.8,
+                                      child: ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.only(
+                                                topLeft: Radius.circular(
+                                                    15), // Adjust the radius as needed
+                                                bottomLeft: Radius.circular(
+                                                    15), // Adjust the radius as needed
+                                              ),
+                                            ),
+                                          ),
+                                          onPressed: state.isImageBtnEnabled &&
+                                                  !context
+                                                      .watch<PwdListCubit>()
+                                                      .isLoading
+                                              ? () async {
+                                                  image = await selectImage();
+                                                  cubit.emitState(image);
+                                                }
+                                              : null,
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Text('Secret Image'),
+                                              SizedBox(
+                                                width: 4,
+                                              ),
+                                              Icon(Icons.file_open_outlined),
+                                            ],
+                                          )),
+                                    ),
+                                    SizedBox(
+                                      width: 3,
+                                    ),
+                                    SizedBox(
+                                      width: width / 3,
+                                      height: 50,
+                                      child: ElevatedButton(
                                         style: ElevatedButton.styleFrom(
                                           shape: RoundedRectangleBorder(
                                             borderRadius: BorderRadius.only(
-                                              topLeft: Radius.circular(
+                                              topRight: Radius.circular(
                                                   15), // Adjust the radius as needed
-                                              bottomLeft: Radius.circular(
+                                              bottomRight: Radius.circular(
                                                   15), // Adjust the radius as needed
                                             ),
                                           ),
                                         ),
-                                        onPressed: state.isImageBtnEnabled &&
+                                        onPressed: state.isGenerateBtnEnabled &&
                                                 !context
                                                     .watch<PwdListCubit>()
                                                     .isLoading
                                             ? () async {
-                                                image = await selectImage();
-                                                cubit.emitState(image);
+                                                await context
+                                                    .read<PwdListCubit>()
+                                                    .generatePwds(
+                                                        state.secretPhrase,
+                                                        image);
+                                                WidgetsBinding.instance
+                                                    .addPostFrameCallback(
+                                                        (_) async {
+                                                  Navigator.pop(context);
+                                                });
                                               }
                                             : null,
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Text('Secret Image'),
-                                            SizedBox(
-                                              width: 4,
-                                            ),
-                                            Icon(Icons.file_open_outlined),
-                                          ],
-                                        )),
-                                  ),
-                                  SizedBox(
-                                    width: 3,
-                                  ),
-                                  SizedBox(
-                                    width: width / 3,
-                                    height: 50,
-                                    child: ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.only(
-                                            topRight: Radius.circular(
-                                                15), // Adjust the radius as needed
-                                            bottomRight: Radius.circular(
-                                                15), // Adjust the radius as needed
-                                          ),
-                                        ),
+                                        child: Text('Generate'),
                                       ),
-                                      onPressed: state.isGenerateBtnEnabled &&
-                                              !context
-                                                  .watch<PwdListCubit>()
-                                                  .isLoading
-                                          ? () async {
-                                              await context
-                                                  .read<PwdListCubit>()
-                                                  .generatePwds(
-                                                      state.secretPhrase, image);
-                                              WidgetsBinding.instance
-                                                  .addPostFrameCallback(
-                                                      (_) async {
-                                                Navigator.pop(context);
-                                              });
-                                            }
-                                          : null,
-                                      child: Text('Generate'),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               );
                             } else {
                               return Container();
