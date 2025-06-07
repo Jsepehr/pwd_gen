@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:pwd_gen/core/injector.dart';
 import 'package:pwd_gen/core/utility.dart';
 import 'package:pwd_gen/view/welcome_dialog.dart';
@@ -14,7 +13,7 @@ import 'package:pwd_gen/view/widgets/shared/search_field.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PwdListView extends StatelessWidget {
-  void _showSettingsDialog(BuildContext context) {
+  /* void _showSettingsDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -34,7 +33,7 @@ class PwdListView extends StatelessWidget {
         ],
       ),
     );
-  }
+  } */
 
   Future<void> _showWelcomeDialog(BuildContext context) async {
     await showDialog(
@@ -46,6 +45,9 @@ class PwdListView extends StatelessWidget {
   const PwdListView({super.key});
   @override
   Widget build(BuildContext context) {
+    final pwdListCubit = context.read<PwdListCubit>();
+    final isSearching = pwdListCubit.isSearching;
+    debugPrint('$isSearching sepehr');
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final showWelcomePage = await SharedPreferences.getInstance();
       final res = showWelcomePage.getBool('welcome');
@@ -58,207 +60,198 @@ class PwdListView extends StatelessWidget {
         showWelcomePage.setBool('welcome', true);
       });
     });
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.save_outlined),
-          onPressed: () async {
-            final res =
-                await context.read<PwdListCubit>().requestStoragePermission();
-            if (!res) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                _showSettingsDialog(context);
-              });
-            }
-            WidgetsBinding.instance.addPostFrameCallback((_) async {
-              
-                  await context.read<PwdListCubit>().wrightContentToFile();
+    return pwdListCubit.isLoading
+        ? Container(
+            color: const Color.fromARGB(200, 0, 0, 0),
+            child: Center(
+              child: LoadingAnimationWidget.threeArchedCircle(
+                  color: const Color.fromARGB(255, 0, 102, 192), size: 50),
+            ),
+          )
+        : BlocBuilder<PwdListCubit, PwdListState>(
+            builder: (context, state) {
+              if (state is PwdListLoaded) {
+                return Scaffold(
+                    appBar: AppBar(
+                      centerTitle: true,
+                      leading: IconButton(
+                        icon: Icon(Icons.save_outlined),
+                        onPressed: state.pwdListShow.isNotEmpty
+                            ? () async {
+                                pwdListCubit.setIsLoadingState(true);
+                                await pwdListCubit.requestStoragePermission();
+                                if (MPGState.currentState !=
+                                    MPGStateEnums.permissionGranted) {
+                                  if (!context.mounted) return;
+                                  await appDialog(
+                                    context,
+                                  );
+                                }
+                                MPGState.applyState(MPGStateEnums
+                                    .showNotificationSecretImageEncrypt);
+                                if (!context.mounted) return;
+                                await appDialog(context);
+                                final image = await selectImage();
 
-              WidgetsBinding.instance.addPostFrameCallback((_) async {
-                context.read<PwdListCubit>().isLoading = false;
-
-                await appDialog(context, PwdListResState());
-              });
-            });
-          },
-        ),
-        title: Text('Passwords List'),
-        actions: [
-          IconButton(
-            onPressed: () {
-              context.read<PwdListCubit>().toggleSearch();
-            },
-            icon: Icon(Icons.search),
-          ),
-        ],
-      ),
-      body: BlocBuilder<PwdListCubit, PwdListState>(
-        builder: (context, state) {
-          if (state is PwdListLoaded) {
-            return Stack(
-              children: [
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    AnimatedSwitcher(
-                      duration: Duration(milliseconds: 500),
-                      transitionBuilder:
-                          (Widget child, Animation<double> animation) {
-                        return FadeTransition(
-                          opacity: animation,
-                          child: SizeTransition(
-                            sizeFactor: animation,
-                            axisAlignment: -1.0,
-                            child: child,
-                          ),
-                        );
-                      },
-                      child: state.isSearching
-                          ? SearchField(
-                              key:
-                                  ValueKey(1), // Important for AnimatedSwitcher
-                              onChange: (value) {
-                                context.read<PwdListCubit>().searchThis(value);
-                              },
-                            )
-                          : SizedBox.shrink(
-                              key: ValueKey(2)), // Ensures transition happens
+                                if (image == null) {
+                                  MPGState.applyState(
+                                      MPGStateEnums.imageNotSelected);
+                                  if (!context.mounted) return;
+                                  await appDialog(
+                                    context,
+                                  );
+                                  pwdListCubit.setIsLoadingState(false);
+                                  return;
+                                }
+                                // get the image hash
+                                final imageHash = generateImageHash(image);
+                                if (!context.mounted) return;
+                                await pwdListCubit
+                                    .wrightContentToFile(imageHash);
+                                if (!context.mounted) return;
+                                pwdListCubit.setIsLoadingState(false);
+                                await appDialog(
+                                  context,
+                                );
+                              }
+                            : null,
+                      ),
+                      title: Text('Passwords List'),
+                      actions: [
+                        IconButton(
+                          onPressed: state.pwdListShow.isNotEmpty
+                              ? () {
+                                  context.read<PwdListCubit>().toggleSearch();
+                                }
+                              : null,
+                          icon: Icon(
+                              !state.isSearching ? Icons.search : Icons.close),
+                        ),
+                      ],
                     ),
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: state.pwdListShow.length + 1,
-                        itemBuilder: (context, index) {
-                          if (index == state.pwdListShow.length) {
-                            return Visibility(
-                              visible: !state.isSearching,
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: SizedBox(
-                                  height: 50,
-                                  width: 100,
-                                  child: ElevatedButton(
-                                    onPressed: () async {
-                                      await showDialog(
-                                        context: context,
-                                        builder: (context) =>
-                                            DialogGenerateOrImport(),
-                                      );
-                                    },
-                                    child: Icon(Icons.add),
+                    body: Stack(
+                      children: [
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            AnimatedSwitcher(
+                              duration: Duration(milliseconds: 500),
+                              transitionBuilder:
+                                  (Widget child, Animation<double> animation) {
+                                return FadeTransition(
+                                  opacity: animation,
+                                  child: SizeTransition(
+                                    sizeFactor: animation,
+                                    axisAlignment: -1.0,
+                                    child: child,
                                   ),
-                                ),
-                              ),
-                            );
-                          }
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 5.0, horizontal: 10),
-                            child: SizedBox(
-                              height: 50,
-                              child: PwdWidget(
-                                pwd: state.pwdListShow[index],
-                                onEdit: () async {
-                                  getIt<PwdEntityEdit>().update(
-                                      hint: state.pwdListShow[index].hint,
-                                      password:
-                                          state.pwdListShow[index].password,
-                                      index: index);
+                                );
+                              },
+                              child: state.isSearching
+                                  ? SearchField(
+                                      key: ValueKey(
+                                          1), // Important for AnimatedSwitcher
+                                      onChange: (value) {
+                                        context
+                                            .read<PwdListCubit>()
+                                            .searchThis(value);
+                                      },
+                                    )
+                                  : SizedBox.shrink(
+                                      key: ValueKey(
+                                          2)), // Ensures transition happens
+                            ),
+                            Expanded(
+                              child: ListView.builder(
+                                itemCount: state.pwdListShow.length + 1,
+                                itemBuilder: (context, index) {
+                                  if (index == state.pwdListShow.length) {
+                                    return Visibility(
+                                      visible: !state.isSearching,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(16.0),
+                                        child: SizedBox(
+                                          height: 50,
+                                          width: 100,
+                                          child: ElevatedButton(
+                                            onPressed: () async {
+                                              await showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    DialogGenerateOrImport(),
+                                              );
+                                            },
+                                            child: Icon(Icons.add),
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 5.0, horizontal: 10),
+                                    child: SizedBox(
+                                      height: 50,
+                                      child: PwdWidget(
+                                        pwd: state.pwdListShow[index],
+                                        onEdit: () async {
+                                          getIt<PwdEntityEdit>().update(
+                                              hint:
+                                                  state.pwdListShow[index].hint,
+                                              password: state
+                                                  .pwdListShow[index].password,
+                                              index: index);
 
-                                  await showModalBottomSheet(
-                                    isScrollControlled: true,
-                                    enableDrag: false,
-                                    isDismissible: state.isLoading,
-                                    context: context,
-                                    builder: (context) {
-                                      return PwdEditorBottomSheet(
-                                        index: index,
-                                      );
-                                    },
+                                          await showModalBottomSheet(
+                                            isScrollControlled: true,
+                                            enableDrag: false,
+                                            isDismissible: state.isLoading,
+                                            context: context,
+                                            builder: (context) {
+                                              return PwdEditorBottomSheet(
+                                                index: index,
+                                              );
+                                            },
+                                          );
+                                        },
+                                        onShareOrOnVisibilityChanged: () {
+                                          context
+                                              .read<PwdListCubit>()
+                                              .updateDateTime(index);
+                                        },
+                                      ),
+                                    ),
                                   );
                                 },
-                                onShareOrOnVisibilityChanged: () {
-                                  context
-                                      .read<PwdListCubit>()
-                                      .updateDateTime(index);
-                                },
                               ),
-                            ),
-                          );
-                        },
-                      ),
-                    )
-                  ],
-                ),
-                state.isLoading
-                    ? Container(
-                        color: const Color.fromARGB(200, 0, 0, 0),
-                        child: Center(
-                          child: LoadingAnimationWidget.threeArchedCircle(
-                              color: const Color.fromARGB(255, 0, 102, 192),
-                              size: 50),
+                            )
+                          ],
                         ),
-                      )
-                    : SizedBox.shrink()
-              ],
-            );
-          } else {
-            return Container(
-              color: const Color.fromARGB(200, 0, 0, 0),
-              child: Center(
-                child: LoadingAnimationWidget.threeArchedCircle(
-                    color: const Color.fromARGB(255, 0, 102, 192), size: 50),
-              ),
-            );
-          }
-        },
-      ),
-    );
-  }
-
-  Future<dynamic> appDialog(BuildContext context, PwdListResState res) {
-    const fileStoredOk =
-        'File stored on\nDownloads > Notepass folder\nsuccessfully :)';
-    const imageNotSelected = 'Image not selected';
-    const wrongImage = 'wrong image selected, try again';
-    const somethingWentWrong = 'Something went wrong! :(';
-
-    String finalRes = somethingWentWrong;
-    switch (PwdListResState.pwdListResponse) {
-      case PwdListResponse.pwdsGeneratedSuccess:
-        finalRes = fileStoredOk;
-        break;
-      case PwdListResponse.imageNotSelected:
-        finalRes = imageNotSelected;
-        break;
-      case PwdListResponse.wrongImageSelected:
-        finalRes = wrongImage;
-        break;
-      case PwdListResponse.somethingWentWrong:
-        break;
-      default:
-    }
-    return showDialog(
-      context: context,
-      builder: (context) {
-        return Center(
-          child: SizedBox(
-            width: 300,
-            height: 150,
-            child: Material(
-              child: Container(
-                  color: Colors.black,
+                        state.isLoading
+                            ? Container(
+                                color: const Color.fromARGB(200, 0, 0, 0),
+                                child: Center(
+                                  child:
+                                      LoadingAnimationWidget.threeArchedCircle(
+                                          color: const Color.fromARGB(
+                                              255, 0, 102, 192),
+                                          size: 50),
+                                ),
+                              )
+                            : SizedBox.shrink()
+                      ],
+                    ));
+              } else {
+                return Container(
+                  color: const Color.fromARGB(200, 0, 0, 0),
                   child: Center(
-                    child: Text(
-                      finalRes,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  )),
-            ),
-          ),
-        );
-      },
-    );
+                    child: LoadingAnimationWidget.threeArchedCircle(
+                        color: const Color.fromARGB(255, 0, 102, 192),
+                        size: 50),
+                  ),
+                );
+              }
+            },
+          );
   }
 }

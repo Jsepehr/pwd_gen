@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:equatable/equatable.dart';
@@ -13,6 +12,7 @@ import 'package:pwd_gen/core/utility.dart';
 import 'package:pwd_gen/data/local/password_repository.dart';
 import 'package:pwd_gen/domain/pwd_entity.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:external_path/external_path.dart';
 import 'package:uuid/uuid.dart';
 
 part 'pwd_list_state.dart';
@@ -21,10 +21,15 @@ class PwdListCubit extends Cubit<PwdListState> {
   PwdListCubit() : super(PwdListInitial());
   List<PwdEntity> _pwdListSaved = []; // read from db
   List<PwdEntity> _pwdListShow = []; // u see this on the list view
-  bool isSearching = false;
-  bool isLoading = false;
+  bool _isSearching = false;
+  bool _isLoading = false;
   final LocalAuthentication _auth = LocalAuthentication();
   bool res = false;
+  bool get isLoading => _isLoading;
+  bool get isSearching => _isSearching;
+  int pwdsListLen() {
+    return _pwdListShow.length;
+  }
 
   Future<void> authenticate() async {
     emit(PwdListInitial());
@@ -55,39 +60,61 @@ class PwdListCubit extends Cubit<PwdListState> {
     _len = _pwdListShow.length;
     _pwdListShow.sort(
         (a, b) => int.parse(b.usageDate!).compareTo(int.parse(a.usageDate!)));
-    _emitState();
+    _emitState(_pwdListShow);
   }
 
   Future<void> _saveAllToLocalDb(PwdEntity pwd) async {
     await db.insertPwd(pwd);
   }
 
-  void loadPwdsFromFile() async {
-    isLoading = true;
-    _emitState();
-    final res = await readContentFromFile(); // read from binary TODO
-    if (res == null) return;
+  Future<void> selectMPGFile() async {
+    setIsLoadingState(true);
+    final res = await ReadNpsFile().readContentFromFile();
+    if (res != null) {
+      for (var element in res) {
+        await _saveAllToLocalDb(element);
+      }
+      _pwdListSaved = res;
+      _pwdListShow = res;
+      MPGState.applyState(MPGStateEnums.oldImportDone);
+      setIsLoadingState(false);
+      _emitState(_pwdListShow);
+      return;
+    }
+    if (MPGState.currentState != MPGStateEnums.ok) {
+      setIsLoadingState(false);
+      return;
+    }
+  }
+
+  Future<void> selectImageFileForPWDGenerator() async {
+    final res = await ReadNpsFile().imageSelectionAndGenPwds();
+
+    if (res.isEmpty) {
+      _isLoading = false;
+      _emitState(_pwdListShow);
+      return;
+    }
 
     _pwdListShow.addAll(res);
     for (var pwd in res) {
       await _saveAllToLocalDb(pwd);
     }
 
-    isLoading = false;
-    _emitState();
+    setIsLoadingState(false);
   }
 
   void toggleSearch() {
-    isSearching = !isSearching;
-    _emitState();
+    _isSearching = !_isSearching;
+    _emitState(_pwdListShow);
   }
 
   void searchThis(String inputString) {
     List<PwdEntity> filteredList = [];
 
-    if (inputString.isEmpty || !isSearching) {
+    if (inputString.isEmpty || !_isSearching) {
       _pwdListShow = _pwdListSaved;
-      _emitState();
+      _emitState(_pwdListShow);
       return;
     }
     for (int i = 0; i < _len; i++) {
@@ -100,7 +127,7 @@ class PwdListCubit extends Cubit<PwdListState> {
     }
     _pwdListShow = List.from(filteredList);
 
-    _emitState();
+    _emitState(_pwdListShow);
   }
 
   Future<void> loadPwdsFromLocalDb() async {
@@ -114,23 +141,33 @@ class PwdListCubit extends Cubit<PwdListState> {
 
   Future<void> updateHintAndPwds(PwdEntityEdit pwdModified, int index) async {
     _usageCount = DateTime.now().millisecondsSinceEpoch;
-    _pwdListShow[index].usageDate = _usageCount.toString();
-    _pwdListShow[index].hint = pwdModified.hint;
-    _pwdListShow[index].password = pwdModified.password;
-    await db.updatePwd(_pwdListShow[index]);
-    _emitState();
+    final updatedPwd = _pwdListShow[index].copyWith(
+      usageDate: _usageCount.toString(),
+      hint: pwdModified.hint,
+      password: pwdModified.password,
+    );
+
+// Aggiorna la lista con il nuovo oggetto
+    final newListShow = List<PwdEntity>.from(_pwdListShow);
+    newListShow[index] = updatedPwd;
+
+// Aggiorna il database
+    await db.updatePwd(updatedPwd);
+// Emetti la nuova lista
+    _pwdListShow = newListShow;
+    _pwdListSaved = newListShow;
+    _emitState(newListShow);
   }
 
   Future<void> updateDateTime(int index) async {
     _usageCount = DateTime.now().millisecondsSinceEpoch;
     _pwdListShow[index].usageDate = _usageCount.toString();
     await db.updatePwd(_pwdListShow[index]);
-    _emitState();
+    _emitState(_pwdListShow);
   }
 
   Future<void> generatePwds(String? secretText, File? image) async {
-    isLoading = true;
-    _emitState();
+    setIsLoadingState(true);
     final List<String> numForRand = getIt<FixedString>().fixedString.split(',');
 
     if (image == null) {
@@ -142,7 +179,7 @@ class PwdListCubit extends Cubit<PwdListState> {
     }
     final stringHash = generateStringHash(secretText);
     // save hashes on user prefs
-    await _saveImageHashes(imageHsh: imageHash);
+    //await _saveImageHashes(imageHsh: imageHash);
 
     var pass1 = CreatePasswords.allDonePreDB(imageHash, numForRand);
     var pass2 = CreatePasswords.allDonePreDB(stringHash, numForRand);
@@ -165,50 +202,51 @@ class PwdListCubit extends Cubit<PwdListState> {
     _len = _pwdListShow.length;
     _pwdListSaved = List.from(_pwdListShow);
     await Future.delayed(Duration(milliseconds: 2));
-    isLoading = false;
-    _emitState();
+    setIsLoadingState(false);
   }
 
-  Future<bool> requestStoragePermission() async {
-    isLoading = true;
-    _emitState();
+  Future<void> requestStoragePermission() async {
+    setIsLoadingState(true);
     if (await Permission.storage.request().isGranted) {
-      return true; // Storage permission granted (for Android 9 and below)
+      // Storage permission granted (for Android 9 and below)
+      MPGState.applyState(MPGStateEnums.permissionGranted);
     }
 
     if (await Permission.manageExternalStorage.request().isGranted) {
-      return true; // Full access granted (for Android 11+)
+      // Full access granted (for Android 11+)
+      MPGState.applyState(MPGStateEnums.permissionGranted);
     }
 
     // If denied, show settings dialog for Android 11+
     if (await Permission.manageExternalStorage.request().isDenied) {
-      isLoading = false;
-      _emitState();
-      return false;
+      setIsLoadingState(false);
+      MPGState.applyState(MPGStateEnums.permissionDenied);
     }
-    isLoading = false;
-    _emitState();
-    return false;
   }
 
-  Future<String> get _localPath async {
-    final directory = Directory('/storage/emulated/0/Download');
-    final folderPath = '${directory.path}/Notepass'; // Custom folder
-
-    final folder = Directory(folderPath);
-    if (!await folder.exists()) {
-      await folder.create(); // Create the folder if it doesn't exist
+  Future<void> _savePath() async {
+    final fileName = _createFileName();
+    String path = '';
+    try {
+      path = await ExternalPath.getExternalStoragePublicDirectory(
+          ExternalPath.DIRECTORY_DOWNLOAD);
+    } on Exception catch (e) {
+      debugPrint('$e');
+      MPGState.applyState(MPGStateEnums.somethingWentWrong);
     }
 
-    return folderPath;
-  }
+    final finalPath = '$path/$appFolderName';
+    final dir = Directory(finalPath);
+    if (!await dir.exists()) {
+      await dir.create(recursive: true);
+    }
 
-  Future<void> _saveText(String filePath) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('path', filePath);
+    await prefs.setString(keyUserPrefPath, finalPath);
+    await prefs.setString(keyUserPrefFileName, fileName);
   }
 
-  Future<void> _saveImageHashes({required String imageHsh}) async {
+/*   Future<void> _saveImageHashes({required String imageHsh}) async {
     final prefs = await SharedPreferences.getInstance();
     final hashes = prefs.getString('imageHash');
     if (hashes != null) {
@@ -219,24 +257,18 @@ class PwdListCubit extends Cubit<PwdListState> {
       return;
     }
     await prefs.setString('imageHash', imageHsh);
-  }
+  } */
 
-
-
-  Future<String?> _loadSavedText() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    return prefs.getString('path');
-  }
-
-  Future<File> get _localFile async {
-    final fileToDelete = await _loadSavedText();
-    if (fileToDelete != null) {
+  Future<void> _deleteOldFile() async {
+    final fileDir = await loadSavedDirectory();
+    final fileName = await loadSavedFileName();
+    if (fileDir != null && fileName != null) {
       try {
-        final file = File(fileToDelete);
+        final file = File('$fileDir/$fileName');
         if (await file.exists()) {
+          debugPrint(file.path.split('/').last);
           await file.delete();
-          debugPrint('File eliminato con successo.'); // TODO handle
+          debugPrint('File eliminato con successo.');
         } else {
           debugPrint('Il file non esiste.');
         }
@@ -244,30 +276,22 @@ class PwdListCubit extends Cubit<PwdListState> {
         debugPrint('Errore durante l\'eliminazione del file: $e');
       }
     }
-    DateTime now = DateTime.now();
-    String formattedDate = DateFormat('yyyyMMddkkmm').format(now);
-    final path = await _localPath;
-    await _saveText('$path/Notepass_pwdc$formattedDate.nps');
-
-    return File('$path/Notepass_pwdc$formattedDate.nps');
   }
 
-  Future<bool> wrightContentToFile() async {
-    // TODO save as binary
+  String _createFileName() {
+    DateTime now = DateTime.now();
+    String formattedDate = DateFormat('yyyyMMddkkmm').format(now);
+    return 'MPG$formattedDate.nps';
+  }
+
+  Future<bool> wrightContentToFile(String imageHash) async {
     try {
-      /*  List<PwdEntity> data = await db.getAllPwds();
-      if (data.isEmpty) return; */
-
-      final file = await _localFile;
-      // String result = '';
-
-      // result = PwdEntityList(_pwdListShow).toJsonList();
-
-      await BinaryEncryptor.saveBinaryEncryptedFile(
-          passwords: _pwdListShow, filename: file.path.split('/').last);
-
-      isLoading = false;
-      _emitState();
+      await _deleteOldFile();
+      await _savePath();
+      // this will create file path and file name
+      await BinaryEncrypt.saveBinaryEncryptedFile(
+          passwords: _pwdListShow, imageHash: imageHash);
+      setIsLoadingState(false);
       return true;
     } on Exception catch (e) {
       debugPrint('wrightContentToFile error : $e');
@@ -275,23 +299,18 @@ class PwdListCubit extends Cubit<PwdListState> {
     }
   }
 
-  _emitState() {
-    isLoading = true;
+  _emitState(List<PwdEntity>? newPwd) {
     emit(
       PwdListLoaded(
-        pwdListShow: [..._pwdListShow],
-        isSearching: isSearching,
-        isLoading: isLoading,
+        pwdListShow: [...newPwd ?? []],
+        isSearching: _isSearching,
+        isLoading: _isLoading,
       ),
     );
-    isLoading = false;
+  }
 
-    emit(
-      PwdListLoaded(
-        pwdListShow: [..._pwdListShow],
-        isSearching: isSearching,
-        isLoading: isLoading,
-      ),
-    );
+  void setIsLoadingState(bool isLoading) {
+    _isLoading = isLoading;
+    _emitState(_pwdListShow);
   }
 }

@@ -12,7 +12,7 @@ class _WelcomeDialogState extends State<WelcomeDialog> {
 
   final List<_SlideData> slides = [
     _SlideData(
-      title: 'Welcome to Notepass',
+      title: 'Welcome to My Password Generator',
       subtitle:
           'Secure. Private. Smart.\n\nYour offline password generator and manager.',
     ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pwd_gen/core/utility.dart';
 import 'package:pwd_gen/view/widgets/main/cubit_pwds_list/pwd_list_cubit.dart';
 import 'package:pwd_gen/view/widgets/pwd_config/pwd_configure_bottom_sheet.dart';
 
@@ -7,6 +8,8 @@ class DialogGenerateOrImport extends StatelessWidget {
   const DialogGenerateOrImport({super.key});
   @override
   Widget build(BuildContext context) {
+    final pwdListCubit = context.read<PwdListCubit>();
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -27,8 +30,8 @@ class DialogGenerateOrImport extends StatelessWidget {
               Navigator.of(context).pop();
               await showModalBottomSheet(
                   isScrollControlled: true,
-                  enableDrag: !context.read<PwdListCubit>().isLoading,
-                  isDismissible: !context.read<PwdListCubit>().isLoading,
+                  enableDrag: !pwdListCubit.isLoading,
+                  isDismissible: !pwdListCubit.isLoading,
                   context: context,
                   builder: (BuildContext bottomSheetContext) {
                     return BlocProvider.value(
@@ -56,13 +59,33 @@ class DialogGenerateOrImport extends StatelessWidget {
                 ),
               ),
             ),
-            onPressed: () {
+            onPressed: () async {
               try {
-                context.read<PwdListCubit>().loadPwdsFromFile();
-                
+                await pwdListCubit.selectMPGFile();
+                if (MPGState.currentState == MPGStateEnums.oldImportDone) {
+                  return;
+                }
+                if (MPGState.currentState != MPGStateEnums.ok) {
+                  if (!context.mounted) return;
+                  await appDialog(
+                    context,
+                  );
+                  return;
+                }
+                MPGState.applyState(
+                    MPGStateEnums.showNotificationSecretImageDecrypt);
+                if (!context.mounted) return;
+                await appDialog(context, barrierDismissible: true);
+                MPGState.applyState(MPGStateEnums.ok);
+                await pwdListCubit.selectImageFileForPWDGenerator();
+                if (MPGState.currentState == MPGStateEnums.ok) return;
+                if (!context.mounted) return;
+                await appDialog(context, barrierDismissible: true);
               } on Exception catch (e) {
                 // TODO
+                debugPrint('$e');
               }
+              if (!context.mounted) return;
               Navigator.pop(context); // Handle Import action
             },
             child: const Text('Import'),

@@ -59,7 +59,8 @@ class _PwdWidgetState extends State<PwdWidget> {
                         onPressed: widget.onEdit, icon: Icon(Icons.edit)),
                     IconButton(
                         onPressed: () async {
-                          await Share.share(widget.pwd.password);
+                          await SharePlus.instance
+                              .share(ShareParams(text: widget.pwd.password));
                           widget.onShareOrOnVisibilityChanged();
                         },
                         icon: Icon(Icons.share)),
