@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:pwd_gen/core/injector.dart';
-import 'package:pwd_gen/core/utility.dart';
-import 'package:pwd_gen/view/welcome_dialog.dart';
-import 'package:pwd_gen/view/widgets/main/cubit_pwds_list/pwd_list_cubit.dart';
-import 'package:pwd_gen/domain/pwd_entity.dart';
-import 'package:pwd_gen/view/widgets/shared/dialog_generate_or_import.dart';
-import 'package:pwd_gen/view/widgets/pwd_edit/pwd_editor_bottom_sheet.dart';
-import 'package:pwd_gen/view/widgets/shared/pwd_widget.dart';
-import 'package:pwd_gen/view/widgets/shared/search_field.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '/core/injector.dart';
+import '/core/utility.dart';
+import '/view/welcome_dialog.dart';
+import '/view/widgets/main/cubit_pwds_list/pwd_list_cubit.dart';
+import '/domain/pwd_entity.dart';
+import '/view/widgets/shared/dialog_generate_or_import.dart';
+import '/view/widgets/pwd_edit/pwd_editor_bottom_sheet.dart';
+import '/view/widgets/shared/pwd_widget.dart';
+import '/view/widgets/shared/search_field.dart';
 
 class PwdListView extends StatelessWidget {
   /* void _showSettingsDialog(BuildContext context) {

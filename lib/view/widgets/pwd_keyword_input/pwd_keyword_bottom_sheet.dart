@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pwd_gen/core/app_pallet.dart';
+import '/core/app_pallet.dart';
+import '/view/widgets/pwd_keyword_input/cubit_pwd_keword/pwd_keyword_cubit.dart';
+import '/view/widgets/shared/edit_pwd_textfield.dart';
 
 
-import 'package:pwd_gen/view/widgets/pwd_keyword_input/cubit_pwd_keword/pwd_keyword_cubit.dart';
-import 'package:pwd_gen/view/widgets/shared/edit_pwd_textfield.dart';
 
 class PwdKeyWordBottomSheet extends StatefulWidget {
   final int index;

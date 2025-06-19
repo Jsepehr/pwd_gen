@@ -1,5 +1,5 @@
 import 'package:path/path.dart';
-import 'package:pwd_gen/repository/pwd_repository.dart';
+import '/repository/pwd_repository.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper implements IDatabaseHelper {

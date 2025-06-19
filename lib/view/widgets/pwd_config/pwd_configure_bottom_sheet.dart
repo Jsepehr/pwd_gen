@@ -2,11 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pwd_gen/core/app_pallet.dart';
-import 'package:pwd_gen/core/utility.dart';
-import 'package:pwd_gen/view/widgets/main/cubit_pwds_list/pwd_list_cubit.dart';
-import 'package:pwd_gen/view/widgets/pwd_config/cubit_config_pwds/config_pwds_cubit.dart';
-import 'package:pwd_gen/view/widgets/shared/edit_pwd_textfield.dart';
+import '/core/app_pallet.dart';
+import '/core/utility.dart';
+import '/view/widgets/main/cubit_pwds_list/pwd_list_cubit.dart';
+import '/view/widgets/pwd_config/cubit_config_pwds/config_pwds_cubit.dart';
+import '/view/widgets/shared/edit_pwd_textfield.dart';
 
 class PwdConfigureBottomSheet extends StatefulWidget {
   const PwdConfigureBottomSheet({

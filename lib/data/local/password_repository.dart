@@ -1,7 +1,7 @@
-import 'package:pwd_gen/core/injector.dart';
-import 'package:pwd_gen/data/local/datbase_helper.dart';
-import 'package:pwd_gen/domain/pwd_entity.dart';
-import 'package:pwd_gen/repository/pwd_repository.dart';
+import '/core/injector.dart';
+import '/data/local/datbase_helper.dart';
+import '/domain/pwd_entity.dart';
+import '/repository/pwd_repository.dart';
 import 'package:sqflite/sqlite_api.dart';
 
 class PwdRepositoryImpl implements PwdRepository {

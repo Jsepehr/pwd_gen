@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pwd_gen/domain/pwd_entity.dart';
 import 'package:share_plus/share_plus.dart';
+import '/domain/pwd_entity.dart';
 
 class PwdWidget extends StatefulWidget {
   final PwdEntity pwd;

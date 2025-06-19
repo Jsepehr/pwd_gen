@@ -4,8 +4,8 @@ import 'package:crypto/crypto.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:pwd_gen/core/notepass_encrypt.dart';
-import 'package:pwd_gen/domain/pwd_entity.dart';
+import '/core/notepass_encrypt.dart';
+import '/domain/pwd_entity.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 

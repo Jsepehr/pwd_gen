@@ -1,7 +1,7 @@
 import 'package:get_it/get_it.dart';
-import 'package:pwd_gen/data/local/datbase_helper.dart';
-import 'package:pwd_gen/data/local/password_repository.dart';
-import 'package:pwd_gen/domain/pwd_entity.dart';
+import '/data/local/datbase_helper.dart';
+import '/data/local/password_repository.dart';
+import '/domain/pwd_entity.dart';
 
 final getIt = GetIt.instance;
 

@@ -4,8 +4,8 @@ import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/rendering.dart';
-import 'package:pwd_gen/core/utility.dart';
-import 'package:pwd_gen/domain/pwd_entity.dart';
+import '/core/utility.dart';
+import '/domain/pwd_entity.dart';
 
 class BinaryEncrypt {
   static const String _magicWord = 'VALID_KEY';

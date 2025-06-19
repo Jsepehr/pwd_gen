@@ -1,4 +1,4 @@
-import 'package:pwd_gen/domain/pwd_entity.dart';
+import '/domain/pwd_entity.dart';
 import 'package:sqflite/sqflite.dart';
 
 abstract class PwdRepository {
