@@ -4,7 +4,6 @@ import 'package:sqflite/sqflite.dart';
 abstract class PwdRepository {
   Future<int> updatePwd(PwdEntity updatedPwd);
   Future<List<PwdEntity>> getAllPwds();
-  Future<void> deletePwd(String id);
   Future<int> insertPwd(PwdEntity pwd);
 }
 

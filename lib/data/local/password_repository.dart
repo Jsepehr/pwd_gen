@@ -29,13 +29,6 @@ class PwdRepositoryImpl implements PwdRepository {
   }
 
   @override
-  Future<int> deletePwd(String id) async {
-    final db = await _dbHelper.database;
-    return await db
-        .delete(_dbHelper.tableName, where: 'id = ?', whereArgs: [id]);
-  }
-
-  @override
   Future<int> updatePwd(PwdEntity updatedPwd) async {
     // Check if the ID exists
     final db = await _dbHelper.database;
@@ -60,35 +53,4 @@ class PwdRepositoryImpl implements PwdRepository {
     );
   }
 
-  Future<void> updateAndVerify(String id, PwdEntity newPwd) async {
-    // Update the password entry
-    await updatePwd(newPwd);
-
-    // Fetch the updated entry
-    final updatedPwd = await getPwdById(id);
-
-    if (updatedPwd != null && updatedPwd.id == newPwd.id) {
-      print("✅ Update successful: ${updatedPwd.toMap()}");
-    } else {
-      print("❌ Update failed! Record not found.");
-    }
-  }
-
-  Future<PwdEntity?> getPwdById(String id) async {
-    /* final db = await _dbHelper.database;
-    final List<Map<String, dynamic>> maps = await db.query(
-      _dbHelper.tableName,
-      where: 'id = ?',
-      whereArgs: [id],
-    ); */
-    await Future.delayed(Duration(seconds: 1));
-    final db = await _dbHelper.database;
-    final result = await db
-        .rawQuery("SELECT * FROM ${_dbHelper.tableName} WHERE id = ?", [id]);
-
-    if (result.isNotEmpty) {
-      return PwdEntity.fromMap(result.first); // Convert map to PwdEntity
-    }
-    return null; // Return null if not found
-  }
 }

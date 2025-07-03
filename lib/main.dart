@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '/core/injector.dart';
-import '/core/routs.dart';
 import '/view/widgets/main/cubit_pwds_list/pwd_list_cubit.dart';
 import '/view/widgets/pwd_config/cubit_config_pwds/config_pwds_cubit.dart';
 import '/view/widgets/pwd_edit/cubit_pwd_editor/pwd_editor_cubit.dart';
@@ -20,8 +19,7 @@ void main() {
         BlocProvider<PwdEditorCubit>(
             create: (context) => PwdEditorCubit()..init()),
       ],
-      child: MaterialApp.router(
-        routerConfig: router,
+      child: MaterialApp(
         darkTheme: ThemeData.dark().copyWith(
           inputDecorationTheme: InputDecorationTheme(
             filled: true,
