@@ -53,7 +53,8 @@ dependencies:
   shared_preferences: 
   local_auth:
   #flutter_secure_storage: ^10.0.0-beta.1
-  encrypt: 
+  encrypt:
+  flutter_native_splash: 
 
 
 dev_dependencies:
@@ -61,13 +62,22 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   mocktail:
-
+flutter_native_splash:
+  color: "#050505" # Replace with your desired color hex code
+  android: true
+  ios: false
+  web: false
+  android_12:
+    color: "#050505"  
 flutter_launcher_icons:
   android: true
   ios: false
   adaptive_icon_background: "#1414b8"
-  adaptive_icon_foreground: "lib/assets/icons/icon.png"
-  image_path: "lib/assets/icons/icon.png"  
+  adaptive_icon_foreground: "lib/assets/icons/icon_big.png"
+  image_path: "lib/assets/icons/icon_big.png"
+
+
+
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
