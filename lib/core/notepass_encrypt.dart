@@ -6,6 +6,7 @@ import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/rendering.dart';
 import '/core/utility.dart';
 import '/domain/pwd_entity.dart';
+import '/view/widgets/shared/app_dialog.dart';
 
 class BinaryEncrypt {
   static const String _magicWord = 'VALID_KEY';
@@ -71,7 +72,6 @@ class BinaryEncrypt {
     required File file,
     required String imageHash,
   }) async {
-    MPGState.applyState(MPGStateEnums.ok);
     final bytes = await file.readAsBytes();
     final byteData = ByteData.sublistView(bytes);
     int offset = 0;

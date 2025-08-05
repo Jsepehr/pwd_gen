@@ -1,19 +1,22 @@
 import 'dart:io';
 
 import 'package:equatable/equatable.dart';
+import 'package:external_path/external_path.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:uuid/uuid.dart';
-import 'package:external_path/external_path.dart';
+import 'package:pwd_gen/core/read_file_generate_pwds.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
+
+import '/core/injector.dart';
 import '/core/notepass_encrypt.dart';
 import '/core/utility.dart';
 import '/data/local/password_repository.dart';
 import '/domain/pwd_entity.dart';
-import '/core/injector.dart';
+import '/view/widgets/shared/app_dialog.dart';
 
 part 'pwd_list_state.dart';
 
@@ -24,17 +27,22 @@ class PwdListCubit extends Cubit<PwdListState> {
   bool _isSearching = false;
   bool _isLoading = false;
   final LocalAuthentication _auth = LocalAuthentication();
-  bool res = false;
+  bool _isUserAuthenticated = false;
   bool get isLoading => _isLoading;
   bool get isSearching => _isSearching;
+  final _readFileGeneratePwds = ReadFileGeneratePwds();
   int pwdsListLen() {
     return _pwdListShow.length;
   }
 
+  String _currentSearchString = '';
+  // This is used to filter the list when searching
+  List<PwdEntity> _filteredList = [];
+
   Future<void> authenticate() async {
     emit(PwdListInitial());
     try {
-      res = await _auth.authenticate(
+      _isUserAuthenticated = await _auth.authenticate(
         localizedReason: 'Autenticati per continuare',
         options: const AuthenticationOptions(
           stickyAuth: true,
@@ -45,16 +53,25 @@ class PwdListCubit extends Cubit<PwdListState> {
     }
   }
 
+  void resetList() {
+    _pwdListShow = [];
+    _pwdListSaved = [];
+    _isSearching = false;
+    _len = 0;
+    getIt<PwdRepositoryImpl>().deleteAllPwds();
+    _emitState(_pwdListShow);
+  }
+
   int _len = 0;
   int i = 0;
   int _usageCount = 0;
   final db = getIt<PwdRepositoryImpl>();
 
   Future<void> loadPwdsFromDb() async {
-    await loadPwdsFromLocalDb();
-    if (_pwdListSaved.isNotEmpty && !res) {
+    await loadPwdsFromLocalDb(); // load from db update _pwdListSaved
+    if (_pwdListSaved.isNotEmpty && !_isUserAuthenticated) {
       await authenticate();
-      await loadPwdsFromDb();
+      _len = _pwdListSaved.length;
     }
     _pwdListShow = List.from(_pwdListSaved);
     _len = _pwdListShow.length;
@@ -69,27 +86,26 @@ class PwdListCubit extends Cubit<PwdListState> {
 
   Future<void> selectMPGFile() async {
     setIsLoadingState(true);
-    final res = await ReadNpsFile().readContentFromFile();
-    if (res != null) {
-      for (var element in res) {
+    final generatedPwds = await _readFileGeneratePwds.readContentFromFile();
+    if (generatedPwds != null) {
+      // here the list from old version
+      for (var element in generatedPwds) {
         await _saveAllToLocalDb(element);
       }
-      _pwdListSaved = res;
-      _pwdListShow = res;
-      MPGState.applyState(MPGStateEnums.oldImportDone);
+      _pwdListSaved = generatedPwds;
+      _pwdListShow = generatedPwds;
+      MPGState.applyState(MPGStateEnums.endOk);
       setIsLoadingState(false);
+      _len = generatedPwds.length;
       _emitState(_pwdListShow);
       return;
     }
-    if (MPGState.currentState != MPGStateEnums.ok) {
-      setIsLoadingState(false);
-      return;
-    }
+    setIsLoadingState(false);
   }
 
   Future<void> selectImageFileForPWDGenerator() async {
-    final res = await ReadNpsFile().imageSelectionAndGenPwds();
-
+    MPGState.applyState(MPGStateEnums.start);
+    final res = await _readFileGeneratePwds.imageSelectionAndGenPwds();
     if (res.isEmpty) {
       _isLoading = false;
       _emitState(_pwdListShow);
@@ -97,6 +113,7 @@ class PwdListCubit extends Cubit<PwdListState> {
     }
 
     _pwdListShow.addAll(res);
+    _pwdListSaved.addAll(res);
     for (var pwd in res) {
       await _saveAllToLocalDb(pwd);
     }
@@ -109,24 +126,27 @@ class PwdListCubit extends Cubit<PwdListState> {
     _emitState(_pwdListShow);
   }
 
+  /// Searches the list of passwords based on the input string.
+  /// If the input string is empty or searching is not enabled, it resets the list to the saved passwords.
+  /// Otherwise, it filters the passwords based on whether their hint contains the input string.
   void searchThis(String inputString) {
-    List<PwdEntity> filteredList = [];
-
+    _currentSearchString = inputString;
     if (inputString.isEmpty || !_isSearching) {
       _pwdListShow = _pwdListSaved;
+      _filteredList.clear();
       _emitState(_pwdListShow);
       return;
     }
+    _filteredList.clear();
     for (int i = 0; i < _len; i++) {
       if (_pwdListSaved[i]
           .hint
           .toLowerCase()
           .contains(inputString.toLowerCase())) {
-        filteredList.add(_pwdListSaved[i]);
+        _filteredList.add(_pwdListSaved[i]);
       }
     }
-    _pwdListShow = List.from(filteredList);
-
+    _pwdListShow = List.from(_filteredList);
     _emitState(_pwdListShow);
   }
 
@@ -139,24 +159,37 @@ class PwdListCubit extends Cubit<PwdListState> {
     }
   }
 
-  Future<void> updateHintAndPwds(PwdEntityEdit pwdModified, int index) async {
+  Future<void> updateHintAndPwds(
+    PwdEntity pwdModified,
+  ) async {
     _usageCount = DateTime.now().millisecondsSinceEpoch;
+    final index = _pwdListShow.indexWhere((e) => e.id == pwdModified.id);
+    final indexSaved = _pwdListSaved.indexWhere((e) => e.id == pwdModified.id);
+    if (index == -1) {
+      debugPrint("Error: Password not found in the list.");
+      return;
+    }
     final updatedPwd = _pwdListShow[index].copyWith(
       usageDate: _usageCount.toString(),
       hint: pwdModified.hint,
       password: pwdModified.password,
     );
 
-// Aggiorna la lista con il nuovo oggetto
     final newListShow = List<PwdEntity>.from(_pwdListShow);
-    newListShow[index] = updatedPwd;
 
-// Aggiorna il database
+    newListShow[index] = updatedPwd;
+    _pwdListSaved[indexSaved] = updatedPwd;
+
     await db.updatePwd(updatedPwd);
-// Emetti la nuova lista
-    _pwdListShow = newListShow;
-    _pwdListSaved = newListShow;
-    _emitState(newListShow);
+
+    if (_currentSearchString.isNotEmpty) {
+      _pwdListShow = newListShow;
+      _emitState(_pwdListShow);
+    } else {
+      _pwdListShow = newListShow;
+      _pwdListSaved = newListShow;
+      _emitState(_pwdListSaved);
+    }
   }
 
   Future<void> updateDateTime(int index) async {
@@ -281,7 +314,7 @@ class PwdListCubit extends Cubit<PwdListState> {
   String _createFileName() {
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('yyyyMMddkkmm').format(now);
-    return 'MPG$formattedDate.nps';
+    return 'MPG$formattedDate.kmg';
   }
 
   Future<bool> wrightContentToFile(String imageHash) async {

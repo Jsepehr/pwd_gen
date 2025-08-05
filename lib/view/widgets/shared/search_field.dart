@@ -22,7 +22,7 @@ class SearchFieldState extends State<SearchField> {
         ),
         onChanged: widget.onChange,
         cursorHeight: 20,
-        autofocus: false,
+        autofocus: true,
       ),
     );
   }

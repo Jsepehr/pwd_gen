@@ -7,9 +7,7 @@ part 'pwd_editor_state.dart';
 class PwdEditorCubit extends Cubit<PwdEditorState> {
   PwdEditorCubit() : super(PwdEditorInitial());
 
-  TextEditingController hintController = TextEditingController();
-  TextEditingController pwdController = TextEditingController();
-  FocusNode focusNode = FocusNode();
+
 
   String pwd = '';
   String hint = '';
@@ -28,10 +26,7 @@ class PwdEditorCubit extends Cubit<PwdEditorState> {
 
   _emitState() {
     emit(PwdEditorLoaded(
-      focusNode: focusNode,
         pwd: pwd,
-        hint: hint,
-        hintController: hintController,
-        pwdController: pwdController));
+        hint: hint,));
   }
 }

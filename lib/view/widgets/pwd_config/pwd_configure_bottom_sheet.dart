@@ -35,6 +35,8 @@ class _PwdConfigureBottomSheetState extends State<PwdConfigureBottomSheet> {
   void dispose() {
     secretPhraseCtl.dispose();
     image = null;
+    context.read<ConfigPwdsCubit>().focusNode.dispose();
+    context.read<ConfigPwdsCubit>().secretPhrase = '';
     super.dispose();
   }
 

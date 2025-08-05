@@ -1,40 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:pwd_gen/core/app_pallet.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '/core/injector.dart';
+
 import '/core/utility.dart';
 import '/view/welcome_dialog.dart';
 import '/view/widgets/main/cubit_pwds_list/pwd_list_cubit.dart';
-import '/domain/pwd_entity.dart';
-import '/view/widgets/shared/dialog_generate_or_import.dart';
 import '/view/widgets/pwd_edit/pwd_editor_bottom_sheet.dart';
+import '/view/widgets/shared/dialog_generate_or_import.dart';
 import '/view/widgets/shared/pwd_widget.dart';
 import '/view/widgets/shared/search_field.dart';
+import '/view/widgets/shared/app_dialog.dart';
 
 class PwdListView extends StatelessWidget {
-  /* void _showSettingsDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text("Storage Permission Required"),
-        content: Text(
-            "This app needs full storage access to save files. Please enable it in settings."),
-        actions: [
-          TextButton(
-            onPressed: () async {
-              await openAppSettings(); // Open settings page
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                Navigator.pop(context);
-              });
-            },
-            child: Text("Open Settings"),
-          ),
-        ],
-      ),
-    );
-  } */
-
   Future<void> _showWelcomeDialog(BuildContext context) async {
     await showDialog(
       context: context,
@@ -46,8 +25,6 @@ class PwdListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final pwdListCubit = context.read<PwdListCubit>();
-    final isSearching = pwdListCubit.isSearching;
-    debugPrint('$isSearching sepehr');
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final showWelcomePage = await SharedPreferences.getInstance();
       final res = showWelcomePage.getBool('welcome');
@@ -83,22 +60,22 @@ class PwdListView extends StatelessWidget {
                                 if (MPGState.currentState !=
                                     MPGStateEnums.permissionGranted) {
                                   if (!context.mounted) return;
-                                  await appDialog(
-                                    context,
+                                  await appDialogV(
+                                    context: context,
                                   );
                                 }
                                 MPGState.applyState(MPGStateEnums
                                     .showNotificationSecretImageEncrypt);
                                 if (!context.mounted) return;
-                                await appDialog(context);
+                                await appDialogV(context : context);
                                 final image = await selectImage();
 
                                 if (image == null) {
                                   MPGState.applyState(
                                       MPGStateEnums.imageNotSelected);
                                   if (!context.mounted) return;
-                                  await appDialog(
-                                    context,
+                                  await appDialogV(
+                                    context: context,
                                   );
                                   pwdListCubit.setIsLoadingState(false);
                                   return;
@@ -110,13 +87,26 @@ class PwdListView extends StatelessWidget {
                                     .wrightContentToFile(imageHash);
                                 if (!context.mounted) return;
                                 pwdListCubit.setIsLoadingState(false);
-                                await appDialog(
-                                  context,
+                                await appDialogV(
+                                  context: context,
                                 );
                               }
                             : null,
                       ),
-                      title: Text('Passwords List'),
+                      title: GestureDetector(
+                          onLongPress: () {
+                            MPGState.applyState(MPGStateEnums.reset);
+                            if (!context.mounted) return;
+                            final res =
+                                appDialogV(context: context, barrierDismissible: true);
+                            res.then((value) {
+                              if (value == true) {
+                                pwdListCubit.resetList();
+                                MPGState.applyState(MPGStateEnums.endOk);
+                              }
+                            });
+                          },
+                          child: Text('Passwords List')),
                       actions: [
                         IconButton(
                           onPressed: state.pwdListShow.isNotEmpty
@@ -174,6 +164,19 @@ class PwdListView extends StatelessWidget {
                                           height: 50,
                                           width: 100,
                                           child: ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor:
+                                                  AppPallet.bottomSheetBG,
+                                              side: BorderSide(
+                                                  style: BorderStyle.solid,
+                                                  width: 0.5,
+                                                  color: AppPallet
+                                                      .buttonBorderSides),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(15),
+                                              ),
+                                            ),
                                             onPressed: () async {
                                               await showDialog(
                                                 context: context,
@@ -195,13 +198,6 @@ class PwdListView extends StatelessWidget {
                                       child: PwdWidget(
                                         pwd: state.pwdListShow[index],
                                         onEdit: () async {
-                                          getIt<PwdEntityEdit>().update(
-                                              hint:
-                                                  state.pwdListShow[index].hint,
-                                              password: state
-                                                  .pwdListShow[index].password,
-                                              index: index);
-
                                           await showModalBottomSheet(
                                             isScrollControlled: true,
                                             enableDrag: false,
@@ -209,7 +205,7 @@ class PwdListView extends StatelessWidget {
                                             context: context,
                                             builder: (context) {
                                               return PwdEditorBottomSheet(
-                                                index: index,
+                                                pwd: state.pwdListShow[index],
                                               );
                                             },
                                           );

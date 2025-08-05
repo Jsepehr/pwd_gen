@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '/core/app_pallet.dart';
 import '/core/utility.dart';
 import '/view/widgets/main/cubit_pwds_list/pwd_list_cubit.dart';
 import '/view/widgets/pwd_config/pwd_configure_bottom_sheet.dart';
+import '/view/widgets/shared/app_dialog.dart';
 
 class DialogGenerateOrImport extends StatelessWidget {
   const DialogGenerateOrImport({super.key});
@@ -18,6 +21,11 @@ class DialogGenerateOrImport extends StatelessWidget {
           width: 150,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
+              backgroundColor: AppPallet.bottomSheetBG,
+              side: BorderSide(
+                  style: BorderStyle.solid,
+                  width: 0.5,
+                  color: AppPallet.buttonBorderSides),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(15), // Adjust the radius as needed
@@ -40,17 +48,25 @@ class DialogGenerateOrImport extends StatelessWidget {
                     );
                   });
             },
-            child: const Text('Generate'),
+            child: const Text(
+              'Generate',
+              style: TextStyle(
+                fontSize: 20,
+              ),
+            ),
           ),
         ),
         SizedBox(
-          width: 1,
+          width: 8,
         ),
         SizedBox(
           height: 100,
           width: 150,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
+              backgroundColor: AppPallet.bottomSheetBG,
+              side: BorderSide(
+                  style: BorderStyle.solid, width: 0.5, color: Colors.white54),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                   topRight: Radius.circular(15), // Adjust the radius as needed
@@ -61,34 +77,43 @@ class DialogGenerateOrImport extends StatelessWidget {
             ),
             onPressed: () async {
               try {
+                MPGState.applyState(MPGStateEnums.start);
                 await pwdListCubit.selectMPGFile();
                 if (MPGState.currentState == MPGStateEnums.oldImportDone) {
                   return;
                 }
-                if (MPGState.currentState != MPGStateEnums.ok) {
+                if (MPGState.currentState == MPGStateEnums.kmgFileNotSelected) {
                   if (!context.mounted) return;
-                  await appDialog(
-                    context,
+                  await appDialogV(
+                    context: context,
                   );
+                  Navigator.of(context).pop();
                   return;
                 }
                 MPGState.applyState(
                     MPGStateEnums.showNotificationSecretImageDecrypt);
                 if (!context.mounted) return;
-                await appDialog(context, barrierDismissible: true);
-                MPGState.applyState(MPGStateEnums.ok);
+                await appDialogV(context: context, barrierDismissible: true);
                 await pwdListCubit.selectImageFileForPWDGenerator();
-                if (MPGState.currentState == MPGStateEnums.ok) return;
-                if (!context.mounted) return;
-                await appDialog(context, barrierDismissible: true);
+                if (MPGState.currentState == MPGStateEnums.endOk) {
+                  Navigator.of(context).pop();
+                  return;
+                } else {
+                  if (!context.mounted) return;
+                  await appDialogV(context: context, barrierDismissible: true);
+                }
               } on Exception catch (e) {
-                // TODO
                 debugPrint('$e');
               }
               if (!context.mounted) return;
               Navigator.pop(context); // Handle Import action
             },
-            child: const Text('Import'),
+            child: const Text(
+              'Import',
+              style: TextStyle(
+                fontSize: 20,
+              ),
+            ),
           ),
         ),
       ],

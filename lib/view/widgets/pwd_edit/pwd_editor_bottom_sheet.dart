@@ -9,10 +9,10 @@ import 'package:pwd_gen/view/widgets/pwd_edit/cubit_pwd_editor/pwd_editor_cubit.
 import 'package:pwd_gen/view/widgets/shared/edit_pwd_textfield.dart';
 
 class PwdEditorBottomSheet extends StatefulWidget {
-  final int index;
+  final PwdEntity pwd;
   const PwdEditorBottomSheet({
     super.key,
-    required this.index,
+    required this.pwd,
   });
   @override
   State<PwdEditorBottomSheet> createState() => _PwdEditorBottomSheetState();
@@ -20,19 +20,33 @@ class PwdEditorBottomSheet extends StatefulWidget {
 
 class _PwdEditorBottomSheetState extends State<PwdEditorBottomSheet> {
   late PwdEditorCubit cubit;
-  PwdEntityEdit pwd = getIt<PwdEntityEdit>();
+  TextEditingController hintController = TextEditingController();
+  TextEditingController pwdController = TextEditingController();
+  FocusNode focusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       cubit = context.read<PwdEditorCubit>();
-      cubit.hintController.text = pwd.hint;
-      cubit.pwdController.text = pwd.password;
-      cubit.modifyPwd(pwd.password);
-      cubit.modifyHint(pwd.hint);
-      cubit.focusNode.requestFocus();
+      hintController.text = widget.pwd.hint;
+      pwdController.text = widget.pwd.password;
+      cubit.modifyPwd(widget.pwd.password);
+      cubit.modifyHint(widget.pwd.hint);
+      focusNode.requestFocus();
+      if (hintController.text == 'Your comment...') {
+        hintController.selection = TextSelection(
+            baseOffset: 0, extentOffset: hintController.text.length);
+      }
     });
+  }
+
+  @override
+  void dispose() {
+    hintController.dispose();
+    pwdController.dispose();
+    focusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -68,8 +82,8 @@ class _PwdEditorBottomSheetState extends State<PwdEditorBottomSheet> {
                       height: 50,
                       child: state is PwdEditorLoaded
                           ? EditPwdTextField(
-                              focusNode: state.focusNode,
-                              controller: state.hintController,
+                              focusNode: focusNode,
+                              controller: hintController,
                               onChange: (p0) {
                                 cubit.modifyHint(p0);
                               },
@@ -84,7 +98,7 @@ class _PwdEditorBottomSheetState extends State<PwdEditorBottomSheet> {
                       child: state is PwdEditorLoaded
                           ? EditPwdTextField(
                               focusNode: FocusNode(),
-                              controller: state.pwdController,
+                              controller: pwdController,
                               onChange: (p0) {
                                 cubit.modifyPwd(p0);
                               },
@@ -100,23 +114,34 @@ class _PwdEditorBottomSheetState extends State<PwdEditorBottomSheet> {
                         state is PwdEditorLoaded
                             ? ElevatedButton(
                                 onPressed: () async {
-                                  getIt<PwdEntityEdit>().update(
-                                      hint: cubit.hint,
-                                      password: cubit.pwd,
-                                      index: widget.index);
-                                  PwdEntityEdit pwd = getIt<PwdEntityEdit>();
-
-                                  cubitPwdsList.updateHintAndPwds(
-                                      pwd, widget.index);
+                                  final updatedPwd = widget.pwd.copyWith(
+                                    hint: cubit.hint,
+                                    password: cubit.pwd,
+                                  );
+                                  await cubitPwdsList.updateHintAndPwds(
+                                    updatedPwd,
+                                  );
                                   Navigator.pop(context);
                                 },
-                                child: Text('Apply'))
+                                child: Text(
+                                  'Apply',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              )
                             : CircularProgressIndicator(),
                         ElevatedButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: Text('Dismiss')),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text(
+                            'Cancel',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
                       ],
                     )
                   ],

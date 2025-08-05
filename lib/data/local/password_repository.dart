@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 import '/core/injector.dart';
 import '/data/local/datbase_helper.dart';
 import '/domain/pwd_entity.dart';
@@ -70,7 +72,7 @@ class PwdRepositoryImpl implements PwdRepository {
     if (updatedPwd != null && updatedPwd.id == newPwd.id) {
       print("✅ Update successful: ${updatedPwd.toMap()}");
     } else {
-      print("❌ Update failed! Record not found.");
+      debugPrint("❌ Update failed! Record not found.");
     }
   }
 
@@ -90,5 +92,10 @@ class PwdRepositoryImpl implements PwdRepository {
       return PwdEntity.fromMap(result.first); // Convert map to PwdEntity
     }
     return null; // Return null if not found
+  }
+  @override
+  Future<void> deleteAllPwds() async {
+    final db = await _dbHelper.database;
+    await db.delete(_dbHelper.tableName);
   }
 }

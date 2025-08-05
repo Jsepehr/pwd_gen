@@ -88,16 +88,19 @@ extension PwdEntityList on List<PwdEntity> {
   }
 }
 
-class PwdEntityEdit {
+/* class PwdEntityEdit {
+  String id;
   String hint;
   String password;
 
   PwdEntityEdit({
+    required this.id,
     required this.hint,
     required this.password,
   });
 
   void update({
+    required String id,
     required String hint,
     required String password,
     required int index,
@@ -105,4 +108,4 @@ class PwdEntityEdit {
     this.hint = hint;
     this.password = password;
   }
-}
+} */

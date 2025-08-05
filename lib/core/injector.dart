@@ -1,7 +1,6 @@
 import 'package:get_it/get_it.dart';
 import '/data/local/datbase_helper.dart';
 import '/data/local/password_repository.dart';
-import '/domain/pwd_entity.dart';
 
 final getIt = GetIt.instance;
 
@@ -9,10 +8,6 @@ void setupLocator() {
   getIt.registerLazySingleton<PwdRepositoryImpl>(() => PwdRepositoryImpl());
   getIt.registerSingleton<DatabaseHelper>(DatabaseHelper());
   getIt.registerSingleton<FixedString>(FixedString._instance);
-  getIt.registerSingleton<PwdEntityEdit>(PwdEntityEdit(
-    password: "",
-    hint: "",
-  ));
 }
 
 class FixedString {
