@@ -42,7 +42,7 @@ class PwdListView extends StatelessWidget {
             color: const Color.fromARGB(200, 0, 0, 0),
             child: Center(
               child: LoadingAnimationWidget.threeArchedCircle(
-                  color: const Color.fromARGB(255, 0, 102, 192), size: 50),
+                  color: AppPallet.bottomSheetTitleIcon, size: 50),
             ),
           )
         : BlocBuilder<PwdListCubit, PwdListState>(
@@ -52,7 +52,10 @@ class PwdListView extends StatelessWidget {
                     appBar: AppBar(
                       centerTitle: true,
                       leading: IconButton(
-                        icon: Icon(Icons.save_outlined),
+                        icon: Icon(
+                          Icons.save_outlined,
+                          color: AppPallet.bottomSheetTitleIcon,
+                        ),
                         onPressed: state.pwdListShow.isNotEmpty
                             ? () async {
                                 pwdListCubit.setIsLoadingState(true);
@@ -67,7 +70,7 @@ class PwdListView extends StatelessWidget {
                                 MPGState.applyState(MPGStateEnums
                                     .showNotificationSecretImageEncrypt);
                                 if (!context.mounted) return;
-                                await appDialogV(context : context);
+                                await appDialogV(context: context);
                                 final image = await selectImage();
 
                                 if (image == null) {
@@ -97,8 +100,8 @@ class PwdListView extends StatelessWidget {
                           onLongPress: () {
                             MPGState.applyState(MPGStateEnums.reset);
                             if (!context.mounted) return;
-                            final res =
-                                appDialogV(context: context, barrierDismissible: true);
+                            final res = appDialogV(
+                                context: context, barrierDismissible: true);
                             res.then((value) {
                               if (value == true) {
                                 pwdListCubit.resetList();
@@ -115,6 +118,7 @@ class PwdListView extends StatelessWidget {
                                 }
                               : null,
                           icon: Icon(
+                              color: AppPallet.bottomSheetTitleIcon,
                               !state.isSearching ? Icons.search : Icons.close),
                         ),
                       ],
@@ -229,8 +233,7 @@ class PwdListView extends StatelessWidget {
                                 child: Center(
                                   child:
                                       LoadingAnimationWidget.threeArchedCircle(
-                                          color: const Color.fromARGB(
-                                              255, 0, 102, 192),
+                                          color: AppPallet.bottomSheetTitleIcon,
                                           size: 50),
                                 ),
                               )
@@ -238,12 +241,31 @@ class PwdListView extends StatelessWidget {
                       ],
                     ));
               } else {
+                if (state is PwdListAuth) {
+                  return Container(
+                    color: const Color.fromARGB(200, 0, 0, 0),
+                    child: Center(
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          LoadingAnimationWidget.threeArchedCircle(
+                              color: AppPallet.bottomSheetTitleIcon, size: 50),
+                          IconButton.outlined(
+                            onPressed: () {
+                              context.read<PwdListCubit>().loadPwdsFromDb();
+                            },
+                            icon: Icon(Icons.fingerprint_outlined),
+                          )
+                        ],
+                      ),
+                    ),
+                  );
+                }
                 return Container(
                   color: const Color.fromARGB(200, 0, 0, 0),
                   child: Center(
                     child: LoadingAnimationWidget.threeArchedCircle(
-                        color: const Color.fromARGB(255, 0, 102, 192),
-                        size: 50),
+                        color: AppPallet.bottomSheetTitleIcon, size: 50),
                   ),
                 );
               }

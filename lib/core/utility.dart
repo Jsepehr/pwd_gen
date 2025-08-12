@@ -1,18 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:crypto/crypto.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import '/core/notepass_encrypt.dart';
 import '/domain/pwd_entity.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:uuid/uuid.dart';
 import '/view/widgets/shared/app_dialog.dart';
 
 const appFolderName = 'MPG';
 const keyUserPrefPath = 'path';
 const keyUserPrefFileName = 'fileName';
+// const keyImageHash = 'fileName';
 
 
 
@@ -25,6 +22,14 @@ Future<String?> loadSavedDirectory() async {
 Future<String?> loadSavedFileName() async {
   final prefs = await SharedPreferences.getInstance();
 
+  return prefs.getString(keyUserPrefFileName);
+}
+Future<bool> savedImageHash(String hash) async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.setString(keyUserPrefFileName , hash);
+}
+Future<String?> loadImageHash() async {
+  final prefs = await SharedPreferences.getInstance();
   return prefs.getString(keyUserPrefFileName);
 }
 

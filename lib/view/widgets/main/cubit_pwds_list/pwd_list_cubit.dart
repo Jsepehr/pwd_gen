@@ -69,10 +69,14 @@ class PwdListCubit extends Cubit<PwdListState> {
 
   Future<void> loadPwdsFromDb() async {
     await loadPwdsFromLocalDb(); // load from db update _pwdListSaved
-    if (_pwdListSaved.isNotEmpty && !_isUserAuthenticated) {
+    if (!_isUserAuthenticated) {
       await authenticate();
-      _len = _pwdListSaved.length;
     }
+    if (!_isUserAuthenticated) {
+      emit(PwdListAuth());
+      return;
+    }
+    _len = _pwdListSaved.length;
     _pwdListShow = List.from(_pwdListSaved);
     _len = _pwdListShow.length;
     _pwdListShow.sort(
@@ -94,7 +98,7 @@ class PwdListCubit extends Cubit<PwdListState> {
       }
       _pwdListSaved = generatedPwds;
       _pwdListShow = generatedPwds;
-      MPGState.applyState(MPGStateEnums.endOk);
+      MPGState.applyState(MPGStateEnums.oldImportDone);
       setIsLoadingState(false);
       _len = generatedPwds.length;
       _emitState(_pwdListShow);
@@ -213,7 +217,7 @@ class PwdListCubit extends Cubit<PwdListState> {
     final stringHash = generateStringHash(secretText);
     // save hashes on user prefs
     //await _saveImageHashes(imageHsh: imageHash);
-
+    
     var pass1 = CreatePasswords.allDonePreDB(imageHash, numForRand);
     var pass2 = CreatePasswords.allDonePreDB(stringHash, numForRand);
 

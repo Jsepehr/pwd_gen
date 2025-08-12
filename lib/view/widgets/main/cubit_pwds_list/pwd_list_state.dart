@@ -8,6 +8,7 @@ sealed class PwdListState extends Equatable {
 }
 
 final class PwdListInitial extends PwdListState {}
+final class PwdListAuth extends PwdListState {}
 
 class PwdListLoading extends PwdListState {}
 

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pwd_gen/core/app_pallet.dart';
+import 'package:pwd_gen/core/dictionary/app_strings.dart';
 import 'package:vibration/vibration.dart';
 
-import '/core/dictionary.dart';
 import '/core/utility.dart';
 
 enum MPGStateEnums {
@@ -42,50 +42,50 @@ Future<bool?> appDialog(BuildContext context,
   switch (MPGState.currentState) {
     case MPGStateEnums.fileGenSuccess:
       finalColor = AppPallet.success;
-      finalRes = fileStoredOk;
+      finalRes = AppStrings.fileStoredOk;
       break;
     case MPGStateEnums.imageNotSelected:
-      finalRes = imageNotSelected;
+      finalRes = AppStrings.imageNotSelected;
       finalColor = AppPallet.error;
       break;
     case MPGStateEnums.reset:
-      finalRes = resetAllPwds;
+      finalRes = AppStrings.resetAllPwds;
       finalColor = AppPallet.error;
       break;
     case MPGStateEnums.wrongImageSelected:
-      finalRes = wrongImage;
+      finalRes = AppStrings.wrongImage;
       finalColor = AppPallet.error;
       break;
     case MPGStateEnums.somethingWentWrong:
-      finalRes = somethingWentWrong;
+      finalRes = AppStrings.somethingWentWrong;
       finalColor = AppPallet.error;
       break;
     case MPGStateEnums.permissionDenied:
-      finalRes = permissionNotGranted;
+      finalRes = AppStrings.permissionNotGranted;
       finalColor = AppPallet.error;
       break;
     case MPGStateEnums.kmgFileNotSelected:
-      finalRes = kmgNotSelected;
+      finalRes = AppStrings.kmgNotSelected;
       finalColor = AppPallet.error;
       break;
     case MPGStateEnums.wrongSelectedFileFormat:
-      finalRes = wrongSelectedFileFormat;
+      finalRes = AppStrings.wrongSelectedFileFormat;
       finalColor = AppPallet.error;
       break;
     case MPGStateEnums.corruptedFile:
-      finalRes = corruptedFile;
+      finalRes = AppStrings.corruptedFile;
       finalColor = AppPallet.error;
       break;
     case MPGStateEnums.showNotificationSecretImageDecrypt:
-      finalRes = selectSecretImageDecrypt;
+      finalRes = AppStrings.selectSecretImageDecrypt;
       finalColor = AppPallet.bottomSheetTitleIcon;
       break;
     case MPGStateEnums.showNotificationSecretImageEncrypt:
-      finalRes = selectSecretImageEncrypt;
+      finalRes = AppStrings.selectSecretImageEncrypt;
       finalColor = AppPallet.bottomSheetTitleIcon;
       break;
     default:
-      finalRes = somethingWentWrong;
+      finalRes = AppStrings.somethingWentWrong;
       finalColor = AppPallet.error;
   }
   return showDialog(
@@ -126,7 +126,7 @@ Future<bool?> appDialog(BuildContext context,
                       Navigator.of(context).pop(true);
                     },
                     icon: Icon(Icons.done_all_outlined),
-                    label: Text('OK'), // Aggiungi un testo al pulsante
+                    label: Text(AppStrings.ok), // Aggiungi un testo al pulsante
                   ),
                 ],
               ),

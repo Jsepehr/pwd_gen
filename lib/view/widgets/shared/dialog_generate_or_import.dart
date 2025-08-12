@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pwd_gen/core/dictionary/app_strings.dart';
 
 import '/core/app_pallet.dart';
 import '/core/utility.dart';
@@ -48,8 +49,8 @@ class DialogGenerateOrImport extends StatelessWidget {
                     );
                   });
             },
-            child: const Text(
-              'Generate',
+            child: Text(
+              AppStrings.generate,
               style: TextStyle(
                 fontSize: 20,
               ),
@@ -108,8 +109,8 @@ class DialogGenerateOrImport extends StatelessWidget {
               if (!context.mounted) return;
               Navigator.pop(context); // Handle Import action
             },
-            child: const Text(
-              'Import',
+            child: Text(
+              AppStrings.import,
               style: TextStyle(
                 fontSize: 20,
               ),

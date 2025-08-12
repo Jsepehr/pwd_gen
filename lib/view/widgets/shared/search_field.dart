@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pwd_gen/core/dictionary/app_strings.dart';
 
 class SearchField extends StatefulWidget {
   final Function(String) onChange;
@@ -17,7 +18,7 @@ class SearchFieldState extends State<SearchField> {
       padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 15),
       child: TextField(
         decoration: InputDecoration(
-          hintText: 'Search...',
+          hintText: '${AppStrings.search}...',
           hintStyle: const TextStyle(),
         ),
         onChanged: widget.onChange,

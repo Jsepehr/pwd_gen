@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pwd_gen/core/dictionary/app_strings.dart';
 import '/core/app_pallet.dart';
 import '/core/utility.dart';
 import '/view/widgets/main/cubit_pwds_list/pwd_list_cubit.dart';
@@ -83,7 +84,7 @@ class _PwdConfigureBottomSheetState extends State<PwdConfigureBottomSheet> {
                               child: EditPwdTextField(
                                 focusNode: state.focusNode,
                                 controller: secretPhraseCtl,
-                                hintText: 'Secret phrase...',
+                                hintText: '${AppStrings.secretPhrase}...',
                                 onChange: (p0) {
                                   cubit.secretPhrase = p0;
                                   cubit.emitState(image);
@@ -142,7 +143,7 @@ class _PwdConfigureBottomSheetState extends State<PwdConfigureBottomSheet> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.center,
                                             children: [
-                                              Text('Secret Image'),
+                                              Text(AppStrings.secretImage),
                                               SizedBox(
                                                 width: 4,
                                               ),
@@ -184,7 +185,7 @@ class _PwdConfigureBottomSheetState extends State<PwdConfigureBottomSheet> {
                                                 });
                                               }
                                             : null,
-                                        child: Text('Generate'),
+                                        child: Text(AppStrings.generate),
                                       ),
                                     ),
                                   ],

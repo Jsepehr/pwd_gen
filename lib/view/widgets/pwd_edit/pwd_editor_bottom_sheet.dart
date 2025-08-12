@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pwd_gen/core/dictionary/app_strings.dart';
 import '/core/app_pallet.dart';
 import '/core/injector.dart';
 import '/view/widgets/main/cubit_pwds_list/pwd_list_cubit.dart';
@@ -34,7 +35,7 @@ class _PwdEditorBottomSheetState extends State<PwdEditorBottomSheet> {
       cubit.modifyPwd(widget.pwd.password);
       cubit.modifyHint(widget.pwd.hint);
       focusNode.requestFocus();
-      if (hintController.text == 'Your comment...') {
+      if (hintController.text == '${AppStrings.readyToBegin}...') {
         hintController.selection = TextSelection(
             baseOffset: 0, extentOffset: hintController.text.length);
       }
@@ -124,7 +125,7 @@ class _PwdEditorBottomSheetState extends State<PwdEditorBottomSheet> {
                                   Navigator.pop(context);
                                 },
                                 child: Text(
-                                  'Apply',
+                                  AppStrings.apply,
                                   style: TextStyle(
                                     fontSize: 16,
                                   ),
@@ -136,7 +137,7 @@ class _PwdEditorBottomSheetState extends State<PwdEditorBottomSheet> {
                             Navigator.pop(context);
                           },
                           child: Text(
-                            'Cancel',
+                            AppStrings.cancel,
                             style: TextStyle(
                               fontSize: 16,
                             ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pwd_gen/core/dictionary/app_strings.dart';
 import '/core/app_pallet.dart';
 import '/view/widgets/pwd_keyword_input/cubit_pwd_keword/pwd_keyword_cubit.dart';
 import '/view/widgets/shared/edit_pwd_textfield.dart';
@@ -81,13 +82,13 @@ class _PwdKeyWordBottomSheetState extends State<PwdKeyWordBottomSheet> {
                                   // confront with the keyword saved on file in binary
                                   Navigator.pop(context);
                                 },
-                                child: Text('Apply'))
+                                child: Text(AppStrings.apply))
                             : CircularProgressIndicator(),
                         ElevatedButton(
                             onPressed: () {
                               Navigator.pop(context);
                             },
-                            child: Text('Dismiss')),
+                            child: Text(AppStrings.cancel)),
                       ],
                     )
                   ],

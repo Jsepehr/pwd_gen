@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pwd_gen/core/dictionary/app_strings.dart';
 
 class WelcomeDialog extends StatefulWidget {
   const WelcomeDialog({super.key});
@@ -12,28 +13,27 @@ class _WelcomeDialogState extends State<WelcomeDialog> {
 
   final List<_SlideData> slides = [
     _SlideData(
-      title: 'Welcome to My Password Generator',
-      subtitle:
-          'Secure. Private. Smart.\n\nYour offline password generator and manager.',
+      title: AppStrings.welcomeToMyPasswordGenerator,
+      subtitle: AppStrings.securePrivateSmart,
     ),
     _SlideData(
-      title: 'Local & Private by Design',
+      title: AppStrings.localAndPrivateByDesign,
       subtitle:
-          'No internet access.\nNo data collection.\nEverything stays on your device.',
+          '${AppStrings.noInternetAccess}\n${AppStrings.noDataCollection}\n${AppStrings.everythingStaysOnYourDevice}',
     ),
     _SlideData(
-      title: 'Smart Password Generation',
+      title: AppStrings.smartPasswordGeneration,
       subtitle:
-          '🔐 Use a photo + keyword to generate strong passwords.\n💡 Add a hint for each password.',
+          '${AppStrings.useAPhotoAndKeywordToGenerateStrongPasswords}\n${AppStrings.addAHintForEachPassword}',
     ),
     _SlideData(
-      title: 'Manage and Export Your Vault',
+      title: AppStrings.manageAndExportYourVault,
       subtitle:
-          '✏️ Edit passwords and hints.\n📂 Export to Downloads.\n📥 Import your list anytime.',
+          '${AppStrings.editPasswordsAndHints}\n${AppStrings.exportToDownloads}\n${AppStrings.importYourListAnytime}',
     ),
     _SlideData(
-      title: 'Ready to Begin?',
-      subtitle: 'Let\'s keep your digital life secure - without compromises.',
+      title: AppStrings.readyToBegin,
+      subtitle: AppStrings.keepYourDigitalLifeSecureWithoutCompromises,
     ),
   ];
 
@@ -78,7 +78,7 @@ class _WelcomeDialogState extends State<WelcomeDialog> {
               ElevatedButton(
                 onPressed: _nextSlide,
                 child:
-                    Text(currentIndex == slides.length - 1 ? 'Start' : 'Next'),
+                    Text(currentIndex == slides.length - 1 ? AppStrings.start : AppStrings.next),
               ),
             ],
           ),

@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pwd_gen/core/dictionary/app_strings.dart';
+import 'package:pwd_gen/core/dictionary/language_helper.dart';
 
 import '/core/injector.dart';
 import '/core/routs.dart';
@@ -7,10 +11,12 @@ import '/view/widgets/main/cubit_pwds_list/pwd_list_cubit.dart';
 import '/view/widgets/pwd_config/cubit_config_pwds/config_pwds_cubit.dart';
 import '/view/widgets/pwd_edit/cubit_pwd_editor/pwd_editor_cubit.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   setupLocator();
-
+  final lang = LanguageHelper.getDeviceLanguageCode();
+  final json = await getLanguageJson(lang);
+  AppStrings.fromJson(jsonDecode(json));
   runApp(
     MultiBlocProvider(
       providers: [
