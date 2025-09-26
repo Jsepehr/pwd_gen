@@ -7,7 +7,7 @@
   "edit_passwords_and_hints": "✏️ Edit passwords and hints.",
   "everything_stays_on_your_device": "Everything stays on your device.",
   "export_to_downloads": "📂 Export to Downloads.",
-  "file_stored_ok": "File successfully stored in\nDownloads > MPG folder.",
+  "file_stored_ok": "File successfully stored in\nDownloads > Keymage folder.",
   "generate": "Generate",
   "image_not_selected": "No image selected.",
   "import_your_list_anytime": "📥 Import your list anytime.",
@@ -37,5 +37,8 @@
   "wrong_image": "Incorrect image selected. Please try again.",
   "wrong_selected_file_format": "Incorrect .kmg file format or filename mismatch.",
   "your_offline_password_generator_and_manager": "Your offline password generator and manager.",
-  "hint": "Hint"
+  "hint": "Unassigned",
+  "do_you_want_to_share_the_reminder": "Do you want to share the reminder together with the password?",
+  "yes":"Yes",
+  "no":"No"
 }

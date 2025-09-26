@@ -37,6 +37,9 @@ class AppStrings {
   static late String wrongImage;
   static late String wrongSelectedFileFormat;
   static late String yourOfflinePasswordGeneratorAndManager;
+  static late String yes;
+  static late String no;
+  static late String doYouWantToShareTheReminder;
   static late String hint;
 
   static fromJson(Map<String, dynamic> json) {
@@ -83,9 +86,13 @@ class AppStrings {
     cancel = json['cancel'] ?? '';
     confirm = json['confirm'] ?? '';
     hint = json['hint'] ?? '';
+    yes = json['yes'] ?? '';
+    no = json['no'] ?? '';
+    doYouWantToShareTheReminder =
+        json['do_you_want_to_share_the_reminder'] ?? '';
   }
 
-  Map<String, dynamic> toJson() {
+  /*Map<String, dynamic> toJson() {
     return {
       'welcome_to_my_password_generator': welcomeToMyPasswordGenerator,
       'secure_private_smart': securePrivateSmart,
@@ -130,5 +137,5 @@ class AppStrings {
       'confirm': confirm,
       'hint': hint,
     };
-  }
+  }*/
 }

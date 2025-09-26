@@ -61,10 +61,10 @@ class BinaryEncrypt {
           await file.writeAsBytes(output, flush: false, mode: FileMode.write);
       debugPrint(f.path);
 
-      MPGState.applyState(MPGStateEnums.fileGenSuccess);
+      KeymageState.applyState(KeymageStateEnums.fileGenSuccess);
     } catch (e) {
       debugPrint('$e');
-      MPGState.applyState(MPGStateEnums.somethingWentWrong);
+      KeymageState.applyState(KeymageStateEnums.somethingWentWrong);
     }
   }
 
@@ -107,7 +107,7 @@ class BinaryEncrypt {
 
     // 6. Compare hashes
     if (savedImageHash != imageHash) {
-      MPGState.applyState(MPGStateEnums.wrongImageSelected);
+      KeymageState.applyState(KeymageStateEnums.wrongImageSelected);
       return [];
     }
 
@@ -122,7 +122,7 @@ class BinaryEncrypt {
       iv: iv,
     );
     if (decryptedMagic != _magicWord) {
-      MPGState.applyState(MPGStateEnums.corruptedFile);
+      KeymageState.applyState(KeymageStateEnums.corruptedFile);
       return [];
     }
 

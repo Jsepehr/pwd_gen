@@ -28,9 +28,11 @@ class PwdListCubit extends Cubit<PwdListState> {
   bool _isLoading = false;
   final LocalAuthentication _auth = LocalAuthentication();
   bool _isUserAuthenticated = false;
+  bool get isUserAuthenticated => _isUserAuthenticated;
   bool get isLoading => _isLoading;
   bool get isSearching => _isSearching;
   final _readFileGeneratePwds = ReadFileGeneratePwds();
+
   int pwdsListLen() {
     return _pwdListShow.length;
   }
@@ -40,7 +42,7 @@ class PwdListCubit extends Cubit<PwdListState> {
   List<PwdEntity> _filteredList = [];
 
   Future<void> authenticate() async {
-    emit(PwdListInitial());
+    _isUserAuthenticated = false;
     try {
       _isUserAuthenticated = await _auth.authenticate(
         localizedReason: 'Autenticati per continuare',
@@ -63,13 +65,13 @@ class PwdListCubit extends Cubit<PwdListState> {
   }
 
   int _len = 0;
-  int i = 0;
   int _usageCount = 0;
   final db = getIt<PwdRepositoryImpl>();
 
   Future<void> loadPwdsFromDb() async {
     await loadPwdsFromLocalDb(); // load from db update _pwdListSaved
     if (!_isUserAuthenticated) {
+      emit(PwdListInitial());
       await authenticate();
     }
     if (!_isUserAuthenticated) {
@@ -78,7 +80,6 @@ class PwdListCubit extends Cubit<PwdListState> {
     }
     _len = _pwdListSaved.length;
     _pwdListShow = List.from(_pwdListSaved);
-    _len = _pwdListShow.length;
     _pwdListShow.sort(
         (a, b) => int.parse(b.usageDate!).compareTo(int.parse(a.usageDate!)));
     _emitState(_pwdListShow);
@@ -88,7 +89,7 @@ class PwdListCubit extends Cubit<PwdListState> {
     await db.insertPwd(pwd);
   }
 
-  Future<void> selectMPGFile() async {
+  Future<void> selectKeymageFile() async {
     setIsLoadingState(true);
     final generatedPwds = await _readFileGeneratePwds.readContentFromFile();
     if (generatedPwds != null) {
@@ -98,7 +99,7 @@ class PwdListCubit extends Cubit<PwdListState> {
       }
       _pwdListSaved = generatedPwds;
       _pwdListShow = generatedPwds;
-      MPGState.applyState(MPGStateEnums.oldImportDone);
+      KeymageState.applyState(KeymageStateEnums.oldImportDone);
       setIsLoadingState(false);
       _len = generatedPwds.length;
       _emitState(_pwdListShow);
@@ -108,7 +109,7 @@ class PwdListCubit extends Cubit<PwdListState> {
   }
 
   Future<void> selectImageFileForPWDGenerator() async {
-    MPGState.applyState(MPGStateEnums.start);
+    KeymageState.applyState(KeymageStateEnums.start);
     final res = await _readFileGeneratePwds.imageSelectionAndGenPwds();
     if (res.isEmpty) {
       _isLoading = false;
@@ -134,6 +135,7 @@ class PwdListCubit extends Cubit<PwdListState> {
   /// If the input string is empty or searching is not enabled, it resets the list to the saved passwords.
   /// Otherwise, it filters the passwords based on whether their hint contains the input string.
   void searchThis(String inputString) {
+    _len = _pwdListSaved.length;
     _currentSearchString = inputString;
     if (inputString.isEmpty || !_isSearching) {
       _pwdListShow = _pwdListSaved;
@@ -184,8 +186,14 @@ class PwdListCubit extends Cubit<PwdListState> {
     newListShow[index] = updatedPwd;
     _pwdListSaved[indexSaved] = updatedPwd;
 
-    await db.updatePwd(updatedPwd);
-
+    final res = await db.updatePwd(updatedPwd);
+    if (res < 1) {
+      KeymageState.applyState(KeymageStateEnums.somethingWentWrong);
+    }
+    final imageHash = await loadImageHash();
+    if (imageHash != null) {
+      await wrightContentToFile(imageHash);
+    }
     if (_currentSearchString.isNotEmpty) {
       _pwdListShow = newListShow;
       _emitState(_pwdListShow);
@@ -217,24 +225,18 @@ class PwdListCubit extends Cubit<PwdListState> {
     final stringHash = generateStringHash(secretText);
     // save hashes on user prefs
     //await _saveImageHashes(imageHsh: imageHash);
-    
+
     var pass1 = CreatePasswords.allDonePreDB(imageHash, numForRand);
     var pass2 = CreatePasswords.allDonePreDB(stringHash, numForRand);
 
     final c = combineStrings(pass1, pass2);
+    _len = _pwdListShow.length;
     for (int k = 0; k < 50; k++) {
-      _pwdListShow.add(PwdEntity(
-          id: Uuid().v4(),
-          hint: 'Your comment...',
-          password: c[k],
-          usageDate: '0'));
+      final tmpPwd =
+          PwdEntity(id: Uuid().v4(), hint: '', password: c[k], usageDate: '0');
+      _pwdListShow.add(tmpPwd);
 
-      await _saveAllToLocalDb(PwdEntity(
-          id: _pwdListShow[k].id,
-          hint: _pwdListShow[k].hint,
-          password: _pwdListShow[k].password,
-          usageDate: _pwdListShow[k].usageDate));
-      i++;
+      await _saveAllToLocalDb(tmpPwd);
     }
     _len = _pwdListShow.length;
     _pwdListSaved = List.from(_pwdListShow);
@@ -246,18 +248,18 @@ class PwdListCubit extends Cubit<PwdListState> {
     setIsLoadingState(true);
     if (await Permission.storage.request().isGranted) {
       // Storage permission granted (for Android 9 and below)
-      MPGState.applyState(MPGStateEnums.permissionGranted);
+      KeymageState.applyState(KeymageStateEnums.permissionGranted);
     }
 
     if (await Permission.manageExternalStorage.request().isGranted) {
       // Full access granted (for Android 11+)
-      MPGState.applyState(MPGStateEnums.permissionGranted);
+      KeymageState.applyState(KeymageStateEnums.permissionGranted);
     }
 
     // If denied, show settings dialog for Android 11+
     if (await Permission.manageExternalStorage.request().isDenied) {
       setIsLoadingState(false);
-      MPGState.applyState(MPGStateEnums.permissionDenied);
+      KeymageState.applyState(KeymageStateEnums.permissionDenied);
     }
   }
 
@@ -269,7 +271,7 @@ class PwdListCubit extends Cubit<PwdListState> {
           ExternalPath.DIRECTORY_DOWNLOAD);
     } on Exception catch (e) {
       debugPrint('$e');
-      MPGState.applyState(MPGStateEnums.somethingWentWrong);
+      KeymageState.applyState(KeymageStateEnums.somethingWentWrong);
     }
 
     final finalPath = '$path/$appFolderName';
@@ -318,7 +320,7 @@ class PwdListCubit extends Cubit<PwdListState> {
   String _createFileName() {
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('yyyyMMddkkmm').format(now);
-    return 'MPG$formattedDate.kmg';
+    return 'Keymage$formattedDate.kmg';
   }
 
   Future<bool> wrightContentToFile(String imageHash) async {
@@ -327,7 +329,7 @@ class PwdListCubit extends Cubit<PwdListState> {
       await _savePath();
       // this will create file path and file name
       await BinaryEncrypt.saveBinaryEncryptedFile(
-          passwords: _pwdListShow, imageHash: imageHash);
+          passwords: _pwdListSaved, imageHash: imageHash);
       setIsLoadingState(false);
       return true;
     } on Exception catch (e) {

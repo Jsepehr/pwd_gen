@@ -7,7 +7,7 @@
   "edit_passwords_and_hints": "✏️ عدل كلمات المرور والتلميحات.",
   "everything_stays_on_your_device": "كل شيء يبقى على جهازك.",
   "export_to_downloads": "📂 صدّر إلى التنزيلات.",
-  "file_stored_ok": "تم حفظ الملف بنجاح في\nالتنزيلات > مجلد MPG.",
+  "file_stored_ok": "تم حفظ الملف بنجاح في\nالتنزيلات > مجلد Keymage.",
   "generate": "إنشاء",
   "image_not_selected": "لم يتم تحديد صورة.",
   "import_your_list_anytime": "📥 استورد قائمتك في أي وقت.",
@@ -37,7 +37,8 @@
   "wrong_image": "تم تحديد صورة غير صحيحة. يرجى المحاولة مرة أخرى.",
   "wrong_selected_file_format": "تنسيق ملف .kmg غير صحيح أو هناك عدم تطابق في اسم الملف.",
   "your_offline_password_generator_and_manager": "مولد ومدير كلمات المرور دون اتصال.",
-  "hint": "تلميح"
+  "hint": "غير مُعَيَّن",
+  "do_you_want_to_share_the_reminder": "هل تريد مشاركة التذكير مع كلمة المرور؟",
+  "yes": "نعم",
+  "no": "لا"
 }
-
-

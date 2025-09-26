@@ -7,7 +7,7 @@
   "edit_passwords_and_hints": "✏️ Редактируйте пароли и подсказки.",
   "everything_stays_on_your_device": "Всё остаётся на вашем устройстве.",
   "export_to_downloads": "📂 Экспортируйте в Загрузки.",
-  "file_stored_ok": "Файл успешно сохранён в\nЗагрузках > папка MPG.",
+  "file_stored_ok": "Файл успешно сохранён в\nЗагрузках > папка Keymage.",
   "generate": "Создать",
   "image_not_selected": "Изображение не выбрано.",
   "import_your_list_anytime": "📥 Импортируйте свой список в любое время.",
@@ -37,6 +37,8 @@
   "wrong_image": "Выбрано неправильное изображение. Пожалуйста, попробуйте снова.",
   "wrong_selected_file_format": "Неверный формат файла .kmg или несоответствие имени файла.",
   "your_offline_password_generator_and_manager": "Ваш офлайн-генератор и менеджер паролей.",
-  "hint":"Подсказка"
+  "hint": "Не назначено",
+  "do_you_want_to_share_the_reminder": "Вы хотите поделиться напоминанием вместе с паролем?",
+  "yes":"Да",
+  "no":"Нет"
 }
-

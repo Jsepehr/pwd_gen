@@ -7,7 +7,7 @@
   "edit_passwords_and_hints": "✏️ رمزعبورها و راهنماها را ویرایش کنید.",
   "everything_stays_on_your_device": "همه چیز روی دستگاه شما می‌ماند.",
   "export_to_downloads": "📂 به بخش دانلودها صادر کنید.",
-  "file_stored_ok": "فایل با موفقیت در\nدانلودها > پوشه MPG ذخیره شد.",
+  "file_stored_ok": "فایل با موفقیت در\nدانلودها > پوشه Keymage ذخیره شد.",
   "generate": "تولید",
   "image_not_selected": "هیچ تصویری انتخاب نشده است.",
   "import_your_list_anytime": "📥 هر زمان بخواهید لیست خود را وارد کنید.",
@@ -37,7 +37,8 @@
   "wrong_image": "تصویر انتخاب‌شده نادرست است. لطفاً دوباره تلاش کنید.",
   "wrong_selected_file_format": "فرمت فایل .kmg اشتباه است یا نام فایل مطابقت ندارد.",
   "your_offline_password_generator_and_manager": "تولیدکننده و مدیر رمز عبور آفلاین شما.",
-  "hint":"راهنما"
+  "do_you_want_to_share_the_reminder": "آیا میخواهید یادآور را همراه با گذرواژه به اشتراک بگذارید؟",
+  "hint": "تخصیص نیافته ",
+  "yes": "بله",
+  "no": "نه"
 }
-
-

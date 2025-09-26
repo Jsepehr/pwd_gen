@@ -78,12 +78,14 @@ class DialogGenerateOrImport extends StatelessWidget {
             ),
             onPressed: () async {
               try {
-                MPGState.applyState(MPGStateEnums.start);
-                await pwdListCubit.selectMPGFile();
-                if (MPGState.currentState == MPGStateEnums.oldImportDone) {
+                KeymageState.applyState(KeymageStateEnums.start);
+                await pwdListCubit.selectKeymageFile();
+                if (KeymageState.currentState ==
+                    KeymageStateEnums.oldImportDone) {
                   return;
                 }
-                if (MPGState.currentState == MPGStateEnums.kmgFileNotSelected) {
+                if (KeymageState.currentState ==
+                    KeymageStateEnums.kmgFileNotSelected) {
                   if (!context.mounted) return;
                   await appDialogV(
                     context: context,
@@ -91,12 +93,12 @@ class DialogGenerateOrImport extends StatelessWidget {
                   Navigator.of(context).pop();
                   return;
                 }
-                MPGState.applyState(
-                    MPGStateEnums.showNotificationSecretImageDecrypt);
+                KeymageState.applyState(
+                    KeymageStateEnums.showNotificationSecretImageDecrypt);
                 if (!context.mounted) return;
                 await appDialogV(context: context, barrierDismissible: true);
                 await pwdListCubit.selectImageFileForPWDGenerator();
-                if (MPGState.currentState == MPGStateEnums.endOk) {
+                if (KeymageState.currentState == KeymageStateEnums.endOk) {
                   Navigator.of(context).pop();
                   return;
                 } else {

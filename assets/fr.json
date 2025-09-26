@@ -7,7 +7,7 @@
   "edit_passwords_and_hints": "✏️ Modifiez les mots de passe et indices.",
   "everything_stays_on_your_device": "Tout reste sur votre appareil.",
   "export_to_downloads": "📂 Exportez vers Téléchargements.",
-  "file_stored_ok": "Fichier enregistré avec succès dans\nTéléchargements > dossier MPG.",
+  "file_stored_ok": "Fichier enregistré avec succès dans\nTéléchargements > dossier Keymage.",
   "generate": "Générer",
   "image_not_selected": "Aucune image sélectionnée.",
   "import_your_list_anytime": "📥 Importez votre liste à tout moment.",
@@ -37,5 +37,8 @@
   "wrong_image": "Image incorrecte sélectionnée. Veuillez réessayer.",
   "wrong_selected_file_format": "Format de fichier .kmg incorrect ou nom de fichier non correspondant.",
   "your_offline_password_generator_and_manager": "Votre générateur et gestionnaire de mots de passe hors ligne.",
-  "hint": "Indice"
+  "hint": "Non attribué",
+  "do_you_want_to_share_the_reminder": "Voulez-vous partager le rappel avec le mot de passe ?",
+  "yes":"Oui",
+  "no":"Non"
 }

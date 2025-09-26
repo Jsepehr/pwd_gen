@@ -7,7 +7,7 @@
   "edit_passwords_and_hints": "✏️ Edite senhas e dicas.",
   "everything_stays_on_your_device": "Tudo fica no seu dispositivo.",
   "export_to_downloads": "📂 Exporte para a pasta Downloads.",
-  "file_stored_ok": "Arquivo armazenado com sucesso em\nDownloads > pasta MPG.",
+  "file_stored_ok": "Arquivo armazenado com sucesso em\nDownloads > pasta Keymage.",
   "generate": "Gerar",
   "image_not_selected": "Nenhuma imagem selecionada.",
   "import_your_list_anytime": "📥 Importe sua lista a qualquer momento.",
@@ -37,6 +37,8 @@
   "wrong_image": "Imagem incorreta selecionada. Por favor, tente novamente.",
   "wrong_selected_file_format": "Formato de arquivo .kmg incorreto ou nome de arquivo incompatível.",
   "your_offline_password_generator_and_manager": "Seu gerador e gerenciador de senhas offline.",
-  "hint": "Dica"
+  "hint": "Não atribuído",
+  "do_you_want_to_share_the_reminder": "Você quer compartilhar o lembrete junto com a senha?",
+  "yes":"Sim",
+  "no":"Não"
 }
-

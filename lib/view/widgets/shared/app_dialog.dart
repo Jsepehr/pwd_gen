@@ -5,7 +5,7 @@ import 'package:vibration/vibration.dart';
 
 import '/core/utility.dart';
 
-enum MPGStateEnums {
+enum KeymageStateEnums {
   corruptedFile,
   endOk,
   endWithError,
@@ -39,48 +39,48 @@ Future<bool?> appDialog(BuildContext context,
     {bool barrierDismissible = false}) {
   String finalRes = '-----';
   Color finalColor = AppPallet.buttonBorderSides;
-  switch (MPGState.currentState) {
-    case MPGStateEnums.fileGenSuccess:
+  switch (KeymageState.currentState) {
+    case KeymageStateEnums.fileGenSuccess:
       finalColor = AppPallet.success;
       finalRes = AppStrings.fileStoredOk;
       break;
-    case MPGStateEnums.imageNotSelected:
+    case KeymageStateEnums.imageNotSelected:
       finalRes = AppStrings.imageNotSelected;
       finalColor = AppPallet.error;
       break;
-    case MPGStateEnums.reset:
+    case KeymageStateEnums.reset:
       finalRes = AppStrings.resetAllPwds;
       finalColor = AppPallet.error;
       break;
-    case MPGStateEnums.wrongImageSelected:
+    case KeymageStateEnums.wrongImageSelected:
       finalRes = AppStrings.wrongImage;
       finalColor = AppPallet.error;
       break;
-    case MPGStateEnums.somethingWentWrong:
+    case KeymageStateEnums.somethingWentWrong:
       finalRes = AppStrings.somethingWentWrong;
       finalColor = AppPallet.error;
       break;
-    case MPGStateEnums.permissionDenied:
+    case KeymageStateEnums.permissionDenied:
       finalRes = AppStrings.permissionNotGranted;
       finalColor = AppPallet.error;
       break;
-    case MPGStateEnums.kmgFileNotSelected:
+    case KeymageStateEnums.kmgFileNotSelected:
       finalRes = AppStrings.kmgNotSelected;
       finalColor = AppPallet.error;
       break;
-    case MPGStateEnums.wrongSelectedFileFormat:
+    case KeymageStateEnums.wrongSelectedFileFormat:
       finalRes = AppStrings.wrongSelectedFileFormat;
       finalColor = AppPallet.error;
       break;
-    case MPGStateEnums.corruptedFile:
+    case KeymageStateEnums.corruptedFile:
       finalRes = AppStrings.corruptedFile;
       finalColor = AppPallet.error;
       break;
-    case MPGStateEnums.showNotificationSecretImageDecrypt:
+    case KeymageStateEnums.showNotificationSecretImageDecrypt:
       finalRes = AppStrings.selectSecretImageDecrypt;
       finalColor = AppPallet.bottomSheetTitleIcon;
       break;
-    case MPGStateEnums.showNotificationSecretImageEncrypt:
+    case KeymageStateEnums.showNotificationSecretImageEncrypt:
       finalRes = AppStrings.selectSecretImageEncrypt;
       finalColor = AppPallet.bottomSheetTitleIcon;
       break;

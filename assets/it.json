@@ -7,7 +7,7 @@
   "edit_passwords_and_hints": "✏️ Modifica password e suggerimenti.",
   "everything_stays_on_your_device": "Tutto rimane sul tuo dispositivo.",
   "export_to_downloads": "📂 Esporta nei Download.",
-  "file_stored_ok": "File salvato con successo in\nDownload > cartella MPG.",
+  "file_stored_ok": "File salvato con successo in\nDownload > cartella Keymage.",
   "generate": "Genera",
   "image_not_selected": "Nessuna immagine selezionata.",
   "import_your_list_anytime": "📥 Importa la tua lista in qualsiasi momento.",
@@ -37,6 +37,8 @@
   "wrong_image": "Immagine selezionata errata. Per favore riprova.",
   "wrong_selected_file_format": "Formato file .kmg errato o nome file non corrispondente.",
   "your_offline_password_generator_and_manager": "Il tuo generatore e gestore di password offline.",
-  "hint":"Suggerimento"
+  "hint": "Non assegnato",
+  "do_you_want_to_share_the_reminder": "Vuoi condividere la promemoria insieme alla password?",
+  "yes":"Sì",
+  "no":"No"
 }
-

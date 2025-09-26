@@ -13,7 +13,15 @@ import '/view/widgets/shared/pwd_widget.dart';
 import '/view/widgets/shared/search_field.dart';
 import '/view/widgets/shared/app_dialog.dart';
 
-class PwdListView extends StatelessWidget {
+class PwdListView extends StatefulWidget {
+  const PwdListView({super.key});
+
+  @override
+  State<PwdListView> createState() => _PwdListViewState();
+}
+
+class _PwdListViewState extends State<PwdListView> {
+  final Map<String, GlobalKey<PwdWidgetState>> pwdKeys = {};
   Future<void> _showWelcomeDialog(BuildContext context) async {
     await showDialog(
       context: context,
@@ -21,7 +29,10 @@ class PwdListView extends StatelessWidget {
     );
   }
 
-  const PwdListView({super.key});
+  Future performAction(Function innerCallback) async {
+    innerCallback();
+  }
+
   @override
   Widget build(BuildContext context) {
     final pwdListCubit = context.read<PwdListCubit>();
@@ -48,34 +59,37 @@ class PwdListView extends StatelessWidget {
         : BlocBuilder<PwdListCubit, PwdListState>(
             builder: (context, state) {
               if (state is PwdListLoaded) {
+                // TODO i pwds appena generati non si salvano
                 return Scaffold(
                     appBar: AppBar(
                       centerTitle: true,
                       leading: IconButton(
                         icon: Icon(
                           Icons.save_outlined,
-                          color: AppPallet.bottomSheetTitleIcon,
+                          color: state.pwdListShow.isNotEmpty
+                              ? AppPallet.bottomSheetTitleIcon
+                              : AppPallet.buttonBorderSides,
                         ),
                         onPressed: state.pwdListShow.isNotEmpty
                             ? () async {
                                 pwdListCubit.setIsLoadingState(true);
                                 await pwdListCubit.requestStoragePermission();
-                                if (MPGState.currentState !=
-                                    MPGStateEnums.permissionGranted) {
+                                if (KeymageState.currentState !=
+                                    KeymageStateEnums.permissionGranted) {
                                   if (!context.mounted) return;
                                   await appDialogV(
                                     context: context,
                                   );
                                 }
-                                MPGState.applyState(MPGStateEnums
+                                KeymageState.applyState(KeymageStateEnums
                                     .showNotificationSecretImageEncrypt);
                                 if (!context.mounted) return;
                                 await appDialogV(context: context);
                                 final image = await selectImage();
 
                                 if (image == null) {
-                                  MPGState.applyState(
-                                      MPGStateEnums.imageNotSelected);
+                                  KeymageState.applyState(
+                                      KeymageStateEnums.imageNotSelected);
                                   if (!context.mounted) return;
                                   await appDialogV(
                                     context: context,
@@ -85,6 +99,7 @@ class PwdListView extends StatelessWidget {
                                 }
                                 // get the image hash
                                 final imageHash = generateImageHash(image);
+                                await savedImageHash(imageHash);
                                 if (!context.mounted) return;
                                 await pwdListCubit
                                     .wrightContentToFile(imageHash);
@@ -97,15 +112,20 @@ class PwdListView extends StatelessWidget {
                             : null,
                       ),
                       title: GestureDetector(
-                          onLongPress: () {
-                            MPGState.applyState(MPGStateEnums.reset);
+                          onLongPressEnd: (_) {
+                            KeymageState.applyState(KeymageStateEnums.reset);
                             if (!context.mounted) return;
                             final res = appDialogV(
                                 context: context, barrierDismissible: true);
-                            res.then((value) {
+                            res.then((value) async {
                               if (value == true) {
+                                await pwdListCubit.authenticate();
+                                if (!pwdListCubit.isUserAuthenticated) {
+                                  return;
+                                }
                                 pwdListCubit.resetList();
-                                MPGState.applyState(MPGStateEnums.endOk);
+                                KeymageState.applyState(
+                                    KeymageStateEnums.endOk);
                               }
                             });
                           },
@@ -118,7 +138,9 @@ class PwdListView extends StatelessWidget {
                                 }
                               : null,
                           icon: Icon(
-                              color: AppPallet.bottomSheetTitleIcon,
+                              color: state.pwdListShow.isNotEmpty
+                                  ? AppPallet.bottomSheetTitleIcon
+                                  : AppPallet.buttonBorderSides,
                               !state.isSearching ? Icons.search : Icons.close),
                         ),
                       ],
@@ -159,6 +181,14 @@ class PwdListView extends StatelessWidget {
                               child: ListView.builder(
                                 itemCount: state.pwdListShow.length + 1,
                                 itemBuilder: (context, index) {
+                                  String id = '';
+                                  if (state.pwdListShow.length != 0 &&
+                                      index != state.pwdListShow.length) {
+                                    id = state.pwdListShow[index].id;
+                                    if (!pwdKeys.containsKey(id)) {
+                                      pwdKeys[id] = GlobalKey<PwdWidgetState>();
+                                    }
+                                  }
                                   if (index == state.pwdListShow.length) {
                                     return Visibility(
                                       visible: !state.isSearching,
@@ -200,6 +230,7 @@ class PwdListView extends StatelessWidget {
                                     child: SizedBox(
                                       height: 50,
                                       child: PwdWidget(
+                                        key: pwdKeys[id],
                                         pwd: state.pwdListShow[index],
                                         onEdit: () async {
                                           await showModalBottomSheet(
@@ -213,6 +244,9 @@ class PwdListView extends StatelessWidget {
                                               );
                                             },
                                           );
+                                          pwdKeys[id]
+                                              ?.currentState
+                                              ?.changeBorderColor();
                                         },
                                         onShareOrOnVisibilityChanged: () {
                                           context

@@ -17,7 +17,7 @@ class ReadFileGeneratePwds {
       type: FileType.any,
     );
     if (_kmgFile == null) {
-      MPGState.applyState(MPGStateEnums.kmgFileNotSelected);
+      KeymageState.applyState(KeymageStateEnums.kmgFileNotSelected);
       return null;
     }
     final file = _kmgFile!.files;
@@ -26,17 +26,17 @@ class ReadFileGeneratePwds {
     if (expOld.firstMatch(fileName) != null) {
       final res = await _verifyOldVersionFile(file);
       if (res == null) {
-        MPGState.applyState(MPGStateEnums.somethingWentWrong);
+        KeymageState.applyState(KeymageStateEnums.somethingWentWrong);
       }
       return res;
     }
     if (!_kmgFile!.files.first.name.contains('.kmg')) {
-      MPGState.applyState(MPGStateEnums.wrongSelectedFileFormat);
+      KeymageState.applyState(KeymageStateEnums.wrongSelectedFileFormat);
       return null;
     }
-    RegExp exp = RegExp(r'MPG\d{5,}\.kmg'); // changed to kmg format
+    RegExp exp = RegExp(r'Keymage\d{5,}\.kmg'); // changed to kmg format
     if (file[0].extension! == 'kmg' && exp.firstMatch(fileName) == null) {
-      MPGState.applyState(MPGStateEnums.fileNameFormatError);
+      KeymageState.applyState(KeymageStateEnums.fileNameFormatError);
       return null;
     }
     return null;
@@ -70,14 +70,14 @@ class ReadFileGeneratePwds {
     File selectedFile = File(_kmgFile!.files.single.path!);
     final image = await selectImage();
     if (image == null) {
-      MPGState.applyState(MPGStateEnums.imageNotSelected);
+      KeymageState.applyState(KeymageStateEnums.imageNotSelected);
       return [];
     }
     final imageHash = generateImageHash(image);
     final pwdList = await BinaryEncrypt.readFileAndValidateHash(
         imageHash: imageHash, file: selectedFile);
     if (pwdList.isNotEmpty) {
-      MPGState.applyState(MPGStateEnums.endOk);
+      KeymageState.applyState(KeymageStateEnums.endOk);
     }
     return pwdList;
   }

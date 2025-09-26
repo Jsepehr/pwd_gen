@@ -7,7 +7,7 @@
   "edit_passwords_and_hints": "✏️ Edita contraseñas y pistas.",
   "everything_stays_on_your_device": "Todo permanece en tu dispositivo.",
   "export_to_downloads": "📂 Exporta a Descargas.",
-  "file_stored_ok": "Archivo guardado correctamente en\nDescargas > carpeta MPG.",
+  "file_stored_ok": "Archivo guardado correctamente en\nDescargas > carpeta Keymage.",
   "generate": "Generar",
   "image_not_selected": "No se seleccionó ninguna imagen.",
   "import_your_list_anytime": "📥 Importa tu lista en cualquier momento.",
@@ -37,7 +37,8 @@
   "wrong_image": "Imagen incorrecta seleccionada. Por favor, inténtalo de nuevo.",
   "wrong_selected_file_format": "Formato de archivo .kmg incorrecto o el nombre del archivo no coincide.",
   "your_offline_password_generator_and_manager": "Tu generador y gestor de contraseñas sin conexión.",
-  "hint": "Pista"
+  "hint": "No asignado",
+  "do_you_want_to_share_the_reminder": "¿Quieres compartir el recordatorio junto con la contraseña?",
+  "yes":"Sí",
+  "no":"No"
 }
-
-

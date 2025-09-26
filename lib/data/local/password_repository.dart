@@ -56,7 +56,11 @@ class PwdRepositoryImpl implements PwdRepository {
 
     return await db.update(
       _dbHelper.tableName,
-      {'hint': updatedPwd.hint.toString(), 'usageDate': updatedPwd.usageDate},
+      {
+        'hint': updatedPwd.hint.toString(),
+        'usageDate': updatedPwd.usageDate,
+        'password': updatedPwd.password
+      },
       where: 'id = ?',
       whereArgs: [updatedPwd.id],
     );
@@ -93,6 +97,7 @@ class PwdRepositoryImpl implements PwdRepository {
     }
     return null; // Return null if not found
   }
+
   @override
   Future<void> deleteAllPwds() async {
     final db = await _dbHelper.database;
