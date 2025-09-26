@@ -98,7 +98,6 @@ class PwdRepositoryImpl implements PwdRepository {
     return null; // Return null if not found
   }
 
-  @override
   Future<void> deleteAllPwds() async {
     final db = await _dbHelper.database;
     await db.delete(_dbHelper.tableName);

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pwd_gen/core/dictionary/app_strings.dart';
 import '/core/app_pallet.dart';
-import '/core/injector.dart';
 import '/view/widgets/main/cubit_pwds_list/pwd_list_cubit.dart';
 import '/domain/pwd_entity.dart';
 

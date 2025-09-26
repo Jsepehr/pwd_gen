@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pwd_gen/core/dictionary/app_strings.dart';
-import 'package:pwd_gen/view/widgets/main/cubit_pwds_list/pwd_list_cubit.dart';
 import 'package:share_plus/share_plus.dart';
 import '/domain/pwd_entity.dart';
 
