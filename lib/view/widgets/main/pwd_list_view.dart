@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:pwd_gen/core/app_pallet.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:pwd_gen/core/app_shared_preferences.dart';
+import 'package:pwd_gen/view/widgets/main/security_choice_view/ui_security_choice.dart';
+import 'package:pwd_gen/view/widgets/shared/ui_choose_pin.dart';
 
 import '/core/utility.dart';
 import '/view/welcome_dialog.dart';
@@ -22,21 +24,21 @@ class PwdListView extends StatefulWidget {
 
 class _PwdListViewState extends State<PwdListView> {
   final Map<String, GlobalKey<PwdWidgetState>> pwdKeys = {};
-  Future<void> _showWelcomeDialog(BuildContext context) async {
+  /* Future<void> _showWelcomeDialog(BuildContext context) async {
     await showDialog(
       context: context,
       builder: (context) => WelcomeDialog(),
     );
-  }
+  } */
 
-  Future performAction(Function innerCallback) async {
+/*   Future performAction(Function innerCallback) async {
     innerCallback();
-  }
+  } */
 
   @override
   Widget build(BuildContext context) {
     final pwdListCubit = context.read<PwdListCubit>();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
+    /* WidgetsBinding.instance.addPostFrameCallback((_) async {
       final showWelcomePage = await SharedPreferences.getInstance();
       final res = showWelcomePage.getBool('welcome');
       if (res != null) {
@@ -47,7 +49,7 @@ class _PwdListViewState extends State<PwdListView> {
         await _showWelcomeDialog(context);
         showWelcomePage.setBool('welcome', true);
       });
-    });
+    }); */
     return pwdListCubit.isLoading
         ? Container(
             color: const Color.fromARGB(200, 0, 0, 0),
@@ -59,7 +61,6 @@ class _PwdListViewState extends State<PwdListView> {
         : BlocBuilder<PwdListCubit, PwdListState>(
             builder: (context, state) {
               if (state is PwdListLoaded) {
-                // TODO i pwds appena generati non si salvano
                 return Scaffold(
                     appBar: AppBar(
                       centerTitle: true,
@@ -99,7 +100,8 @@ class _PwdListViewState extends State<PwdListView> {
                                 }
                                 // get the image hash
                                 final imageHash = generateImageHash(image);
-                                await savedImageHash(imageHash);
+                                await AppSharedPreferences.savedImageHash(
+                                    imageHash);
                                 if (!context.mounted) return;
                                 await pwdListCubit
                                     .wrightContentToFile(imageHash);
@@ -112,6 +114,8 @@ class _PwdListViewState extends State<PwdListView> {
                             : null,
                       ),
                       title: GestureDetector(
+                          // per fare reset delle passwords (segreto)
+                          // tenendo premuto sul titolo
                           onLongPressEnd: (_) {
                             KeymageState.applyState(KeymageStateEnums.reset);
                             if (!context.mounted) return;
@@ -294,6 +298,15 @@ class _PwdListViewState extends State<PwdListView> {
                       ),
                     ),
                   );
+                }
+                if (state is PwdListWelcome) {
+                  return WelcomePage();
+                }
+                if (state is PwdListChooseSecurity) {
+                  return UiSecurityChoice();
+                }
+                if (state is PwdChoosePin) {
+                  return UiChoosePin();
                 }
                 return Container(
                   color: const Color.fromARGB(200, 0, 0, 0),

@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:pwd_gen/core/app_shared_preferences.dart';
 import 'package:pwd_gen/core/read_file_generate_pwds.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
@@ -33,9 +34,8 @@ class PwdListCubit extends Cubit<PwdListState> {
   bool get isSearching => _isSearching;
   final _readFileGeneratePwds = ReadFileGeneratePwds();
 
-  int pwdsListLen() {
-    return _pwdListShow.length;
-  }
+  int get pwdsListLen => _pwdListShow.length;
+  
 
   String _currentSearchString = '';
   // This is used to filter the list when searching
@@ -55,6 +55,13 @@ class PwdListCubit extends Cubit<PwdListState> {
     }
   }
 
+  void emitSecurityOptions() {
+    emit(PwdListChooseSecurity());
+  }
+  void emitChoosePin() {
+    emit(PwdChoosePin());
+  }
+
   void resetList() {
     _pwdListShow = [];
     _pwdListSaved = [];
@@ -69,20 +76,29 @@ class PwdListCubit extends Cubit<PwdListState> {
   final db = getIt<PwdRepositoryImpl>();
 
   Future<void> loadPwdsFromDb() async {
-    await loadPwdsFromLocalDb(); // load from db update _pwdListSaved
-    if (!_isUserAuthenticated) {
-      emit(PwdListInitial());
-      await authenticate();
+    ///emit(PwdListInitial());
+    // TODO QUI welcome page se non è ancora apparsa
+    // poi una delle opzioni pagina per mettere password shelta da utente
+    // o invocare api android
+    final welcome = await AppSharedPreferences.loadBoolFirstRun() ?? false;
+    if (welcome == false) {
+      emit(PwdListWelcome());
+    } else {
+      emit(PwdListChooseSecurity());
     }
-    if (!_isUserAuthenticated) {
+    //await loadPwdsFromLocalDb(); // load from db update _pwdListSaved
+
+    // await authenticate();
+
+/*     if (!_isUserAuthenticated) {
       emit(PwdListAuth());
       return;
-    }
-    _len = _pwdListSaved.length;
+    } */
+    /*  _len = _pwdListSaved.length;
     _pwdListShow = List.from(_pwdListSaved);
     _pwdListShow.sort(
         (a, b) => int.parse(b.usageDate!).compareTo(int.parse(a.usageDate!)));
-    _emitState(_pwdListShow);
+    _emitState(_pwdListShow); */
   }
 
   Future<void> _saveAllToLocalDb(PwdEntity pwd) async {
@@ -190,7 +206,7 @@ class PwdListCubit extends Cubit<PwdListState> {
     if (res < 1) {
       KeymageState.applyState(KeymageStateEnums.somethingWentWrong);
     }
-    final imageHash = await loadImageHash();
+    final imageHash = await AppSharedPreferences.loadImageHash();
     if (imageHash != null) {
       await wrightContentToFile(imageHash);
     }
@@ -299,8 +315,8 @@ class PwdListCubit extends Cubit<PwdListState> {
   } */
 
   Future<void> _deleteOldFile() async {
-    final fileDir = await loadSavedDirectory();
-    final fileName = await loadSavedFileName();
+    final fileDir = await AppSharedPreferences.loadSavedDirectory();
+    final fileName = await AppSharedPreferences.loadSavedFileName();
     if (fileDir != null && fileName != null) {
       try {
         final file = File('$fileDir/$fileName');

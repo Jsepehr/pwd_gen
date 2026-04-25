@@ -11,6 +11,9 @@ final class PwdListInitial extends PwdListState {}
 final class PwdListAuth extends PwdListState {}
 
 class PwdListLoading extends PwdListState {}
+class PwdListWelcome extends PwdListState {}
+class PwdListChooseSecurity extends PwdListState {}
+class PwdChoosePin extends PwdListState {}
 
 class PwdListLoaded extends PwdListState {
   final List<PwdEntity> pwdListShow;

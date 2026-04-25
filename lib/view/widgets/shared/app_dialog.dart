@@ -25,6 +25,7 @@ enum KeymageStateEnums {
   unknown,
   wrongImageSelected,
   wrongSelectedFileFormat,
+  helpForCreateNewPassword,
 }
 
 Future<bool?> appDialogV(
@@ -82,6 +83,11 @@ Future<bool?> appDialog(BuildContext context,
       break;
     case KeymageStateEnums.showNotificationSecretImageEncrypt:
       finalRes = AppStrings.selectSecretImageEncrypt;
+      finalColor = AppPallet.bottomSheetTitleIcon;
+      break;
+    case KeymageStateEnums.helpForCreateNewPassword:
+      finalRes =
+          'Questo immagine funge da backup per il tuo password, se dimentichi la tua password allora puoi usare questo immagine per entrare nell\'app';
       finalColor = AppPallet.bottomSheetTitleIcon;
       break;
     default:

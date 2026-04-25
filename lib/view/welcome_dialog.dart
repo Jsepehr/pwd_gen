@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pwd_gen/core/app_shared_preferences.dart';
 import 'package:pwd_gen/core/dictionary/app_strings.dart';
+import 'package:pwd_gen/view/widgets/main/cubit_pwds_list/pwd_list_cubit.dart';
 
-class WelcomeDialog extends StatefulWidget {
-  const WelcomeDialog({super.key});
+class WelcomePage extends StatefulWidget {
+  const WelcomePage({super.key});
 
   @override
-  State<WelcomeDialog> createState() => _WelcomeDialogState();
+  State<WelcomePage> createState() => _WelcomePageState();
 }
 
-class _WelcomeDialogState extends State<WelcomeDialog> {
+class _WelcomePageState extends State<WelcomePage> {
   int currentIndex = 0;
 
   final List<_SlideData> slides = [
@@ -37,13 +40,14 @@ class _WelcomeDialogState extends State<WelcomeDialog> {
     ),
   ];
 
-  void _nextSlide() {
+  void _nextSlide() async {
     if (currentIndex < slides.length - 1) {
       setState(() {
         currentIndex++;
       });
     } else {
-      Navigator.of(context).pop(); // Close the dialog
+      await AppSharedPreferences.saveBoolFirstRun(true);
+      context.read<PwdListCubit>().emitSecurityOptions() ;
     }
   }
 
@@ -51,36 +55,45 @@ class _WelcomeDialogState extends State<WelcomeDialog> {
   Widget build(BuildContext context) {
     final slide = slides[currentIndex];
 
-    return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: SizedBox(
-          width: 300,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                slide.title,
-                textAlign: TextAlign.center,
-                style:
-                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      color: Colors.black,
+      child: Center(
+        child: Dialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: SizedBox(
+              width: 300,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    slide.title,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    slide.subtitle,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                  const SizedBox(height: 24),
+                  _buildDotsIndicator(),
+                  const SizedBox(height: 24),
+                  ElevatedButton(
+                    onPressed: _nextSlide,
+                    child: Text(currentIndex == slides.length - 1
+                        ? AppStrings.start
+                        : AppStrings.next),
+                  ),
+                ],
               ),
-              const SizedBox(height: 16),
-              Text(
-                slide.subtitle,
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 16),
-              ),
-              const SizedBox(height: 24),
-              _buildDotsIndicator(),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: _nextSlide,
-                child:
-                    Text(currentIndex == slides.length - 1 ? AppStrings.start : AppStrings.next),
-              ),
-            ],
+            ),
           ),
         ),
       ),

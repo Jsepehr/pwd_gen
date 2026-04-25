@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/rendering.dart';
+import 'package:pwd_gen/core/app_shared_preferences.dart';
 import '/core/utility.dart';
 import '/domain/pwd_entity.dart';
 import '/view/widgets/shared/app_dialog.dart';
@@ -45,13 +46,13 @@ class BinaryEncrypt {
     buffer.add(imageHashBytes);
 
     final output = buffer.toBytes();
-    final directory = await loadSavedDirectory();
+    final directory = await AppSharedPreferences.loadSavedDirectory();
     final dir = Directory(directory!);
     if (!await dir.exists()) {
       await dir.create(recursive: true);
     }
 
-    final fileName = await loadSavedFileName();
+    final fileName = await AppSharedPreferences.loadSavedFileName();
 
     final result = "${dir.path}/$fileName";
 

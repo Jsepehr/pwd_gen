@@ -6,32 +6,6 @@ import '/domain/pwd_entity.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '/view/widgets/shared/app_dialog.dart';
 
-const appFolderName = 'Keymage';
-const keyUserPrefPath = 'path';
-const keyUserPrefFileName = 'fileName';
-const keyImageHash = 'ImageHash';
-
-Future<String?> loadSavedDirectory() async {
-  final prefs = await SharedPreferences.getInstance();
-
-  return prefs.getString(keyUserPrefPath);
-}
-
-Future<String?> loadSavedFileName() async {
-  final prefs = await SharedPreferences.getInstance();
-
-  return prefs.getString(keyUserPrefFileName);
-}
-
-Future<bool> savedImageHash(String hash) async {
-  final prefs = await SharedPreferences.getInstance();
-  return prefs.setString(keyImageHash, hash);
-}
-
-Future<String?> loadImageHash() async {
-  final prefs = await SharedPreferences.getInstance();
-  return prefs.getString(keyImageHash);
-}
 
 class KeymageState {
   static KeymageStateEnums _currentState = KeymageStateEnums.unknown;

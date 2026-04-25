@@ -1,0 +1,90 @@
+import 'package:shared_preferences/shared_preferences.dart';
+
+const appFolderName = 'Keymage';
+const keyUserPrefPath = 'path';
+const keyUserPrefFileName = 'fileName';
+const keyImageHash = 'ImageHash';
+const keyPwdImageHash = 'PwdImageHash';
+const keyPwdHash = 'PwdHash';
+const keyImageHashEnterApp = 'ImageHashEnterApp';
+const keyBoolFirstRun = 'firstRun';
+const keyBoolSecurityDone = 'securityDone';
+
+class AppSharedPreferences {
+  static Future<String?> loadSavedDirectory() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    return prefs.getString(keyUserPrefPath);
+  }
+
+  static Future<String?> loadSavedFileName() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    return prefs.getString(keyUserPrefFileName);
+  }
+
+  static Future<bool> savedImageHash(String hash) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.setString(keyImageHash, hash);
+  }
+  //----------------
+  //----------------
+  static Future<bool> savedPwdHash(String hash) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.setString(keyPwdHash, hash);
+  }
+  static Future<bool> savedPwdImageHash(String hash) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.setString(keyPwdImageHash, hash);
+  }
+
+  static Future<String?> loadPwdHash() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    return prefs.getString(keyPwdHash);
+  }
+  static Future<String?> loadPwdImageHash() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    return prefs.getString(keyPwdImageHash);
+  }
+
+  // ---------------
+  // ---------------
+  static Future<bool> saveImageHashEnterApp(String hash) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.setString(keyImageHashEnterApp, hash);
+  }
+
+  static Future<String?> loadImageHashEnterApp() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(keyImageHashEnterApp);
+  }
+  // ---------------
+  // ---------------
+
+  static Future<String?> loadImageHash() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(keyImageHash);
+  }
+
+  static Future<bool?> loadBoolFirstRun() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(keyBoolFirstRun);
+  }
+
+  static Future<bool?> saveBoolFirstRun(bool input) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.setBool(keyBoolFirstRun, input);
+  }
+
+  static Future<bool?> loadBoolSecurityDone() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(keyBoolSecurityDone);
+  }
+
+  static Future<bool?> saveBoolSecurityDone(bool input) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.setBool(keyBoolSecurityDone, input);
+  }
+}
