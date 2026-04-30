@@ -1,0 +1,2 @@
+/Users/mymac/projects/pwd_gen/android/app/.cxx/Debug/4ft2z711/armeabi-v7a/CMakeFiles/edit_cache.dir
+/Users/mymac/projects/pwd_gen/android/app/.cxx/Debug/4ft2z711/armeabi-v7a/CMakeFiles/rebuild_cache.dir
