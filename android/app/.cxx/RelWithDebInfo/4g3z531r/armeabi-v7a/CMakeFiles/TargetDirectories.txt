@@ -1,2 +1,0 @@
-/Users/mymac/projects/pwd_gen/android/app/.cxx/RelWithDebInfo/4g3z531r/armeabi-v7a/CMakeFiles/edit_cache.dir
-/Users/mymac/projects/pwd_gen/android/app/.cxx/RelWithDebInfo/4g3z531r/armeabi-v7a/CMakeFiles/rebuild_cache.dir
