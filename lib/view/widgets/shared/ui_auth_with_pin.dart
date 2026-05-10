@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pwd_gen/core/app_pallet.dart';
 import 'package:pwd_gen/core/app_shared_preferences.dart';
+import 'package:pwd_gen/core/dictionary/app_strings.dart';
 import 'package:pwd_gen/view/widgets/main/cubit_pwds_list/pwd_list_cubit.dart';
 import 'package:pwd_gen/view/widgets/shared/app_dialog.dart'
     show KeymageStateEnums, appDialogV;
@@ -15,15 +17,14 @@ class UiChoosePin extends StatefulWidget {
 class _UiChoosePinState extends State<UiChoosePin> {
   final _formKey = GlobalKey<FormState>();
   final _passController = TextEditingController();
-  final _confirmPassController = TextEditingController();
   bool _obscureText = true;
 
   @override
   Widget build(BuildContext context) {
     // Definizione dei colori del tema
-    const darkBackground = Color(0xFF121212);
-    const accentBlue = Color(0xFF448AFF);
-    const surfaceColor = Color(0xFF1E1E1E);
+    const darkBackground = AppPallet.bottomSheetBG;
+    const accentBlue = AppPallet.bottomSheetTitleIcon;
+    const surfaceColor = AppPallet.bottomSheetBG;
 
     return Theme(
       data: ThemeData.dark().copyWith(
@@ -53,7 +54,7 @@ class _UiChoosePinState extends State<UiChoosePin> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Text(
-                      "Crea Nuova Password",
+                      "Inserisci la tua PIN",
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -71,21 +72,6 @@ class _UiChoosePinState extends State<UiChoosePin> {
                       validator: (value) => (value == null || value.isEmpty)
                           ? "Inserisci una password"
                           : null,
-                    ),
-
-                    const SizedBox(height: 15),
-
-                    // Campo Ripeti Password
-                    TextFormField(
-                      controller: _confirmPassController,
-                      obscureText: _obscureText,
-                      decoration:
-                          _inputDecoration("Ripeti Password", Icons.lock_reset),
-                      validator: (value) {
-                        if (value != _passController.text)
-                          return "Le password non coincidono";
-                        return null;
-                      },
                     ),
                     const SizedBox(height: 20),
 
@@ -106,28 +92,31 @@ class _UiChoosePinState extends State<UiChoosePin> {
                                   return;
                                 }
                                 final imageHash = generateImageHash(image);
-                                await AppSharedPreferences
-                                    .saveImageHashEnterApp(imageHash);
+                                final savedImage = await AppSharedPreferences
+                                    .loadImageHashEnterApp();
+                                if (savedImage == null || savedImage.isEmpty) {
+                                  // error nessuna immagine salvata
+                                  KeymageState.applyState(
+                                      KeymageStateEnums.noSavedImage);
+                                  if (!context.mounted) return;
+                                  appDialogV(context: context);
+                                  return;
+                                }
+                                if (imageHash != savedImage) {
+                                  KeymageState.applyState(
+                                      KeymageStateEnums.imageMismatch);
+                                  if (!context.mounted) return;
+                                  appDialogV(context: context);
+                                  return;
+                                }
+                                context.read<PwdListCubit>().loadPwdsFromDb();
                               },
                               child: Text(
                                   softWrap: true,
-                                  'Seleziona un immagine come opzione secondaria per entrare nell\'app'),
+                                  AppStrings.loginWithImage,),
                             ),
                           ),
-                          Container(
-                            color: accentBlue,
-                            width: 1,
-                            height: double.infinity,
-                          ),
-                          IconButton(
-                            onPressed: () {
-                              KeymageState.applyState(
-                                  KeymageStateEnums.helpForCreateNewPassword);
-                              if (!context.mounted) return;
-                              appDialogV(context: context);
-                            },
-                            icon: Icon(Icons.help_outline),
-                          ),
+                          
                         ],
                       ),
                     ),
@@ -146,16 +135,21 @@ class _UiChoosePinState extends State<UiChoosePin> {
                           ),
                         ),
                         onPressed: () async {
-                          if (_formKey.currentState!.validate()) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content:
-                                      Text('Password salvata con successo!')),
-                            );
-                            final hash =
-                                generateStringHash(_confirmPassController.text);
-                            await AppSharedPreferences.savedPwdHash(hash);
-                            // TODO emit lista pagina prinicipale
+                          if (_formKey.currentState?.validate() ?? false) {
+                            final pin = _passController.text;
+                           final savedPwd = await AppSharedPreferences.loadPwdHash();
+                           // paragona le hash di due passwords e se non corrispondono mostra un dialogo di errore
+                            if (savedPwd != null && savedPwd.isNotEmpty) {
+                              final inputHash = generateStringHash(pin);
+                              if (inputHash != savedPwd) {
+                                KeymageState.applyState(
+                                    KeymageStateEnums.pinMismatch);
+                                if (!context.mounted) return;
+                                appDialogV(context: context);
+                                return;
+                              }
+                            }
+                           
                             context.read<PwdListCubit>().loadPwdsFromDb();
                           }
                         },

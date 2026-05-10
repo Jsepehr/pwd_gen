@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
+import 'package:pwd_gen/core/app_shared_preferences.dart';
 import 'package:pwd_gen/view/widgets/main/cubit_pwds_list/pwd_list_cubit.dart';
 
 class UiSecurityChoice extends StatelessWidget {
@@ -61,10 +61,14 @@ class UiSecurityChoice extends StatelessWidget {
                   backgroundColor: Colors.blue,
                   foregroundColor: Colors.white,
                 ),
-                onPressed: () {
+                onPressed: () async {
                   // TODO: Salva la preferenza "Blocco Sistema"
                   // Esempio: prefs.setString('security_type', 'biometric');
                   //context.go('/');
+                  await AppSharedPreferences.saveEntryMode(
+                      UserEntryMode.androidSecurity);
+                  // TODO emit lista pagina prinicipale
+                  context.read<PwdListCubit>().loadPwdsFromDb();
                 },
                 icon: const Icon(Icons.fingerprint_rounded),
                 label: const Text('Usa il blocco del telefono'),

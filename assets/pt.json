@@ -40,5 +40,10 @@
   "hint": "Não atribuído",
   "do_you_want_to_share_the_reminder": "Você quer compartilhar o lembrete junto com a senha?",
   "yes":"Sim",
-  "no":"Não"
+  "no":"Não",
+  "no_saved_image":"Nenhuma imagem salva encontrada.",
+  "image_mismatch":"A imagem selecionada não corresponde àquela usada como pin secreto.",
+  "pin_mismatch":"O pin inserido não corresponde ao usado para entrar no aplicativo.",
+  "help_for_create_new_password":"Esta imagem serve como backup para sua senha. Se você esquecer sua senha, pode usar esta imagem para acessar o aplicativo.",
+  "login_with_image":"Entrar com imagem"
 }

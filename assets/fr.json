@@ -40,5 +40,10 @@
   "hint": "Non attribué",
   "do_you_want_to_share_the_reminder": "Voulez-vous partager le rappel avec le mot de passe ?",
   "yes":"Oui",
-  "no":"Non"
+  "no":"Non",
+  "no_saved_image":"Aucune image enregistrée trouvée.",
+  "image_mismatch":"L'image sélectionnée ne correspond pas à celle utilisée comme pin secret.",
+  "pin_mismatch":"Le pin entré ne correspond pas à celui utilisé pour entrer dans l'application.",
+  "help_for_create_new_password":"Cette image sert de sauvegarde pour votre mot de passe. Si vous oubliez votre mot de passe, vous pouvez utiliser cette image pour accéder à l'application.",
+  "login_with_image":"Se connecter avec une image"
 }

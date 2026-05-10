@@ -26,6 +26,9 @@ enum KeymageStateEnums {
   wrongImageSelected,
   wrongSelectedFileFormat,
   helpForCreateNewPassword,
+  noSavedImage,
+  imageMismatch,
+  pinMismatch,
 }
 
 Future<bool?> appDialogV(
@@ -86,9 +89,25 @@ Future<bool?> appDialog(BuildContext context,
       finalColor = AppPallet.bottomSheetTitleIcon;
       break;
     case KeymageStateEnums.helpForCreateNewPassword:
-      finalRes =
-          'Questo immagine funge da backup per il tuo password, se dimentichi la tua password allora puoi usare questo immagine per entrare nell\'app';
+      finalRes = AppStrings.helpForCreateNewPassword;
+           
       finalColor = AppPallet.bottomSheetTitleIcon;
+      break;
+    case KeymageStateEnums.endOk:
+      finalRes = AppStrings.ok;
+      finalColor = AppPallet.success;
+      break;
+    case KeymageStateEnums.imageMismatch:
+      finalRes = AppStrings.imageMismatch;
+      finalColor = AppPallet.error;
+      break;
+    case KeymageStateEnums.pinMismatch:
+      finalRes = AppStrings.pinMismatch;
+      finalColor = AppPallet.error;
+      break;
+    case KeymageStateEnums.noSavedImage:
+      finalRes = AppStrings.noSavedImage;
+      finalColor = AppPallet.error;
       break;
     default:
       finalRes = AppStrings.somethingWentWrong;

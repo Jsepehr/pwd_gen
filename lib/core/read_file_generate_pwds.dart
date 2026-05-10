@@ -12,10 +12,10 @@ class ReadFileGeneratePwds {
   static FilePickerResult? _kmgFile;
 
   Future<List<PwdEntity>?> readContentFromFile() async {
-    _kmgFile = await FilePicker.platform.pickFiles(
-      allowMultiple: false,
-      type: FileType.any,
-    );
+    _kmgFile = await FilePicker.pickFiles(
+        allowMultiple: false,
+        type: FileType.custom,
+        allowedExtensions: ['kmg']);
     if (_kmgFile == null) {
       KeymageState.applyState(KeymageStateEnums.kmgFileNotSelected);
       return null;

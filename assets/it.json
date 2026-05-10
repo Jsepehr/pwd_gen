@@ -40,5 +40,10 @@
   "hint": "Non assegnato",
   "do_you_want_to_share_the_reminder": "Vuoi condividere la promemoria insieme alla password?",
   "yes":"Sì",
-  "no":"No"
+  "no":"No",
+  "no_saved_image":"Nessuna immagine salvata trovata.",
+  "image_mismatch":"L'immagine selezionata non corrisponde a quella utilizzata come pin segreto.",
+  "pin_mismatch":"Il pin inserito non corrisponde a quello utilizzato per accedere all'app.",
+  "help_for_create_new_password":"Questo immagine funge da backup per il tuo password, se dimentichi la tua password allora puoi usare questo immagine per entrare nell'app",
+  "login_with_image":"Accedi con l'immagine"
 }

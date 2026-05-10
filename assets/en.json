@@ -40,5 +40,10 @@
   "hint": "Unassigned",
   "do_you_want_to_share_the_reminder": "Do you want to share the reminder together with the password?",
   "yes":"Yes",
-  "no":"No"
+  "no":"No",
+  "no_saved_image":"No saved image found.",
+  "image_mismatch":"The selected image does not match the one used to as secret pin.",
+  "pin_mismatch":"The entered pin does not match the one used to enter the app.",
+  "help_for_create_new_password":"This image serves as a backup for your password. If you forget your password, you can use this image to access the app.",
+  "login_with_image":"Login with image"
 }

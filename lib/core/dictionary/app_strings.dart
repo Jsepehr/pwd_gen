@@ -41,6 +41,12 @@ class AppStrings {
   static late String no;
   static late String doYouWantToShareTheReminder;
   static late String hint;
+  static late String pinMismatch;
+  static late String imageMismatch;
+  static late String noSavedImage;
+  static late String helpForCreateNewPassword;
+  static late String loginWithImage;
+
 
   static fromJson(Map<String, dynamic> json) {
     welcomeToMyPasswordGenerator =
@@ -90,52 +96,10 @@ class AppStrings {
     no = json['no'] ?? '';
     doYouWantToShareTheReminder =
         json['do_you_want_to_share_the_reminder'] ?? '';
+    pinMismatch = json['pin_mismatch'] ?? '';
+    imageMismatch = json['image_mismatch'] ?? '';
+    noSavedImage = json['no_saved_image'] ?? '';
+    helpForCreateNewPassword = json['help_for_create_new_password'] ?? '';
+    loginWithImage = json['login_with_image'] ?? '';
   }
-
-  /*Map<String, dynamic> toJson() {
-    return {
-      'welcome_to_my_password_generator': welcomeToMyPasswordGenerator,
-      'secure_private_smart': securePrivateSmart,
-      'your_offline_password_generator_and_manager':
-          yourOfflinePasswordGeneratorAndManager,
-      'local_and_private_by_design': localAndPrivateByDesign,
-      'no_internet_access': noInternetAccess,
-      'no_data_collection': noDataCollection,
-      'everything_stays_on_your_device': everythingStaysOnYourDevice,
-      'smart_password_generation': smartPasswordGeneration,
-      'use_a_photo_and_keyword_to_generate_strong_passwords':
-          useAPhotoAndKeywordToGenerateStrongPasswords,
-      'add_a_hint_for_each_password': addAHintForEachPassword,
-      'manage_and_export_your_vault': manageAndExportYourVault,
-      'edit_passwords_and_hints': editPasswordsAndHints,
-      'export_to_downloads': exportToDownloads,
-      'import_your_list_anytime': importYourListAnytime,
-      'ready_to_begin': readyToBegin,
-      'keep_your_digital_life_secure_without_compromises':
-          keepYourDigitalLifeSecureWithoutCompromises,
-      'file_stored_ok': fileStoredOk,
-      'image_not_selected': imageNotSelected,
-      'kmg_not_selected': kmgNotSelected,
-      'wrong_image': wrongImage,
-      'wrong_selected_file_format': wrongSelectedFileFormat,
-      'something_went_wrong': somethingWentWrong,
-      'reset_all_pwds': resetAllPwds,
-      'corrupted_file': corruptedFile,
-      'permission_not_granted': permissionNotGranted,
-      'select_secret_image_decrypt': selectSecretImageDecrypt,
-      'select_secret_image_encrypt': selectSecretImageEncrypt,
-      'import': import,
-      'generate': generate,
-      'ok': ok,
-      'search': search,
-      'start': start,
-      'next': next,
-      'secret_phrase': secretPhrase,
-      'secret_image': secretImage,
-      'apply': apply,
-      'cancel': cancel,
-      'confirm': confirm,
-      'hint': hint,
-    };
-  }*/
 }

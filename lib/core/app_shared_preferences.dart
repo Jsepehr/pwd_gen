@@ -9,6 +9,23 @@ const keyPwdHash = 'PwdHash';
 const keyImageHashEnterApp = 'ImageHashEnterApp';
 const keyBoolFirstRun = 'firstRun';
 const keyBoolSecurityDone = 'securityDone';
+const keyUserEntryMode = 'entryMode';
+
+enum UserEntryMode {
+  customPwd,
+  androidSecurity,
+  unknown;
+
+  static UserEntryMode entriModeFromString(String? input) {
+    if (input == "customPwd") {
+      return customPwd;
+    } else if (input == "androidSecurity") {
+      return androidSecurity;
+    } else {
+      return unknown;
+    }
+  }
+}
 
 class AppSharedPreferences {
   static Future<String?> loadSavedDirectory() async {
@@ -27,12 +44,29 @@ class AppSharedPreferences {
     final prefs = await SharedPreferences.getInstance();
     return prefs.setString(keyImageHash, hash);
   }
+
   //----------------
   //----------------
+  // app starting
+  static Future<bool> saveEntryMode(UserEntryMode input) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.setString(keyUserEntryMode, input.name);
+  }
+
+  static Future<UserEntryMode> loadEntryMode() async {
+    String? res;
+    final prefs = await SharedPreferences.getInstance();
+    res = prefs.getString(
+      keyUserEntryMode,
+    );
+    return UserEntryMode.entriModeFromString(res);
+  }
+
   static Future<bool> savedPwdHash(String hash) async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.setString(keyPwdHash, hash);
   }
+
   static Future<bool> savedPwdImageHash(String hash) async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.setString(keyPwdImageHash, hash);
@@ -43,6 +77,7 @@ class AppSharedPreferences {
 
     return prefs.getString(keyPwdHash);
   }
+
   static Future<String?> loadPwdImageHash() async {
     final prefs = await SharedPreferences.getInstance();
 

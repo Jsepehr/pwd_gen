@@ -9,6 +9,7 @@ import 'package:local_auth/local_auth.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pwd_gen/core/app_shared_preferences.dart';
 import 'package:pwd_gen/core/read_file_generate_pwds.dart';
+import 'package:pwd_gen/view/widgets/main/pwd_list_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
@@ -35,7 +36,6 @@ class PwdListCubit extends Cubit<PwdListState> {
   final _readFileGeneratePwds = ReadFileGeneratePwds();
 
   int get pwdsListLen => _pwdListShow.length;
-  
 
   String _currentSearchString = '';
   // This is used to filter the list when searching
@@ -46,11 +46,9 @@ class PwdListCubit extends Cubit<PwdListState> {
     try {
       _isUserAuthenticated = await _auth.authenticate(
         localizedReason: 'Autenticati per continuare',
-        options: const AuthenticationOptions(
-          stickyAuth: true,
-        ),
       );
     } catch (e) {
+      print(e);
       return;
     }
   }
@@ -58,6 +56,7 @@ class PwdListCubit extends Cubit<PwdListState> {
   void emitSecurityOptions() {
     emit(PwdListChooseSecurity());
   }
+
   void emitChoosePin() {
     emit(PwdChoosePin());
   }
@@ -81,24 +80,29 @@ class PwdListCubit extends Cubit<PwdListState> {
     // poi una delle opzioni pagina per mettere password shelta da utente
     // o invocare api android
     final welcome = await AppSharedPreferences.loadBoolFirstRun() ?? false;
+    final userEntryMode = await AppSharedPreferences.loadEntryMode();
     if (welcome == false) {
       emit(PwdListWelcome());
     } else {
-      emit(PwdListChooseSecurity());
+      if (userEntryMode == UserEntryMode.unknown) {
+        emit(PwdChoosePin());
+      } else {
+        if (userEntryMode == UserEntryMode.customPwd) {
+          // TODO mostra la pagina per entrare con la pwds o image
+        } else {
+          await authenticate();
+          if (!_isUserAuthenticated) {
+            emit(PwdListAuth());
+            return;
+          }
+          await _loadPwdsFromLocalDb();
+          _len = _pwdListSaved.length;
+          _pwdListShow = List.from(_pwdListSaved);
+          _emitState(_pwdListShow);
+        }
+      }
     }
     //await loadPwdsFromLocalDb(); // load from db update _pwdListSaved
-
-    // await authenticate();
-
-/*     if (!_isUserAuthenticated) {
-      emit(PwdListAuth());
-      return;
-    } */
-    /*  _len = _pwdListSaved.length;
-    _pwdListShow = List.from(_pwdListSaved);
-    _pwdListShow.sort(
-        (a, b) => int.parse(b.usageDate!).compareTo(int.parse(a.usageDate!)));
-    _emitState(_pwdListShow); */
   }
 
   Future<void> _saveAllToLocalDb(PwdEntity pwd) async {
@@ -172,7 +176,7 @@ class PwdListCubit extends Cubit<PwdListState> {
     _emitState(_pwdListShow);
   }
 
-  Future<void> loadPwdsFromLocalDb() async {
+  Future<void> _loadPwdsFromLocalDb() async {
     try {
       _pwdListSaved = await db.getAllPwds();
       _pwdListSaved.sort((a, b) => b.usageDate!.compareTo(a.usageDate!));

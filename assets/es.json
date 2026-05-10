@@ -40,5 +40,10 @@
   "hint": "No asignado",
   "do_you_want_to_share_the_reminder": "¿Quieres compartir el recordatorio junto con la contraseña?",
   "yes":"Sí",
-  "no":"No"
+  "no":"No",
+  "no_saved_image":"No se encontró ninguna imagen guardada.",
+  "image_mismatch":"La imagen seleccionada no coincide con la utilizada como pin secreto.",
+  "pin_mismatch":"El pin ingresado no coincide con el utilizado para ingresar a la aplicación.",
+  "help_for_create_new_password":"Esta imagen sirve como respaldo para tu contraseña. Si olvidas tu contraseña, puedes usar esta imagen para acceder a la aplicación.",
+  "login_with_image":"Iniciar sesión con imagen"
 }
