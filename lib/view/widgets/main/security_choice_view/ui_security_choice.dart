@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pwd_gen/core/app_shared_preferences.dart';
-import 'package:pwd_gen/view/widgets/main/cubit_pwds_list/pwd_list_cubit.dart';
+
+import '/core/app_shared_preferences.dart';
+import '/core/dictionary/app_strings.dart';
+import '/view/widgets/main/cubit_pwds_list/pwd_list_cubit.dart';
 
 class UiSecurityChoice extends StatelessWidget {
   const UiSecurityChoice({super.key});
@@ -20,15 +22,15 @@ class UiSecurityChoice extends StatelessWidget {
                   size: 80, color: Colors.blue),
               const SizedBox(height: 32),
               Text(
-                'Proteggi i tuoi dati',
+                AppStrings.protectYourVault,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
               ),
               const SizedBox(height: 16),
-              const Text(
-                'Scegli come vuoi accedere all\'app. Questa impostazione è obbligatoria per la tua sicurezza.',
+               Text(
+                AppStrings.chooseYourPreferredSecurityMethod,
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 16, color: Colors.grey),
               ),
@@ -43,13 +45,12 @@ class UiSecurityChoice extends StatelessWidget {
                   elevation: 0,
                 ),
                 onPressed: () {
-                  // TODO: Salva la preferenza "Codice PIN"
-                  // Esempio: prefs.setString('security_type', 'pin');
-                  //context.go('/');
+                    AppSharedPreferences.saveEntryMode(
+                        UserEntryMode.customPwd);
                   context.read<PwdListCubit>().emitChoosePin();
                 },
                 icon: const Icon(Icons.dialpad_rounded),
-                label: const Text('Usa un codice PIN personalizzato'),
+                label:  Text(AppStrings.useAPersonalizedPassword),
               ),
 
               const SizedBox(height: 16),
@@ -62,16 +63,12 @@ class UiSecurityChoice extends StatelessWidget {
                   foregroundColor: Colors.white,
                 ),
                 onPressed: () async {
-                  // TODO: Salva la preferenza "Blocco Sistema"
-                  // Esempio: prefs.setString('security_type', 'biometric');
-                  //context.go('/');
                   await AppSharedPreferences.saveEntryMode(
                       UserEntryMode.androidSecurity);
-                  // TODO emit lista pagina prinicipale
                   context.read<PwdListCubit>().loadPwdsFromDb();
                 },
                 icon: const Icon(Icons.fingerprint_rounded),
-                label: const Text('Usa il blocco del telefono'),
+                label:  Text(AppStrings.userAndroidSecurityAuthentication),
               ),
             ],
           ),

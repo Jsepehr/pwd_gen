@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pwd_gen/core/app_shared_preferences.dart';
+import 'package:pwd_gen/core/dictionary/app_strings.dart';
 import 'package:pwd_gen/view/widgets/main/cubit_pwds_list/pwd_list_cubit.dart';
 import 'package:pwd_gen/view/widgets/shared/app_dialog.dart'
     show KeymageStateEnums, appDialogV;
@@ -52,8 +53,8 @@ class _UiChoosePinState extends State<UiChoosePin> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text(
-                      "Crea Nuova Password",
+                     Text(
+                      AppStrings.createNewPassword,
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -67,9 +68,9 @@ class _UiChoosePinState extends State<UiChoosePin> {
                       controller: _passController,
                       obscureText: _obscureText,
                       decoration: _inputDecoration(
-                          "Nuova Password", Icons.lock_outline),
+                          AppStrings.newPassword, Icons.lock_outline),
                       validator: (value) => (value == null || value.isEmpty)
-                          ? "Inserisci una password"
+                          ? AppStrings.passwordRequired
                           : null,
                     ),
 
@@ -80,10 +81,10 @@ class _UiChoosePinState extends State<UiChoosePin> {
                       controller: _confirmPassController,
                       obscureText: _obscureText,
                       decoration:
-                          _inputDecoration("Ripeti Password", Icons.lock_reset),
+                          _inputDecoration(AppStrings.repeatPassword, Icons.lock_reset),
                       validator: (value) {
                         if (value != _passController.text)
-                          return "Le password non coincidono";
+                          return AppStrings.passwordsDoNotMatch;
                         return null;
                       },
                     ),
@@ -111,7 +112,7 @@ class _UiChoosePinState extends State<UiChoosePin> {
                               },
                               child: Text(
                                   softWrap: true,
-                                  'Seleziona un immagine come opzione secondaria per entrare nell\'app'),
+                                  AppStrings.loginWithImage),
                             ),
                           ),
                           Container(
@@ -148,19 +149,18 @@ class _UiChoosePinState extends State<UiChoosePin> {
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
+                               SnackBar(
                                   content:
-                                      Text('Password salvata con successo!')),
+                                      Text(AppStrings.passwordSavedSuccessfully)),
                             );
                             final hash =
                                 generateStringHash(_confirmPassController.text);
                             await AppSharedPreferences.savedPwdHash(hash);
-                            // TODO emit lista pagina prinicipale
                             context.read<PwdListCubit>().loadPwdsFromDb();
                           }
                         },
-                        child: const Text(
-                          "Conferme",
+                        child: Text(
+                          AppStrings.confirm,
                           style: TextStyle(
                               fontWeight: FontWeight.bold, color: Colors.white),
                         ),

@@ -15,7 +15,7 @@ void main() async {
   // 2. Costruisci il contenuto del file Dart
   final buffer = StringBuffer();
   buffer.writeln('// GENERATED CODE - DO NOT MODIFY BY HAND');
-  buffer.writeln('\nclass AppStringsTest {');
+  buffer.writeln('\nclass AppStrings {');
 
   data.forEach((key, value) {
     // Trasforma la chiave in un nome variabile valido (es. api_key -> apiKey)
@@ -23,7 +23,7 @@ void main() async {
       return match.group(0)!.toUpperCase().replaceFirst('_', '');
     });
 
-    buffer.writeln('  static late String $fieldName = "$key";');
+    buffer.writeln('  static late String $fieldName;');
   });
 
   buffer.writeln('\nstatic fromJson(Map<String, dynamic> json) {');

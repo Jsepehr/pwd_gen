@@ -1,3 +1,5 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
 class AppStrings {
   static late String addAHintForEachPassword;
   static late String apply;
@@ -10,8 +12,8 @@ class AppStrings {
   static late String fileStoredOk;
   static late String generate;
   static late String imageNotSelected;
-  static late String import;
   static late String importYourListAnytime;
+  static late String import;
   static late String keepYourDigitalLifeSecureWithoutCompromises;
   static late String kmgNotSelected;
   static late String localAndPrivateByDesign;
@@ -37,69 +39,85 @@ class AppStrings {
   static late String wrongImage;
   static late String wrongSelectedFileFormat;
   static late String yourOfflinePasswordGeneratorAndManager;
+  static late String hint;
+  static late String doYouWantToShareTheReminder;
   static late String yes;
   static late String no;
-  static late String doYouWantToShareTheReminder;
-  static late String hint;
-  static late String pinMismatch;
-  static late String imageMismatch;
   static late String noSavedImage;
+  static late String imageMismatch;
+  static late String pinMismatch;
   static late String helpForCreateNewPassword;
   static late String loginWithImage;
+  static late String selectImageToLogin;
+  static late String passwordSavedSuccessfully;
+  static late String passwordsDoNotMatch;
+  static late String createNewPassword;
+  static late String newPassword;
+  static late String repeatPassword;
+  static late String passwordRequired;
+  static late String userAndroidSecurityAuthentication;
+  static late String useAPersonalizedPassword;
+  static late String chooseYourPreferredSecurityMethod;
+  static late String protectYourVault;
 
-
-  static fromJson(Map<String, dynamic> json) {
-    welcomeToMyPasswordGenerator =
-        json['welcome_to_my_password_generator'] ?? '';
-    securePrivateSmart = json['secure_private_smart'] ?? '';
-    yourOfflinePasswordGeneratorAndManager =
-        json['your_offline_password_generator_and_manager'] ?? '';
-    localAndPrivateByDesign = json['local_and_private_by_design'] ?? '';
-    noInternetAccess = json['no_internet_access'] ?? '';
-    noDataCollection = json['no_data_collection'] ?? '';
-    everythingStaysOnYourDevice = json['everything_stays_on_your_device'] ?? '';
-    smartPasswordGeneration = json['smart_password_generation'] ?? '';
-    useAPhotoAndKeywordToGenerateStrongPasswords =
-        json['use_a_photo_and_keyword_to_generate_strong_passwords'] ?? '';
+static fromJson(Map<String, dynamic> json) {
     addAHintForEachPassword = json['add_a_hint_for_each_password'] ?? '';
-    manageAndExportYourVault = json['manage_and_export_your_vault'] ?? '';
-    editPasswordsAndHints = json['edit_passwords_and_hints'] ?? '';
-    exportToDownloads = json['export_to_downloads'] ?? '';
-    importYourListAnytime = json['import_your_list_anytime'] ?? '';
-    readyToBegin = json['ready_to_begin'] ?? '';
-    keepYourDigitalLifeSecureWithoutCompromises =
-        json['keep_your_digital_life_secure_without_compromises'] ?? '';
-    fileStoredOk = json['file_stored_ok'] ?? '';
-    imageNotSelected = json['image_not_selected'] ?? '';
-    kmgNotSelected = json['kmg_not_selected'] ?? '';
-    wrongImage = json['wrong_image'] ?? '';
-    wrongSelectedFileFormat = json['wrong_selected_file_format'] ?? '';
-    somethingWentWrong = json['something_went_wrong'] ?? '';
-    resetAllPwds = json['reset_all_pwds'] ?? '';
-    corruptedFile = json['corrupted_file'] ?? '';
-    permissionNotGranted = json['permission_not_granted'] ?? '';
-    selectSecretImageDecrypt = json['select_secret_image_decrypt'] ?? '';
-    selectSecretImageEncrypt = json['select_secret_image_encrypt'] ?? '';
-    import = json['import'] ?? '';
-    generate = json['generate'] ?? '';
-    ok = json['ok'] ?? '';
-    search = json['search'] ?? '';
-    start = json['start'] ?? '';
-    next = json['next'] ?? '';
-    secretPhrase = json['secret_phrase'] ?? '';
-    secretImage = json['secret_image'] ?? '';
     apply = json['apply'] ?? '';
     cancel = json['cancel'] ?? '';
     confirm = json['confirm'] ?? '';
+    corruptedFile = json['corrupted_file'] ?? '';
+    editPasswordsAndHints = json['edit_passwords_and_hints'] ?? '';
+    everythingStaysOnYourDevice = json['everything_stays_on_your_device'] ?? '';
+    exportToDownloads = json['export_to_downloads'] ?? '';
+    fileStoredOk = json['file_stored_ok'] ?? '';
+    generate = json['generate'] ?? '';
+    imageNotSelected = json['image_not_selected'] ?? '';
+    importYourListAnytime = json['import_your_list_anytime'] ?? '';
+    import = json['import'] ?? '';
+    keepYourDigitalLifeSecureWithoutCompromises = json['keep_your_digital_life_secure_without_compromises'] ?? '';
+    kmgNotSelected = json['kmg_not_selected'] ?? '';
+    localAndPrivateByDesign = json['local_and_private_by_design'] ?? '';
+    manageAndExportYourVault = json['manage_and_export_your_vault'] ?? '';
+    next = json['next'] ?? '';
+    noDataCollection = json['no_data_collection'] ?? '';
+    noInternetAccess = json['no_internet_access'] ?? '';
+    ok = json['ok'] ?? '';
+    permissionNotGranted = json['permission_not_granted'] ?? '';
+    readyToBegin = json['ready_to_begin'] ?? '';
+    resetAllPwds = json['reset_all_pwds'] ?? '';
+    search = json['search'] ?? '';
+    secretImage = json['secret_image'] ?? '';
+    secretPhrase = json['secret_phrase'] ?? '';
+    securePrivateSmart = json['secure_private_smart'] ?? '';
+    selectSecretImageDecrypt = json['select_secret_image_decrypt'] ?? '';
+    selectSecretImageEncrypt = json['select_secret_image_encrypt'] ?? '';
+    smartPasswordGeneration = json['smart_password_generation'] ?? '';
+    somethingWentWrong = json['something_went_wrong'] ?? '';
+    start = json['start'] ?? '';
+    useAPhotoAndKeywordToGenerateStrongPasswords = json['use_a_photo_and_keyword_to_generate_strong_passwords'] ?? '';
+    welcomeToMyPasswordGenerator = json['welcome_to_my_password_generator'] ?? '';
+    wrongImage = json['wrong_image'] ?? '';
+    wrongSelectedFileFormat = json['wrong_selected_file_format'] ?? '';
+    yourOfflinePasswordGeneratorAndManager = json['your_offline_password_generator_and_manager'] ?? '';
     hint = json['hint'] ?? '';
+    doYouWantToShareTheReminder = json['do_you_want_to_share_the_reminder'] ?? '';
     yes = json['yes'] ?? '';
     no = json['no'] ?? '';
-    doYouWantToShareTheReminder =
-        json['do_you_want_to_share_the_reminder'] ?? '';
-    pinMismatch = json['pin_mismatch'] ?? '';
-    imageMismatch = json['image_mismatch'] ?? '';
     noSavedImage = json['no_saved_image'] ?? '';
+    imageMismatch = json['image_mismatch'] ?? '';
+    pinMismatch = json['pin_mismatch'] ?? '';
     helpForCreateNewPassword = json['help_for_create_new_password'] ?? '';
     loginWithImage = json['login_with_image'] ?? '';
+    selectImageToLogin = json['select_image_to_login'] ?? '';
+    passwordSavedSuccessfully = json['password_saved_successfully'] ?? '';
+    passwordsDoNotMatch = json['passwords_do_not_match'] ?? '';
+    createNewPassword = json['create_new_password'] ?? '';
+    newPassword = json['new_password'] ?? '';
+    repeatPassword = json['repeat_password'] ?? '';
+    passwordRequired = json['password_required'] ?? '';
+    userAndroidSecurityAuthentication = json['user_android_security_authentication'] ?? '';
+    useAPersonalizedPassword = json['use_a_personalized_password'] ?? '';
+    chooseYourPreferredSecurityMethod = json['choose_your_preferred_security_method'] ?? '';
+    protectYourVault = json['protect_your_vault'] ?? '';
   }
 }
