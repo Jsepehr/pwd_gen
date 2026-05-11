@@ -9,12 +9,12 @@ import 'package:pwd_gen/view/widgets/shared/app_dialog.dart'
 
 import '/core/utility.dart';
 
-class UiChoosePin extends StatefulWidget {
+class UiLoginWithPassword extends StatefulWidget {
   @override
-  _UiChoosePinState createState() => _UiChoosePinState();
+  _UiLoginWithPasswordState createState() => _UiLoginWithPasswordState();
 }
 
-class _UiChoosePinState extends State<UiChoosePin> {
+class _UiLoginWithPasswordState extends State<UiLoginWithPassword> {
   final _formKey = GlobalKey<FormState>();
   final _passController = TextEditingController();
   bool _obscureText = true;
@@ -22,7 +22,7 @@ class _UiChoosePinState extends State<UiChoosePin> {
   @override
   Widget build(BuildContext context) {
     // Definizione dei colori del tema
-    const darkBackground = AppPallet.bottomSheetBG;
+    const darkBackground = AppPallet.darkBlue;
     const accentBlue = AppPallet.bottomSheetTitleIcon;
     const surfaceColor = AppPallet.bottomSheetBG;
 
@@ -53,8 +53,8 @@ class _UiChoosePinState extends State<UiChoosePin> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text(
-                      "Inserisci la tua PIN",
+                    Text(
+                      AppStrings.enterYourPassword,
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -63,14 +63,14 @@ class _UiChoosePinState extends State<UiChoosePin> {
                     ),
                     const SizedBox(height: 25),
 
-                    // Campo Nuova Password
+                    // Campo Password
                     TextFormField(
                       controller: _passController,
                       obscureText: _obscureText,
                       decoration: _inputDecoration(
-                          "Nuova Password", Icons.lock_outline),
+                          AppStrings.passwordHere, Icons.lock_outline),
                       validator: (value) => (value == null || value.isEmpty)
-                          ? "Inserisci una password"
+                          ? AppStrings.passwordRequired
                           : null,
                     ),
                     const SizedBox(height: 20),
@@ -109,14 +109,38 @@ class _UiChoosePinState extends State<UiChoosePin> {
                                   appDialogV(context: context);
                                   return;
                                 }
+                                context
+                                    .read<PwdListCubit>()
+                                    .setUserAuthenticated(true);
                                 context.read<PwdListCubit>().loadPwdsFromDb();
                               },
                               child: Text(
-                                  softWrap: true,
-                                  AppStrings.loginWithImage,),
+                                softWrap: true,
+                                AppStrings.loginWithImage,
+                              ),
                             ),
                           ),
-                          
+                          Container(
+                            height: 40,
+                            width: 1,
+                            color: Colors.white54,
+                          ),
+                          Expanded(
+                            child: InkWell(
+                              onTap: () async {
+                                // TODO user authentication with android biometric and if success set userAuthenticated to true in PwdListCubit and loadPwdsFromDb
+                                
+                                  context
+                                      .read<PwdListCubit>()
+                                      .setUserAuthenticated(true);
+                                context.read<PwdListCubit>().loadPwdsFromDb();
+                              },
+                              child: Text(
+                                softWrap: true,
+                                AppStrings.userAndroidSecurityAuthentication,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -137,8 +161,9 @@ class _UiChoosePinState extends State<UiChoosePin> {
                         onPressed: () async {
                           if (_formKey.currentState?.validate() ?? false) {
                             final pin = _passController.text;
-                           final savedPwd = await AppSharedPreferences.loadPwdHash();
-                           // paragona le hash di due passwords e se non corrispondono mostra un dialogo di errore
+                            final savedPwd =
+                                await AppSharedPreferences.loadPwdHash();
+                            // paragona le hash di due passwords e se non corrispondono mostra un dialogo di errore
                             if (savedPwd != null && savedPwd.isNotEmpty) {
                               final inputHash = generateStringHash(pin);
                               if (inputHash != savedPwd) {
@@ -149,7 +174,10 @@ class _UiChoosePinState extends State<UiChoosePin> {
                                 return;
                               }
                             }
-                           
+
+                            context
+                                .read<PwdListCubit>()
+                                .setUserAuthenticated(true);
                             context.read<PwdListCubit>().loadPwdsFromDb();
                           }
                         },

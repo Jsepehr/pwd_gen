@@ -9,7 +9,6 @@ import 'package:local_auth/local_auth.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pwd_gen/core/app_shared_preferences.dart';
 import 'package:pwd_gen/core/read_file_generate_pwds.dart';
-import 'package:pwd_gen/view/widgets/main/pwd_list_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
@@ -53,12 +52,16 @@ class PwdListCubit extends Cubit<PwdListState> {
     }
   }
 
+  void setUserAuthenticated(bool value) {
+    _isUserAuthenticated = value;
+  }
+
   void emitSecurityOptions() {
-    emit(PwdListChooseSecurity());
+    emit(UiPwdListChooseSecurity());
   }
 
   void emitChoosePin() {
-    emit(PwdChoosePin());
+    emit(UiPwdChoosePin());
   }
 
   void resetList() {
@@ -82,17 +85,33 @@ class PwdListCubit extends Cubit<PwdListState> {
     final welcome = await AppSharedPreferences.loadBoolFirstRun() ?? false;
     final userEntryMode = await AppSharedPreferences.loadEntryMode();
     if (welcome == false) {
-      emit(PwdListWelcome());
+      emit(UiPwdListWelcome());
     } else {
       if (userEntryMode == UserEntryMode.unknown) {
-        emit(PwdChoosePin());
+        emit(UiPwdChoosePin());
       } else {
         if (userEntryMode == UserEntryMode.customPwd) {
-          // TODO mostra la pagina per entrare con la pwds o image
+          final pwdHash = await AppSharedPreferences.loadPwdHash();
+          if (pwdHash == null || pwdHash.isEmpty) {
+            // se non c'è una password salvata, mostra la schermata di scelta del PIN
+            emit(UiPwdChoosePin());
+            return;
+          } else {
+            if (!_isUserAuthenticated) {
+              emit(UiPwdLoginWithPassword());
+            } else {
+              await _loadPwdsFromLocalDb();
+              _len = _pwdListSaved.length;
+              _pwdListShow = List.from(_pwdListSaved);
+              _isLoading = false;
+              _isSearching = false;
+              _emitState(_pwdListShow);
+            }
+          }
         } else {
           await authenticate();
           if (!_isUserAuthenticated) {
-            emit(PwdListAuth());
+            emit(UiPwdListAuth());
             return;
           }
           await _loadPwdsFromLocalDb();

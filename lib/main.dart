@@ -21,10 +21,14 @@ void main() async {
     MultiBlocProvider(
       providers: [
         BlocProvider<PwdListCubit>(
-            create: (context) => PwdListCubit()..loadPwdsFromDb()),
+          lazy: false,
+          create: (context) => PwdListCubit()..loadPwdsFromDb(),
+        ),
         BlocProvider<ConfigPwdsCubit>(create: (context) => ConfigPwdsCubit()),
         BlocProvider<PwdEditorCubit>(
-            create: (context) => PwdEditorCubit()..init()),
+          lazy: false,
+          create: (context) => PwdEditorCubit()..init(),
+        ),
       ],
       child: MaterialApp.router(
         routerConfig: router,

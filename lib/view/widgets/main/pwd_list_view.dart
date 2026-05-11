@@ -5,6 +5,7 @@ import 'package:pwd_gen/core/app_pallet.dart';
 import 'package:pwd_gen/core/app_shared_preferences.dart';
 import 'package:pwd_gen/view/widgets/main/security_choice_view/ui_security_choice.dart';
 import 'package:pwd_gen/view/widgets/shared/ui_choose_pin.dart';
+import 'package:pwd_gen/view/widgets/shared/ui_login_with_password.dart';
 
 import '/core/utility.dart';
 import '/view/welcome_dialog.dart';
@@ -279,7 +280,7 @@ class _PwdListViewState extends State<PwdListView> {
                       ],
                     ));
               } else {
-                if (state is PwdListAuth) {
+                if (state is UiPwdListAuth) {
                   return Container(
                     color: const Color.fromARGB(200, 0, 0, 0),
                     child: Center(
@@ -299,14 +300,17 @@ class _PwdListViewState extends State<PwdListView> {
                     ),
                   );
                 }
-                if (state is PwdListWelcome) {
+                if (state is UiPwdListWelcome) {
                   return WelcomePage();
                 }
-                if (state is PwdListChooseSecurity) {
+                if (state is UiPwdListChooseSecurity) {
                   return UiSecurityChoice();
                 }
-                if (state is PwdChoosePin) {
+                if (state is UiPwdChoosePin) {
                   return UiChoosePin();
+                }
+                if (state is UiPwdLoginWithPassword) {
+                  return UiLoginWithPassword();
                 }
                 return Container(
                   color: const Color.fromARGB(200, 0, 0, 0),

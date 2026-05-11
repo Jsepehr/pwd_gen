@@ -8,12 +8,18 @@ sealed class PwdListState extends Equatable {
 }
 
 final class PwdListInitial extends PwdListState {}
-final class PwdListAuth extends PwdListState {}
 
-class PwdListLoading extends PwdListState {}
-class PwdListWelcome extends PwdListState {}
-class PwdListChooseSecurity extends PwdListState {}
-class PwdChoosePin extends PwdListState {}
+final class UiPwdListAuth extends PwdListState {}
+
+class UiPwdListLoading extends PwdListState {}
+
+class UiPwdListWelcome extends PwdListState {}
+
+class UiPwdListChooseSecurity extends PwdListState {}
+
+class UiPwdChoosePin extends PwdListState {}
+
+class UiPwdLoginWithPassword extends PwdListState {}
 
 class PwdListLoaded extends PwdListState {
   final List<PwdEntity> pwdListShow;
