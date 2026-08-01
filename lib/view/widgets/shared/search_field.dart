@@ -14,6 +14,7 @@ class SearchField extends StatefulWidget {
 class SearchFieldState extends State<SearchField> {
   @override
   Widget build(BuildContext context) {
+    debugPrint("Building SearchField");
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 15),
       child: TextField(

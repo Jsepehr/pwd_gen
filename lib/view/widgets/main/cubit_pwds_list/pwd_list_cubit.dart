@@ -95,7 +95,6 @@ class PwdListCubit extends Cubit<PwdListState> {
           if (pwdHash == null || pwdHash.isEmpty) {
             // se non c'è una password salvata, mostra la schermata di scelta del PIN
             emit(UiPwdChoosePin());
-            return;
           } else {
             if (!_isUserAuthenticated) {
               emit(UiPwdLoginWithPassword());

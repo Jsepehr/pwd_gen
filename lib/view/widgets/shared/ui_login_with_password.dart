@@ -25,6 +25,7 @@ class _UiLoginWithPasswordState extends State<UiLoginWithPassword> {
     const darkBackground = AppPallet.darkBlue;
     const accentBlue = AppPallet.bottomSheetTitleIcon;
     const surfaceColor = AppPallet.bottomSheetBG;
+    debugPrint("Building UiLoginWithPassword");
 
     return Theme(
       data: ThemeData.dark().copyWith(
@@ -78,7 +79,7 @@ class _UiLoginWithPasswordState extends State<UiLoginWithPassword> {
                     SizedBox(
                       height: 70,
                       width: double.infinity,
-                      child: Row(
+                      child: Column(
                         children: [
                           Expanded(
                             child: InkWell(
@@ -129,10 +130,6 @@ class _UiLoginWithPasswordState extends State<UiLoginWithPassword> {
                             child: InkWell(
                               onTap: () async {
                                 // TODO user authentication with android biometric and if success set userAuthenticated to true in PwdListCubit and loadPwdsFromDb
-                                
-                                  context
-                                      .read<PwdListCubit>()
-                                      .setUserAuthenticated(true);
                                 context.read<PwdListCubit>().loadPwdsFromDb();
                               },
                               child: Text(

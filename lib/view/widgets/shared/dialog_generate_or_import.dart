@@ -12,6 +12,7 @@ class DialogGenerateOrImport extends StatelessWidget {
   const DialogGenerateOrImport({super.key});
   @override
   Widget build(BuildContext context) {
+    debugPrint("Building DialogGenerateOrImport");
     final pwdListCubit = context.read<PwdListCubit>();
 
     return Row(

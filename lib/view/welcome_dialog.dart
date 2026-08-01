@@ -54,6 +54,7 @@ class _WelcomePageState extends State<WelcomePage> {
   @override
   Widget build(BuildContext context) {
     final slide = slides[currentIndex];
+    debugPrint("Building WelcomePage");
 
     return Container(
       width: double.infinity,

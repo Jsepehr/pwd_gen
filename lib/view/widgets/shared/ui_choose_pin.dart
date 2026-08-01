@@ -25,6 +25,7 @@ class _UiChoosePinState extends State<UiChoosePin> {
     const darkBackground = Color(0xFF121212);
     const accentBlue = Color(0xFF448AFF);
     const surfaceColor = Color(0xFF1E1E1E);
+    debugPrint("Building UiChoosePin");
 
     return Theme(
       data: ThemeData.dark().copyWith(

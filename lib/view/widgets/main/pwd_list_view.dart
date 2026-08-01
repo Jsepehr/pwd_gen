@@ -38,6 +38,7 @@ class _PwdListViewState extends State<PwdListView> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint("Building PwdListView");
     final pwdListCubit = context.read<PwdListCubit>();
     /* WidgetsBinding.instance.addPostFrameCallback((_) async {
       final showWelcomePage = await SharedPreferences.getInstance();

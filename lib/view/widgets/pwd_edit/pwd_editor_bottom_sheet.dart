@@ -52,6 +52,7 @@ class _PwdEditorBottomSheetState extends State<PwdEditorBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final cubitPwdsList = context.read<PwdListCubit>();
+    debugPrint("Building PwdEditorBottomSheet");
     return Padding(
       // 👇 Pushes content above the keyboard
       padding: EdgeInsets.only(

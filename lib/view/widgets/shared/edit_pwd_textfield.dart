@@ -17,6 +17,7 @@ class EditPwdTextField extends StatelessWidget {
   final  FocusNode focusNode;
   @override
   Widget build(BuildContext context) {
+    debugPrint("Building EditPwdTextField");
     return TextField(
       focusNode: focusNode,
       onChanged: onChange,

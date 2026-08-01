@@ -43,6 +43,7 @@ class _PwdConfigureBottomSheetState extends State<PwdConfigureBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint("Building PwdConfigureBottomSheet");
     final cubit = context.read<ConfigPwdsCubit>();
     cubit.secretPhrase = secretPhraseCtl.text;
     final width = MediaQuery.of(context).size.width;

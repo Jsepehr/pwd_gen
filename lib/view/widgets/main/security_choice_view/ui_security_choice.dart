@@ -10,6 +10,7 @@ class UiSecurityChoice extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint("Building UiSecurityChoice");
     return Scaffold(
       body: SafeArea(
         child: Padding(

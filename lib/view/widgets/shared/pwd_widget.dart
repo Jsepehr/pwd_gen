@@ -48,6 +48,7 @@ class PwdWidgetState extends State<PwdWidget>
 
   @override
   Widget build(BuildContext context) {
+    debugPrint("Building PwdWidget");
     super.build(context);
     if (_isVisible) {
       controller.text = widget.pwd.password;
