@@ -122,7 +122,8 @@ Future<bool?> appDialog(BuildContext context,
           child: Container(
             decoration: BoxDecoration(
               color: AppPallet.bottomSheetBG, // Colore di sfondo
-              borderRadius: BorderRadius.circular(12), // Angoli arrotondati
+              borderRadius:
+                  BorderRadius.circular(AppRadius.md), // Angoli arrotondati
               border: Border.all(
                 // Bordo bianco 2px
                 color: finalColor,
@@ -143,7 +144,7 @@ Future<bool?> appDialog(BuildContext context,
                   Text(
                     finalRes,
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 20),
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
                   SizedBox(height: 10),
                   ElevatedButton.icon(

@@ -21,172 +21,150 @@ class _UiLoginWithPasswordState extends State<UiLoginWithPassword> {
 
   @override
   Widget build(BuildContext context) {
-    // Definizione dei colori del tema
-    const darkBackground = AppPallet.darkBlue;
-    const accentBlue = AppPallet.bottomSheetTitleIcon;
-    const surfaceColor = AppPallet.bottomSheetBG;
     debugPrint("Building UiLoginWithPassword");
 
-    return Theme(
-      data: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: darkBackground,
-        colorScheme: ColorScheme.dark(primary: accentBlue),
-      ),
-      child: Scaffold(
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: surfaceColor,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withAlpha(50),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
+    return Scaffold(
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: AppPallet.bottomSheetBG,
+              borderRadius: BorderRadius.circular(AppRadius.lg),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withAlpha(50),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    AppStrings.enterYourPassword,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppPallet.bottomSheetTitleIcon,
+                        ),
+                  ),
+                  const SizedBox(height: 25),
+
+                  // Campo Password
+                  TextFormField(
+                    controller: _passController,
+                    obscureText: _obscureText,
+                    decoration: _inputDecoration(
+                        AppStrings.passwordHere, Icons.lock_outline),
+                    validator: (value) => (value == null || value.isEmpty)
+                        ? AppStrings.passwordRequired
+                        : null,
+                  ),
+                  const SizedBox(height: 20),
+
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(AppRadius.md),
+                        ),
+                      ),
+                      onPressed: () async {
+                        final image = await selectImage();
+                        if (image == null) {
+                          KeymageState.applyState(
+                              KeymageStateEnums.imageNotSelected);
+                          if (!context.mounted) return;
+                          appDialogV(context: context);
+                          return;
+                        }
+                        final imageHash = generateImageHash(image);
+                        final savedImage =
+                            await AppSharedPreferences.loadImageHashEnterApp();
+                        if (savedImage == null || savedImage.isEmpty) {
+                          // error nessuna immagine salvata
+                          KeymageState.applyState(
+                              KeymageStateEnums.noSavedImage);
+                          if (!context.mounted) return;
+                          appDialogV(context: context);
+                          return;
+                        }
+                        if (imageHash != savedImage) {
+                          KeymageState.applyState(
+                              KeymageStateEnums.imageMismatch);
+                          if (!context.mounted) return;
+                          appDialogV(context: context);
+                          return;
+                        }
+                        context.read<PwdListCubit>().setUserAuthenticated(true);
+                        context.read<PwdListCubit>().loadPwdsFromDb();
+                      },
+                      icon: const Icon(Icons.image_outlined),
+                      label: Text(AppStrings.loginWithImage),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(AppRadius.md),
+                        ),
+                      ),
+                      onPressed: () async {
+                        final cubit = context.read<PwdListCubit>();
+                        await cubit.authenticate();
+                        if (!context.mounted) return;
+                        if (!cubit.isUserAuthenticated) return;
+                        cubit.loadPwdsFromDb();
+                      },
+                      icon: const Icon(Icons.fingerprint),
+                      label: Text(AppStrings.userAndroidSecurityAuthentication),
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // Bottone di Conferma
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        if (_formKey.currentState?.validate() ?? false) {
+                          final pin = _passController.text;
+                          final savedPwd =
+                              await AppSharedPreferences.loadPwdHash();
+                          // paragona le hash di due passwords e se non corrispondono mostra un dialogo di errore
+                          if (savedPwd != null && savedPwd.isNotEmpty) {
+                            final inputHash = generateStringHash(pin);
+                            if (inputHash != savedPwd) {
+                              KeymageState.applyState(
+                                  KeymageStateEnums.pinMismatch);
+                              if (!context.mounted) return;
+                              appDialogV(context: context);
+                              return;
+                            }
+                          }
+
+                          context
+                              .read<PwdListCubit>()
+                              .setUserAuthenticated(true);
+                          context.read<PwdListCubit>().loadPwdsFromDb();
+                        }
+                      },
+                      child: Text(AppStrings.confirm),
+                    ),
                   ),
                 ],
-              ),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      AppStrings.enterYourPassword,
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: accentBlue,
-                      ),
-                    ),
-                    const SizedBox(height: 25),
-
-                    // Campo Password
-                    TextFormField(
-                      controller: _passController,
-                      obscureText: _obscureText,
-                      decoration: _inputDecoration(
-                          AppStrings.passwordHere, Icons.lock_outline),
-                      validator: (value) => (value == null || value.isEmpty)
-                          ? AppStrings.passwordRequired
-                          : null,
-                    ),
-                    const SizedBox(height: 20),
-
-                    SizedBox(
-                      height: 70,
-                      width: double.infinity,
-                      child: Column(
-                        children: [
-                          Expanded(
-                            child: InkWell(
-                              onTap: () async {
-                                final image = await selectImage();
-                                if (image == null) {
-                                  KeymageState.applyState(
-                                      KeymageStateEnums.imageNotSelected);
-                                  if (!context.mounted) return;
-                                  appDialogV(context: context);
-                                  return;
-                                }
-                                final imageHash = generateImageHash(image);
-                                final savedImage = await AppSharedPreferences
-                                    .loadImageHashEnterApp();
-                                if (savedImage == null || savedImage.isEmpty) {
-                                  // error nessuna immagine salvata
-                                  KeymageState.applyState(
-                                      KeymageStateEnums.noSavedImage);
-                                  if (!context.mounted) return;
-                                  appDialogV(context: context);
-                                  return;
-                                }
-                                if (imageHash != savedImage) {
-                                  KeymageState.applyState(
-                                      KeymageStateEnums.imageMismatch);
-                                  if (!context.mounted) return;
-                                  appDialogV(context: context);
-                                  return;
-                                }
-                                context
-                                    .read<PwdListCubit>()
-                                    .setUserAuthenticated(true);
-                                context.read<PwdListCubit>().loadPwdsFromDb();
-                              },
-                              child: Text(
-                                softWrap: true,
-                                AppStrings.loginWithImage,
-                              ),
-                            ),
-                          ),
-                          Container(
-                            height: 40,
-                            width: 1,
-                            color: Colors.white54,
-                          ),
-                          Expanded(
-                            child: InkWell(
-                              onTap: () async {
-                                // TODO user authentication with android biometric and if success set userAuthenticated to true in PwdListCubit and loadPwdsFromDb
-                                context.read<PwdListCubit>().loadPwdsFromDb();
-                              },
-                              child: Text(
-                                softWrap: true,
-                                AppStrings.userAndroidSecurityAuthentication,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // Bottone di Conferma
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: accentBlue,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        onPressed: () async {
-                          if (_formKey.currentState?.validate() ?? false) {
-                            final pin = _passController.text;
-                            final savedPwd =
-                                await AppSharedPreferences.loadPwdHash();
-                            // paragona le hash di due passwords e se non corrispondono mostra un dialogo di errore
-                            if (savedPwd != null && savedPwd.isNotEmpty) {
-                              final inputHash = generateStringHash(pin);
-                              if (inputHash != savedPwd) {
-                                KeymageState.applyState(
-                                    KeymageStateEnums.pinMismatch);
-                                if (!context.mounted) return;
-                                appDialogV(context: context);
-                                return;
-                              }
-                            }
-
-                            context
-                                .read<PwdListCubit>()
-                                .setUserAuthenticated(true);
-                            context.read<PwdListCubit>().loadPwdsFromDb();
-                          }
-                        },
-                        child: const Text(
-                          "Conferme",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, color: Colors.white),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
               ),
             ),
           ),
@@ -199,19 +177,10 @@ class _UiLoginWithPasswordState extends State<UiLoginWithPassword> {
   InputDecoration _inputDecoration(String label, IconData icon) {
     return InputDecoration(
       labelText: label,
-      prefixIcon: Icon(icon, color: Colors.blueAccent),
+      prefixIcon: Icon(icon, color: AppPallet.bottomSheetTitleIcon),
       suffixIcon: IconButton(
         icon: Icon(_obscureText ? Icons.visibility_off : Icons.visibility),
         onPressed: () => setState(() => _obscureText = !_obscureText),
-      ),
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: const BorderSide(color: Colors.grey),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: const BorderSide(color: Colors.blueAccent, width: 2),
       ),
     );
   }

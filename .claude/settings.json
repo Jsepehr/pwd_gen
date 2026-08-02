@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/sepehrbaradaran/AppData/Local/Pub/Cache/hosted/pub.dev/app_settings-8.0.3/lib/src/**)",
+      "Bash(flutter analyze *)",
+      "Bash(find ~/AppData/Local/Pub/Cache/hosted/pub.dev -maxdepth 1 -iname \"app_settings-*\" 2>/dev/null)",
+      "Read(//c/Users/sepehrbaradaran/AppData/Local/Pub/Cache/hosted/pub.dev/**)",
+      "Bash(flutter config *)",
+      "Bash(flutter clean *)",
+      "Bash(flutter pub *)",
+      "Bash(grep -A8 \"^  app_settings:\" \"/c/Users/sepehrbaradaran/progetti personali/pwd_gen/pubspec.lock\"; find ~/AppData/Local/Pub/Cache/hosted/pub.dev -maxdepth 1 -iname \"app_settings-*\")",
+      "Read(//c/Users/sepehrbaradaran/AppData/Local/Pub/Cache/hosted/pub.dev/app_settings-5.2.0/lib/**)",
+      "Bash(flutter run *)",
+      "Bash(C:/Users/sepehrbaradaran/AppData/Local/Android/sdk/platform-tools/adb.exe -s emulator-5554 logcat -d -t 200)"
+    ]
+  }
+}

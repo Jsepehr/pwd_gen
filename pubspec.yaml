@@ -53,6 +53,9 @@ dependencies:
   local_auth:
   vibration:
   encrypt:
+  app_settings: ^5.1.1
+  url_launcher:
+  package_info_plus:
 
 dev_dependencies:
   flutter_launcher_icons: ^0.14.4

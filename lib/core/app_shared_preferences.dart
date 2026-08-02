@@ -10,6 +10,7 @@ const keyImageHashEnterApp = 'ImageHashEnterApp';
 const keyBoolFirstRun = 'firstRun';
 const keyBoolSecurityDone = 'securityDone';
 const keyUserEntryMode = 'entryMode';
+const keyLanguageOverride = 'languageOverride';
 
 enum UserEntryMode {
   customPwd,
@@ -121,5 +122,21 @@ class AppSharedPreferences {
   static Future<bool?> saveBoolSecurityDone(bool input) async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.setBool(keyBoolSecurityDone, input);
+  }
+
+  /// Null means "follow the device language".
+  static Future<String?> loadLanguageOverride() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(keyLanguageOverride);
+  }
+
+  /// Pass null to go back to following the device language.
+  static Future<void> saveLanguageOverride(String? languageCode) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (languageCode == null) {
+      await prefs.remove(keyLanguageOverride);
+    } else {
+      await prefs.setString(keyLanguageOverride, languageCode);
+    }
   }
 }

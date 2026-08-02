@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:google_fonts/google_fonts.dart';
+import 'package:pwd_gen/core/app_pallet.dart';
 import 'package:pwd_gen/core/dictionary/app_strings.dart';
 import 'package:share_plus/share_plus.dart';
 import '/domain/pwd_entity.dart';
@@ -35,8 +35,8 @@ class PwdWidgetState extends State<PwdWidget>
       vsync: this,
     );
     _borderColorAnimation = ColorTween(
-      begin: Colors.black,
-      end: Color.fromARGB(255, 255, 106, 0),
+      begin: AppPallet.black,
+      end: AppPallet.highlight,
     ).animate(_controller);
   }
 
@@ -57,7 +57,7 @@ class PwdWidgetState extends State<PwdWidget>
     }
     return Scaffold(
       body: ClipRRect(
-        borderRadius: BorderRadius.all(Radius.circular(10)),
+        borderRadius: BorderRadius.all(Radius.circular(AppRadius.md)),
         child: Stack(
           children: [
             AnimatedBuilder(
@@ -70,39 +70,38 @@ class PwdWidgetState extends State<PwdWidget>
                 enabled: true,
                 readOnly: true,
                 textAlign: TextAlign.start,
-                style: GoogleFonts.firaCode(
-                    // Use Google Font for input text
-                    textStyle: TextStyle(
+                style: const TextStyle(
+                  fontFamily: 'monospace', // fixed-width for readability
                   fontSize: 18,
-                )),
+                ),
                 decoration: InputDecoration(
                   hintStyle: TextStyle(color: Colors.grey),
                   hintText: '✍️ ' + AppStrings.hint,
                   disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadius.md),
                     borderSide: BorderSide(
-                      color: _borderColorAnimation.value ?? Colors.black,
+                      color: _borderColorAnimation.value ?? AppPallet.black,
                       width: 1.5,
                     ),
                   ),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadius.md),
                     borderSide: BorderSide(
-                      color: _borderColorAnimation.value ?? Colors.black,
+                      color: _borderColorAnimation.value ?? AppPallet.black,
                       width: 1.5,
                     ),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadius.md),
                     borderSide: BorderSide(
-                      color: _borderColorAnimation.value ?? Colors.black,
+                      color: _borderColorAnimation.value ?? AppPallet.black,
                       width: 1.5,
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadius.md),
                     borderSide: BorderSide(
-                      color: _borderColorAnimation.value ?? Colors.black,
+                      color: _borderColorAnimation.value ?? AppPallet.black,
                       width: 1.5,
                     ),
                   ),

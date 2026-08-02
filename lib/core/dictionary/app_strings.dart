@@ -1,17 +1,21 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
 class AppStrings {
+  static late String about;
   static late String addAHintForEachPassword;
   static late String apply;
   static late String cancel;
+  static late String changeLanguage;
   static late String chooseYourPreferredSecurityMethod;
   static late String confirm;
   static late String corruptedFile;
   static late String createNewPassword;
+  static late String developedBy;
   static late String doYouWantToShareTheReminder;
   static late String editPasswordsAndHints;
   static late String enterYourPassword;
   static late String everythingStaysOnYourDevice;
+  static late String export;
   static late String exportToDownloads;
   static late String fileStoredOk;
   static late String generate;
@@ -31,18 +35,23 @@ class AppStrings {
   static late String noDataCollection;
   static late String noInternetAccess;
   static late String noSavedImage;
+  static late String noScreenLockMessage;
+  static late String noScreenLockTitle;
   static late String no;
   static late String ok;
+  static late String openSettings;
   static late String passwordHere;
   static late String passwordRequired;
   static late String passwordSavedSuccessfully;
   static late String passwordsDoNotMatch;
   static late String permissionNotGranted;
   static late String pinMismatch;
+  static late String privacyPolicy;
   static late String protectYourVault;
   static late String readyToBegin;
   static late String repeatPassword;
   static late String resetAllPwds;
+  static late String resetVault;
   static late String search;
   static late String secretImage;
   static late String secretPhrase;
@@ -50,30 +59,41 @@ class AppStrings {
   static late String selectImageToLogin;
   static late String selectSecretImageDecrypt;
   static late String selectSecretImageEncrypt;
+  static late String shareApp;
+  static late String shareAppMessage;
   static late String smartPasswordGeneration;
   static late String somethingWentWrong;
   static late String start;
+  static late String systemDefault;
   static late String useAPersonalizedPassword;
   static late String useAPhotoAndKeywordToGenerateStrongPasswords;
   static late String userAndroidSecurityAuthentication;
+  static late String version;
+  static late String visitWebsite;
   static late String welcomeToMyPasswordGenerator;
   static late String wrongImage;
   static late String wrongSelectedFileFormat;
   static late String yes;
   static late String yourOfflinePasswordGeneratorAndManager;
 
-static fromJson(Map<String, dynamic> json) {
+  static fromJson(Map<String, dynamic> json) {
+    about = json['about'] ?? '';
     addAHintForEachPassword = json['add_a_hint_for_each_password'] ?? '';
     apply = json['apply'] ?? '';
     cancel = json['cancel'] ?? '';
-    chooseYourPreferredSecurityMethod = json['choose_your_preferred_security_method'] ?? '';
+    changeLanguage = json['change_language'] ?? '';
+    chooseYourPreferredSecurityMethod =
+        json['choose_your_preferred_security_method'] ?? '';
     confirm = json['confirm'] ?? '';
     corruptedFile = json['corrupted_file'] ?? '';
     createNewPassword = json['create_new_password'] ?? '';
-    doYouWantToShareTheReminder = json['do_you_want_to_share_the_reminder'] ?? '';
+    developedBy = json['developed_by'] ?? '';
+    doYouWantToShareTheReminder =
+        json['do_you_want_to_share_the_reminder'] ?? '';
     editPasswordsAndHints = json['edit_passwords_and_hints'] ?? '';
     enterYourPassword = json['enter_your_password'] ?? '';
     everythingStaysOnYourDevice = json['everything_stays_on_your_device'] ?? '';
+    export = json['export'] ?? '';
     exportToDownloads = json['export_to_downloads'] ?? '';
     fileStoredOk = json['file_stored_ok'] ?? '';
     generate = json['generate'] ?? '';
@@ -83,7 +103,8 @@ static fromJson(Map<String, dynamic> json) {
     imageNotSelected = json['image_not_selected'] ?? '';
     importYourListAnytime = json['import_your_list_anytime'] ?? '';
     import = json['import'] ?? '';
-    keepYourDigitalLifeSecureWithoutCompromises = json['keep_your_digital_life_secure_without_compromises'] ?? '';
+    keepYourDigitalLifeSecureWithoutCompromises =
+        json['keep_your_digital_life_secure_without_compromises'] ?? '';
     kmgNotSelected = json['kmg_not_selected'] ?? '';
     localAndPrivateByDesign = json['local_and_private_by_design'] ?? '';
     loginWithImage = json['login_with_image'] ?? '';
@@ -93,18 +114,23 @@ static fromJson(Map<String, dynamic> json) {
     noDataCollection = json['no_data_collection'] ?? '';
     noInternetAccess = json['no_internet_access'] ?? '';
     noSavedImage = json['no_saved_image'] ?? '';
+    noScreenLockMessage = json['no_screen_lock_message'] ?? '';
+    noScreenLockTitle = json['no_screen_lock_title'] ?? '';
     no = json['no'] ?? '';
     ok = json['ok'] ?? '';
+    openSettings = json['open_settings'] ?? '';
     passwordHere = json['passwordHere'] ?? '';
     passwordRequired = json['password_required'] ?? '';
     passwordSavedSuccessfully = json['password_saved_successfully'] ?? '';
     passwordsDoNotMatch = json['passwords_do_not_match'] ?? '';
     permissionNotGranted = json['permission_not_granted'] ?? '';
     pinMismatch = json['pin_mismatch'] ?? '';
+    privacyPolicy = json['privacy_policy'] ?? '';
     protectYourVault = json['protect_your_vault'] ?? '';
     readyToBegin = json['ready_to_begin'] ?? '';
     repeatPassword = json['repeat_password'] ?? '';
     resetAllPwds = json['reset_all_pwds'] ?? '';
+    resetVault = json['reset_vault'] ?? '';
     search = json['search'] ?? '';
     secretImage = json['secret_image'] ?? '';
     secretPhrase = json['secret_phrase'] ?? '';
@@ -112,16 +138,25 @@ static fromJson(Map<String, dynamic> json) {
     selectImageToLogin = json['select_image_to_login'] ?? '';
     selectSecretImageDecrypt = json['select_secret_image_decrypt'] ?? '';
     selectSecretImageEncrypt = json['select_secret_image_encrypt'] ?? '';
+    shareApp = json['share_app'] ?? '';
+    shareAppMessage = json['share_app_message'] ?? '';
     smartPasswordGeneration = json['smart_password_generation'] ?? '';
     somethingWentWrong = json['something_went_wrong'] ?? '';
     start = json['start'] ?? '';
+    systemDefault = json['system_default'] ?? '';
     useAPersonalizedPassword = json['use_a_personalized_password'] ?? '';
-    useAPhotoAndKeywordToGenerateStrongPasswords = json['use_a_photo_and_keyword_to_generate_strong_passwords'] ?? '';
-    userAndroidSecurityAuthentication = json['user_android_security_authentication'] ?? '';
-    welcomeToMyPasswordGenerator = json['welcome_to_my_password_generator'] ?? '';
+    useAPhotoAndKeywordToGenerateStrongPasswords =
+        json['use_a_photo_and_keyword_to_generate_strong_passwords'] ?? '';
+    userAndroidSecurityAuthentication =
+        json['user_android_security_authentication'] ?? '';
+    version = json['version'] ?? '';
+    visitWebsite = json['visit_website'] ?? '';
+    welcomeToMyPasswordGenerator =
+        json['welcome_to_my_password_generator'] ?? '';
     wrongImage = json['wrong_image'] ?? '';
     wrongSelectedFileFormat = json['wrong_selected_file_format'] ?? '';
     yes = json['yes'] ?? '';
-    yourOfflinePasswordGeneratorAndManager = json['your_offline_password_generator_and_manager'] ?? '';
+    yourOfflinePasswordGeneratorAndManager =
+        json['your_offline_password_generator_and_manager'] ?? '';
   }
 }

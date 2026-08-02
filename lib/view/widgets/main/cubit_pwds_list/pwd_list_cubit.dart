@@ -78,17 +78,13 @@ class PwdListCubit extends Cubit<PwdListState> {
   final db = getIt<PwdRepositoryImpl>();
 
   Future<void> loadPwdsFromDb() async {
-    ///emit(PwdListInitial());
-    // TODO QUI welcome page se non è ancora apparsa
-    // poi una delle opzioni pagina per mettere password shelta da utente
-    // o invocare api android
     final welcome = await AppSharedPreferences.loadBoolFirstRun() ?? false;
     final userEntryMode = await AppSharedPreferences.loadEntryMode();
     if (welcome == false) {
       emit(UiPwdListWelcome());
     } else {
       if (userEntryMode == UserEntryMode.unknown) {
-        emit(UiPwdChoosePin());
+        emit(UiPwdListChooseSecurity());
       } else {
         if (userEntryMode == UserEntryMode.customPwd) {
           final pwdHash = await AppSharedPreferences.loadPwdHash();
@@ -120,7 +116,6 @@ class PwdListCubit extends Cubit<PwdListState> {
         }
       }
     }
-    //await loadPwdsFromLocalDb(); // load from db update _pwdListSaved
   }
 
   Future<void> _saveAllToLocalDb(PwdEntity pwd) async {
@@ -166,6 +161,14 @@ class PwdListCubit extends Cubit<PwdListState> {
 
   void toggleSearch() {
     _isSearching = !_isSearching;
+    if (!_isSearching) {
+      // Closing search must drop the filter, or a stale filtered subset
+      // lingers as _pwdListShow — which generatePwds() and others treat as
+      // the full list, silently losing entries that didn't match the filter.
+      _currentSearchString = '';
+      _filteredList.clear();
+      _pwdListShow = _pwdListSaved;
+    }
     _emitState(_pwdListShow);
   }
 

@@ -22,13 +22,15 @@ class PwdConfigureBottomSheet extends StatefulWidget {
 class _PwdConfigureBottomSheetState extends State<PwdConfigureBottomSheet> {
   TextEditingController secretPhraseCtl = TextEditingController();
   File? image;
+  late final ConfigPwdsCubit _configCubit;
 
   @override
   void initState() {
     super.initState();
+    _configCubit = context.read<ConfigPwdsCubit>();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      context.read<ConfigPwdsCubit>().emitState(image);
-      context.read<ConfigPwdsCubit>().focusNode.requestFocus();
+      _configCubit.emitState(image);
+      _configCubit.focusNode.requestFocus();
     });
   }
 
@@ -36,8 +38,10 @@ class _PwdConfigureBottomSheetState extends State<PwdConfigureBottomSheet> {
   void dispose() {
     secretPhraseCtl.dispose();
     image = null;
-    context.read<ConfigPwdsCubit>().focusNode.dispose();
-    context.read<ConfigPwdsCubit>().secretPhrase = '';
+    // The FocusNode lives on the long-lived cubit (reused across every time
+    // this sheet is opened), not on this transient widget — don't dispose it
+    // here, or reopening the sheet crashes with "used after being disposed".
+    _configCubit.secretPhrase = '';
     super.dispose();
   }
 
@@ -51,158 +55,154 @@ class _PwdConfigureBottomSheetState extends State<PwdConfigureBottomSheet> {
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: Container(
-          color: AppPallet.bottomSheetBG,
-          height: 220,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: Icon(
-                      Icons.settings,
-                      color: AppPallet.bottomSheetTitleIcon,
-                    ),
+      child: SizedBox(
+        height: 220,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: Icon(
+                    Icons.settings,
+                    color: AppPallet.bottomSheetTitleIcon,
                   ),
                 ),
-                SizedBox(
-                  height: 8,
-                ),
-                BlocBuilder<ConfigPwdsCubit, ConfigPwdsState>(
-                  builder: (context, state) {
-                    if (state is ConfigPwdsLoaded) {
-                      return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              height: 50,
-                              child: EditPwdTextField(
-                                focusNode: state.focusNode,
-                                controller: secretPhraseCtl,
-                                hintText: '${AppStrings.secretPhrase}...',
-                                onChange: (p0) {
-                                  cubit.secretPhrase = p0;
-                                  cubit.emitState(image);
-                                },
-                              ),
+              ),
+              SizedBox(
+                height: 8,
+              ),
+              BlocBuilder<ConfigPwdsCubit, ConfigPwdsState>(
+                builder: (context, state) {
+                  if (state is ConfigPwdsLoaded) {
+                    return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: 50,
+                            child: EditPwdTextField(
+                              focusNode: state.focusNode,
+                              controller: secretPhraseCtl,
+                              hintText: '${AppStrings.secretPhrase}...',
+                              onChange: (p0) {
+                                cubit.secretPhrase = p0;
+                                cubit.emitState(image);
+                              },
                             ),
-                          ]);
-                    } else {
-                      return CircularProgressIndicator();
-                    }
-                  },
-                ),
-                SizedBox(
-                  height: 8,
-                ),
-                SizedBox(
-                  width: width,
-                  height: 100,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        width: double.infinity,
-                        height: 60,
-                        child: BlocBuilder<ConfigPwdsCubit, ConfigPwdsState>(
-                          builder: (context, state) {
-                            if (state is ConfigPwdsLoaded) {
-                              return SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
-                                  children: [
-                                    SizedBox(
-                                      height: 50,
-                                      width: width / 1.8,
-                                      child: ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.only(
-                                                topLeft: Radius.circular(
-                                                    15), // Adjust the radius as needed
-                                                bottomLeft: Radius.circular(
-                                                    15), // Adjust the radius as needed
-                                              ),
-                                            ),
-                                          ),
-                                          onPressed: state.isImageBtnEnabled &&
-                                                  !context
-                                                      .watch<PwdListCubit>()
-                                                      .isLoading
-                                              ? () async {
-                                                  image = await selectImage();
-                                                  cubit.emitState(image);
-                                                }
-                                              : null,
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Text(AppStrings.secretImage),
-                                              SizedBox(
-                                                width: 4,
-                                              ),
-                                              Icon(Icons.file_open_outlined),
-                                            ],
-                                          )),
-                                    ),
-                                    SizedBox(
-                                      width: 3,
-                                    ),
-                                    SizedBox(
-                                      width: width / 3,
-                                      height: 50,
-                                      child: ElevatedButton(
+                          ),
+                        ]);
+                  } else {
+                    return CircularProgressIndicator();
+                  }
+                },
+              ),
+              SizedBox(
+                height: 8,
+              ),
+              SizedBox(
+                width: width,
+                height: 100,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      width: double.infinity,
+                      height: 60,
+                      child: BlocBuilder<ConfigPwdsCubit, ConfigPwdsState>(
+                        builder: (context, state) {
+                          if (state is ConfigPwdsLoaded) {
+                            return SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: [
+                                  SizedBox(
+                                    height: 50,
+                                    width: width / 1.8,
+                                    child: ElevatedButton(
                                         style: ElevatedButton.styleFrom(
                                           shape: RoundedRectangleBorder(
                                             borderRadius: BorderRadius.only(
-                                              topRight: Radius.circular(
-                                                  15), // Adjust the radius as needed
-                                              bottomRight: Radius.circular(
-                                                  15), // Adjust the radius as needed
+                                              topLeft:
+                                                  Radius.circular(AppRadius.md),
+                                              bottomLeft:
+                                                  Radius.circular(AppRadius.md),
                                             ),
                                           ),
                                         ),
-                                        onPressed: state.isGenerateBtnEnabled &&
+                                        onPressed: state.isImageBtnEnabled &&
                                                 !context
                                                     .watch<PwdListCubit>()
                                                     .isLoading
                                             ? () async {
-                                                await context
-                                                    .read<PwdListCubit>()
-                                                    .generatePwds(
-                                                        state.secretPhrase,
-                                                        image);
-                                                WidgetsBinding.instance
-                                                    .addPostFrameCallback(
-                                                        (_) async {
-                                                  Navigator.pop(context);
-                                                });
+                                                image = await selectImage();
+                                                cubit.emitState(image);
                                               }
                                             : null,
-                                        child: Text(AppStrings.generate),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(AppStrings.secretImage),
+                                            SizedBox(
+                                              width: 4,
+                                            ),
+                                            Icon(Icons.file_open_outlined),
+                                          ],
+                                        )),
+                                  ),
+                                  SizedBox(
+                                    width: 3,
+                                  ),
+                                  SizedBox(
+                                    width: width / 3,
+                                    height: 50,
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.only(
+                                            topRight:
+                                                Radius.circular(AppRadius.md),
+                                            bottomRight:
+                                                Radius.circular(AppRadius.md),
+                                          ),
+                                        ),
                                       ),
+                                      onPressed: state.isGenerateBtnEnabled &&
+                                              !context
+                                                  .watch<PwdListCubit>()
+                                                  .isLoading
+                                          ? () async {
+                                              await context
+                                                  .read<PwdListCubit>()
+                                                  .generatePwds(
+                                                      state.secretPhrase,
+                                                      image);
+                                              WidgetsBinding.instance
+                                                  .addPostFrameCallback(
+                                                      (_) async {
+                                                Navigator.pop(context);
+                                              });
+                                            }
+                                          : null,
+                                      child: Text(AppStrings.generate),
                                     ),
-                                  ],
-                                ),
-                              );
-                            } else {
-                              return Container();
-                            }
-                          },
-                        ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          } else {
+                            return Container();
+                          }
+                        },
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

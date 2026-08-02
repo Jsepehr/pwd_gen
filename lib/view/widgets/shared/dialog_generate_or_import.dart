@@ -30,9 +30,8 @@ class DialogGenerateOrImport extends StatelessWidget {
                   color: AppPallet.buttonBorderSides),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(15), // Adjust the radius as needed
-                  bottomLeft:
-                      Radius.circular(15), // Adjust the radius as needed
+                  topLeft: Radius.circular(AppRadius.md),
+                  bottomLeft: Radius.circular(AppRadius.md),
                 ),
               ),
             ),
@@ -68,12 +67,13 @@ class DialogGenerateOrImport extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppPallet.bottomSheetBG,
               side: BorderSide(
-                  style: BorderStyle.solid, width: 0.5, color: Colors.white54),
+                  style: BorderStyle.solid,
+                  width: 0.5,
+                  color: AppPallet.buttonBorderSides),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(15), // Adjust the radius as needed
-                  bottomRight:
-                      Radius.circular(15), // Adjust the radius as needed
+                  topRight: Radius.circular(AppRadius.md),
+                  bottomRight: Radius.circular(AppRadius.md),
                 ),
               ),
             ),

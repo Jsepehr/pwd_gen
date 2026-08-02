@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pwd_gen/core/app_pallet.dart';
 import 'package:pwd_gen/core/app_shared_preferences.dart';
 import 'package:pwd_gen/core/dictionary/app_strings.dart';
 import 'package:pwd_gen/view/widgets/main/cubit_pwds_list/pwd_list_cubit.dart';
@@ -56,14 +57,13 @@ class _WelcomePageState extends State<WelcomePage> {
     final slide = slides[currentIndex];
     debugPrint("Building WelcomePage");
 
+    final textTheme = Theme.of(context).textTheme;
     return Container(
       width: double.infinity,
       height: double.infinity,
-      color: Colors.black,
+      color: AppPallet.darkBlue,
       child: Center(
         child: Dialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: SizedBox(
@@ -74,14 +74,14 @@ class _WelcomePageState extends State<WelcomePage> {
                   Text(
                     slide.title,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
-                        fontSize: 20, fontWeight: FontWeight.bold),
+                    style: textTheme.titleLarge
+                        ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
                   Text(
                     slide.subtitle,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 16),
+                    style: textTheme.bodyLarge,
                   ),
                   const SizedBox(height: 24),
                   _buildDotsIndicator(),
@@ -112,7 +112,8 @@ class _WelcomePageState extends State<WelcomePage> {
           width: isActive ? 12 : 8,
           height: isActive ? 12 : 8,
           decoration: BoxDecoration(
-            color: isActive ? Colors.blue : Colors.grey[400],
+            color:
+                isActive ? AppPallet.bottomSheetTitleIcon : Colors.grey[600],
             shape: BoxShape.circle,
           ),
         );
