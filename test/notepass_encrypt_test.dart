@@ -1,26 +1,38 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pwd_gen/core/notepass_encrypt.dart';
-import 'package:pwd_gen/core/app_shared_preferences.dart';
 import 'package:pwd_gen/domain/pwd_entity.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
+const _channel = MethodChannel('com.example.pwd_gen/vault_export');
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   late Directory tempDir;
+  Uint8List? capturedBytes;
 
   setUp(() async {
     tempDir = await Directory.systemTemp.createTemp('kmg_test');
-    SharedPreferences.setMockInitialValues({
-      keyUserPrefPath: tempDir.path,
-      keyUserPrefFileName: 'test_export.kmg',
+    capturedBytes = null;
+    // Stand in for MainActivity.kt's handler, which isn't reachable from a
+    // plain `flutter test` run — just capture the bytes it would have
+    // written to MediaStore/Downloads.
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(_channel, (call) async {
+      if (call.method == 'saveKmgFile') {
+        capturedBytes = call.arguments['bytes'] as Uint8List;
+        return 'ok';
+      }
+      return null;
     });
   });
 
   tearDown(() async {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(_channel, null);
     if (await tempDir.exists()) {
       await tempDir.delete(recursive: true);
     }
@@ -33,11 +45,16 @@ void main() {
 
   test('round-trip: same image hash decrypts the saved vault', () async {
     const imageHash = 'fake-hash-of-the-secret-image';
-    await BinaryEncrypt.saveBinaryEncryptedFile(
-        passwords: pwds, imageHash: imageHash);
+    final status = await BinaryEncrypt.saveBinaryEncryptedFile(
+      passwords: pwds,
+      imageHash: imageHash,
+      fileName: 'test_export.kmg',
+    );
+    expect(status, 'ok');
+    expect(capturedBytes, isNotNull);
 
     final file = File('${tempDir.path}/test_export.kmg');
-    expect(await file.exists(), isTrue);
+    await file.writeAsBytes(capturedBytes!);
 
     final result = await BinaryEncrypt.readFileAndValidateHash(
       file: file,
@@ -51,9 +68,14 @@ void main() {
       () async {
     const imageHash = 'fake-hash-of-the-secret-image';
     await BinaryEncrypt.saveBinaryEncryptedFile(
-        passwords: pwds, imageHash: imageHash);
+      passwords: pwds,
+      imageHash: imageHash,
+      fileName: 'test_export.kmg',
+    );
 
     final file = File('${tempDir.path}/test_export.kmg');
+    await file.writeAsBytes(capturedBytes!);
+
     final result = await BinaryEncrypt.readFileAndValidateHash(
       file: file,
       imageHash: 'a-completely-different-hash',

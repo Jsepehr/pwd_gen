@@ -12,7 +12,16 @@ import '/view/widgets/shared/vault_actions.dart';
 class AppDrawer extends StatelessWidget {
   final bool hasPasswords;
 
-  const AppDrawer({super.key, required this.hasPasswords});
+  /// The Scaffold's own context (the one that places `AppDrawer` in its
+  /// `drawer:` slot), not `build`'s own `context`. The drawer's content is
+  /// presented as a pushed route, so once `Navigator.pop` closes it, every
+  /// context inside this widget's own subtree becomes unmounted — anything
+  /// that keeps running after the pop (permission requests, dialogs, image
+  /// picking) needs a context that survives the drawer closing.
+  final BuildContext rootContext;
+
+  const AppDrawer(
+      {super.key, required this.hasPasswords, required this.rootContext});
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +55,8 @@ class AppDrawer extends StatelessWidget {
               enabled: hasPasswords,
               onTap: () async {
                 Navigator.pop(context);
-                await exportVaultFlow(context, cubit);
+                if (!rootContext.mounted) return;
+                await exportVaultFlow(rootContext, cubit);
               },
             ),
             ListTile(
@@ -54,7 +64,8 @@ class AppDrawer extends StatelessWidget {
               title: Text(AppStrings.import),
               onTap: () async {
                 Navigator.pop(context);
-                await importVaultFlow(context, cubit);
+                if (!rootContext.mounted) return;
+                await importVaultFlow(rootContext, cubit);
               },
             ),
             ListTile(
@@ -62,8 +73,8 @@ class AppDrawer extends StatelessWidget {
               title: Text(AppStrings.changeLanguage),
               onTap: () async {
                 Navigator.pop(context);
-                if (!context.mounted) return;
-                await showLanguagePicker(context);
+                if (!rootContext.mounted) return;
+                await showLanguagePicker(rootContext);
               },
             ),
             const Divider(),
@@ -75,7 +86,8 @@ class AppDrawer extends StatelessWidget {
               enabled: hasPasswords,
               onTap: () async {
                 Navigator.pop(context);
-                await resetVaultFlow(context, cubit);
+                if (!rootContext.mounted) return;
+                await resetVaultFlow(rootContext, cubit);
               },
             ),
             const Spacer(),
@@ -94,7 +106,8 @@ class AppDrawer extends StatelessWidget {
               title: Text(AppStrings.about),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.of(context).push(
+                if (!rootContext.mounted) return;
+                Navigator.of(rootContext).push(
                   MaterialPageRoute(builder: (_) => const AboutScreen()),
                 );
               },

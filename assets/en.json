@@ -43,6 +43,7 @@
   "password_saved_successfully": "Password saved successfully!",
   "passwords_do_not_match": "Passwords do not match.",
   "permission_not_granted": "This app requires storage access to save files. Please enable this in your settings.",
+  "permission_required_title": "Storage access needed",
   "pin_mismatch": "The entered PIN does not match the one used to access the app.",
   "privacy_policy": "Privacy Policy",
   "protect_your_vault": "Protect your vault",

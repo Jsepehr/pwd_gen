@@ -42,6 +42,7 @@
   "password_saved_successfully": "تم حفظ كلمة المرور بنجاح!",
   "passwords_do_not_match": "كلمات المرور غير متطابقة.",
   "permission_not_granted": "يتطلب التطبيق إذن الوصول إلى وحدة التخزين لحفظ الملفات. يرجى تفعيله من الإعدادات.",
+  "permission_required_title": "الوصول إلى وحدة التخزين مطلوب",
   "pin_mismatch": "رمز PIN المدخل غير صحيح.",
   "privacy_policy": "سياسة الخصوصية",
   "protect_your_vault": "احمِ خزنتك",

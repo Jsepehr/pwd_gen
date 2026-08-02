@@ -48,7 +48,6 @@ dependencies:
   loading_animation_widget:
   intl:
   permission_handler:
-  external_path:
   shared_preferences:
   local_auth:
   vibration:

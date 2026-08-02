@@ -36,6 +36,11 @@ Future<bool?> appDialogV(
   if (await Vibration.hasVibrator()) {
     Vibration.vibrate();
   }
+  // The caller's own `context.mounted` check happens before this function is
+  // called, but the await above is enough time for the context to become
+  // invalid — re-check here so every appDialogV call site is covered, not
+  // just the ones that happen to re-check after this function returns.
+  if (!context.mounted) return null;
   return appDialog(context, barrierDismissible: barrierDismissible ?? true);
 }
 

@@ -34,8 +34,9 @@ class _PwdListViewState extends State<PwdListView> {
             builder: (context, state) {
               if (state is PwdListLoaded) {
                 return Scaffold(
-                    drawer:
-                        AppDrawer(hasPasswords: state.pwdListShow.isNotEmpty),
+                    drawer: AppDrawer(
+                        hasPasswords: state.pwdListShow.isNotEmpty,
+                        rootContext: context),
                     appBar: AppBar(
                       centerTitle: true,
                       title: Text('Passwords List'),

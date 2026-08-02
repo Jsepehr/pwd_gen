@@ -42,6 +42,7 @@
   "password_saved_successfully": "رمز عبور با موفقیت ذخیره شد!",
   "passwords_do_not_match": "رمزهای عبور مطابقت ندارند.",
   "permission_not_granted": "این برنامه برای ذخیره فایل‌ها به دسترسی به حافظه نیاز دارد. لطفاً آن را در تنظیمات فعال کنید.",
+  "permission_required_title": "Se necesita acceso al almacenamiento",
   "pin_mismatch": "پین وارد شده با پین ورود به برنامه مطابقت ندارد.",
   "privacy_policy": "Política de privacidad",
   "protect_your_vault": "از صندوقچه خود محافظت کنید",  

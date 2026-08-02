@@ -1,8 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-const appFolderName = 'Keymage';
-const keyUserPrefPath = 'path';
-const keyUserPrefFileName = 'fileName';
 const keyImageHash = 'ImageHash';
 const keyPwdImageHash = 'PwdImageHash';
 const keyPwdHash = 'PwdHash';
@@ -29,18 +26,6 @@ enum UserEntryMode {
 }
 
 class AppSharedPreferences {
-  static Future<String?> loadSavedDirectory() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    return prefs.getString(keyUserPrefPath);
-  }
-
-  static Future<String?> loadSavedFileName() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    return prefs.getString(keyUserPrefFileName);
-  }
-
   static Future<bool> savedImageHash(String hash) async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.setString(keyImageHash, hash);

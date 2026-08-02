@@ -42,6 +42,7 @@
   "password_saved_successfully": "Mot de passe enregistré con succès !",
   "passwords_do_not_match": "Les mots de passe ne correspondent pas.",
   "permission_not_granted": "Cette application nécessite l'accès au stockage pour enregistrer les fichiers. Veuillez l'activer dans les paramètres.",
+  "permission_required_title": "Accès au stockage requis",
   "pin_mismatch": "Le code PIN saisi ne correspond pas.",
   "privacy_policy": "Politique de confidentialité",
   "protect_your_vault": "Protégez votre coffre-fort",

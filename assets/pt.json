@@ -42,6 +42,7 @@
   "password_saved_successfully": "Senha salva com sucesso!",
   "passwords_do_not_match": "As senhas não coincidem.",
   "permission_not_granted": "Este aplicativo requer acesso ao armazenamento para salvar arquivos. Ative-o nas configurações.",
+  "permission_required_title": "Acesso ao armazenamento necessário",
   "pin_mismatch": "O PIN inserido não corresponde ao de acesso.",
   "privacy_policy": "Política de privacidade",
   "protect_your_vault": "Proteja seu cofre",

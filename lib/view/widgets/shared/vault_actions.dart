@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '/core/app_shared_preferences.dart';
 import '/core/dictionary/app_strings.dart';
@@ -48,14 +49,11 @@ Future<bool> confirmIdentity(BuildContext context, PwdListCubit cubit) async {
 }
 
 /// Picks a secret image and writes the whole vault to an encrypted .kmg
-/// backup file in Downloads.
+/// backup file in Downloads. Saving goes through MediaStore on Android 10+
+/// (no permission needed); on older versions [_saveWithPermissionRetry]
+/// requests storage permission only if the write actually needs it.
 Future<void> exportVaultFlow(BuildContext context, PwdListCubit cubit) async {
   cubit.setIsLoadingState(true);
-  await cubit.requestStoragePermission();
-  if (KeymageState.currentState != KeymageStateEnums.permissionGranted) {
-    if (!context.mounted) return;
-    await appDialogV(context: context);
-  }
   KeymageState.applyState(KeymageStateEnums.showNotificationSecretImageEncrypt);
   if (!context.mounted) return;
   await appDialogV(context: context);
@@ -71,9 +69,51 @@ Future<void> exportVaultFlow(BuildContext context, PwdListCubit cubit) async {
   final imageHash = generateImageHash(image);
   await AppSharedPreferences.savedImageHash(imageHash);
   if (!context.mounted) return;
-  await cubit.wrightContentToFile(imageHash);
+  final status = await cubit.wrightContentToFile(imageHash);
   if (!context.mounted) return;
+
+  if (status == 'permission_needed') {
+    cubit.setIsLoadingState(false);
+    final granted = await Permission.storage.request().isGranted;
+    if (granted) {
+      if (!context.mounted) return;
+      final retryStatus = await cubit.wrightContentToFile(imageHash);
+      if (!context.mounted) return;
+      cubit.setIsLoadingState(false);
+      KeymageState.applyState(retryStatus == 'ok'
+          ? KeymageStateEnums.fileGenSuccess
+          : KeymageStateEnums.somethingWentWrong);
+      await appDialogV(context: context);
+      return;
+    }
+    if (!context.mounted) return;
+    await showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(AppStrings.permissionRequiredTitle),
+        content: Text(AppStrings.permissionNotGranted),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text(AppStrings.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(dialogContext).pop();
+              openAppSettings();
+            },
+            child: Text(AppStrings.openSettings),
+          ),
+        ],
+      ),
+    );
+    return;
+  }
+
   cubit.setIsLoadingState(false);
+  KeymageState.applyState(status == 'ok'
+      ? KeymageStateEnums.fileGenSuccess
+      : KeymageStateEnums.somethingWentWrong);
   await appDialogV(context: context);
 }
 

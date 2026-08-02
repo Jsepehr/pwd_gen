@@ -42,6 +42,7 @@
   "password_saved_successfully": "Password salvata con successo!",
   "passwords_do_not_match": "Le password non corrispondono.",
   "permission_not_granted": "L'app richiede l'accesso alla memoria per salvare i file. Abilitalo nelle impostazioni.",
+  "permission_required_title": "Accesso alla memoria necessario",
   "pin_mismatch": "Il PIN inserito non corrisponde a quello di accesso.",
   "privacy_policy": "Informativa sulla privacy",
   "protect_your_vault": "Proteggi il tuo archivio",

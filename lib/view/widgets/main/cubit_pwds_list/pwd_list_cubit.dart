@@ -1,15 +1,12 @@
 import 'dart:io';
 
 import 'package:equatable/equatable.dart';
-import 'package:external_path/external_path.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:pwd_gen/core/app_shared_preferences.dart';
 import 'package:pwd_gen/core/read_file_generate_pwds.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
 import '/core/injector.dart';
@@ -285,47 +282,6 @@ class PwdListCubit extends Cubit<PwdListState> {
     setIsLoadingState(false);
   }
 
-  Future<void> requestStoragePermission() async {
-    setIsLoadingState(true);
-    if (await Permission.storage.request().isGranted) {
-      // Storage permission granted (for Android 9 and below)
-      KeymageState.applyState(KeymageStateEnums.permissionGranted);
-    }
-
-    if (await Permission.manageExternalStorage.request().isGranted) {
-      // Full access granted (for Android 11+)
-      KeymageState.applyState(KeymageStateEnums.permissionGranted);
-    }
-
-    // If denied, show settings dialog for Android 11+
-    if (await Permission.manageExternalStorage.request().isDenied) {
-      setIsLoadingState(false);
-      KeymageState.applyState(KeymageStateEnums.permissionDenied);
-    }
-  }
-
-  Future<void> _savePath() async {
-    final fileName = _createFileName();
-    String path = '';
-    try {
-      path = await ExternalPath.getExternalStoragePublicDirectory(
-          ExternalPath.DIRECTORY_DOWNLOAD);
-    } on Exception catch (e) {
-      debugPrint('$e');
-      KeymageState.applyState(KeymageStateEnums.somethingWentWrong);
-    }
-
-    final finalPath = '$path/$appFolderName';
-    final dir = Directory(finalPath);
-    if (!await dir.exists()) {
-      await dir.create(recursive: true);
-    }
-
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(keyUserPrefPath, finalPath);
-    await prefs.setString(keyUserPrefFileName, fileName);
-  }
-
 /*   Future<void> _saveImageHashes({required String imageHsh}) async {
     final prefs = await SharedPreferences.getInstance();
     final hashes = prefs.getString('imageHash');
@@ -339,43 +295,26 @@ class PwdListCubit extends Cubit<PwdListState> {
     await prefs.setString('imageHash', imageHsh);
   } */
 
-  Future<void> _deleteOldFile() async {
-    final fileDir = await AppSharedPreferences.loadSavedDirectory();
-    final fileName = await AppSharedPreferences.loadSavedFileName();
-    if (fileDir != null && fileName != null) {
-      try {
-        final file = File('$fileDir/$fileName');
-        if (await file.exists()) {
-          debugPrint(file.path.split('/').last);
-          await file.delete();
-          debugPrint('File eliminato con successo.');
-        } else {
-          debugPrint('Il file non esiste.');
-        }
-      } catch (e) {
-        debugPrint('Errore durante l\'eliminazione del file: $e');
-      }
-    }
-  }
-
   String _createFileName() {
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('yyyyMMddkkmm').format(now);
     return 'Keymage$formattedDate.kmg';
   }
 
-  Future<bool> wrightContentToFile(String imageHash) async {
+  /// Returns `"ok"`, `"permission_needed"`, or `"error"` — see
+  /// [BinaryEncrypt.saveBinaryEncryptedFile].
+  Future<String> wrightContentToFile(String imageHash) async {
     try {
-      await _deleteOldFile();
-      await _savePath();
-      // this will create file path and file name
-      await BinaryEncrypt.saveBinaryEncryptedFile(
-          passwords: _pwdListSaved, imageHash: imageHash);
+      final status = await BinaryEncrypt.saveBinaryEncryptedFile(
+        passwords: _pwdListSaved,
+        imageHash: imageHash,
+        fileName: _createFileName(),
+      );
       setIsLoadingState(false);
-      return true;
+      return status;
     } on Exception catch (e) {
       debugPrint('wrightContentToFile error : $e');
-      return false;
+      return 'error';
     }
   }
 

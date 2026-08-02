@@ -45,6 +45,7 @@ class AppStrings {
   static late String passwordSavedSuccessfully;
   static late String passwordsDoNotMatch;
   static late String permissionNotGranted;
+  static late String permissionRequiredTitle;
   static late String pinMismatch;
   static late String privacyPolicy;
   static late String protectYourVault;
@@ -124,6 +125,7 @@ class AppStrings {
     passwordSavedSuccessfully = json['password_saved_successfully'] ?? '';
     passwordsDoNotMatch = json['passwords_do_not_match'] ?? '';
     permissionNotGranted = json['permission_not_granted'] ?? '';
+    permissionRequiredTitle = json['permission_required_title'] ?? '';
     pinMismatch = json['pin_mismatch'] ?? '';
     privacyPolicy = json['privacy_policy'] ?? '';
     protectYourVault = json['protect_your_vault'] ?? '';
