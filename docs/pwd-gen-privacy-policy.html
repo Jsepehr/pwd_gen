@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Keymage – Privacy Policy</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    max-width: 760px;
+    margin: 40px auto;
+    padding: 0 20px;
+    line-height: 1.6;
+    color: #1a1a1a;
+  }
+  h1 { font-size: 1.8em; margin-bottom: 0.2em; }
+  h2 { font-size: 1.3em; margin-top: 2em; border-bottom: 1px solid #ddd; padding-bottom: 0.3em; }
+  .updated { color: #666; font-size: 0.9em; margin-bottom: 2em; }
+  ul { padding-left: 1.3em; }
+  li { margin-bottom: 0.5em; }
+  code { background: #f2f2f2; padding: 1px 5px; border-radius: 4px; font-size: 0.95em; }
+  footer { margin-top: 3em; color: #666; font-size: 0.9em; }
+</style>
+</head>
+<body>
+
+<h1>Privacy Policy for Keymage</h1>
+<p class="updated">Last updated: August 2, 2026</p>
+
+<p>
+  Keymage ("the app") is an offline password generator and manager developed by Sepehr Amini.
+  This policy explains, in plain language, what happens to your data when you use the app.
+</p>
+
+<h2>Summary</h2>
+<p>
+  Keymage does not collect, transmit, or share any of your personal data. Everything the app
+  creates or stores lives only on your own device. The app does not use the internet for
+  anything except opening links you explicitly tap (such as this privacy policy or the
+  developer's website).
+</p>
+
+<h2>Data the app does <em>not</em> collect</h2>
+<ul>
+  <li>No account or sign-up — the app has no login, no user profile, and no server backend.</li>
+  <li>No analytics or usage tracking of any kind.</li>
+  <li>No advertising and no ad-tracking identifiers.</li>
+  <li>No cloud sync — your data is never uploaded anywhere by the app.</li>
+  <li>No access to your contacts, location, microphone, or camera.</li>
+</ul>
+
+<h2>Data stored on your device</h2>
+<p>Everything below is stored locally, in the app's private storage area, and is never sent anywhere:</p>
+<ul>
+  <li>
+    <strong>Your saved passwords and hints</strong> — kept in a local database on your device,
+    used only to display your password list inside the app.
+  </li>
+  <li>
+    <strong>Your app password</strong> (if you choose to protect the app with a custom password
+    instead of your device's screen lock) — stored locally in a hashed (irreversible) form, never
+    in plain text and never transmitted.
+  </li>
+  <li>
+    <strong>Your "secret image"</strong> (optional recovery method) — when you pick an image from
+    your gallery to use as a backup login method, the app reads that image only to compute a
+    cryptographic fingerprint (a SHA-256 hash) of it. Only this fingerprint is stored on your
+    device. The image itself is never copied, stored, or uploaded by the app — it stays exactly
+    where it already was in your device's gallery.
+  </li>
+</ul>
+
+<h2>Permissions the app uses, and why</h2>
+<ul>
+  <li>
+    <strong>Photo / gallery access</strong> — used solely to let you pick the secret image
+    described above. The app processes the image on your device and does not retain or share it.
+  </li>
+  <li>
+    <strong>Storage access</strong> — used only when you choose to export or import your password
+    vault. Exporting creates an encrypted backup file on your own device (in your Downloads
+    folder); importing reads a backup file you select. Keymage never uploads this file anywhere —
+    what you do with it afterward (e.g. moving it to your own cloud storage) is entirely up to you.
+  </li>
+  <li>
+    <strong>Biometric / device screen-lock authentication</strong> — if you choose to unlock the
+    app using your device's fingerprint, face unlock, PIN, or pattern, this is handled entirely by
+    Android's own operating-system security APIs. Keymage never sees, collects, or stores your
+    biometric data — it only receives a yes/no "authentication succeeded" result from Android.
+  </li>
+</ul>
+
+<h2>Third parties</h2>
+<p>
+  Keymage does not integrate any third-party analytics, advertising, or data-collection SDKs.
+  The only outbound actions the app can take are ones you explicitly trigger yourself: using the
+  "Share app" option (which hands off to Android's normal share sheet, letting you choose where
+  to send it) or tapping the developer's website / this privacy policy link, which opens in your
+  browser.
+</p>
+
+<h2>Children's privacy</h2>
+<p>
+  Keymage is not directed at children and does not knowingly collect any information from anyone,
+  regardless of age — since it does not collect personal data from any user.
+</p>
+
+<h2>Changes to this policy</h2>
+<p>
+  This policy may be updated occasionally, for example if new features change how data is
+  handled. The "Last updated" date at the top of this page will always reflect the most recent
+  revision. Continued use of the app after a change constitutes acceptance of the revised policy.
+</p>
+
+<h2>Contact</h2>
+<p>
+  If you have any questions about this privacy policy, you can reach the developer at:
+  <br>
+  <code>amini.sep@gmail.com</code>
+</p>
+
+<footer>
+  Keymage — Local &amp; Private by Design.
+</footer>
+
+</body>
+</html>

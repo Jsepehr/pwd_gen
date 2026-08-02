@@ -7,7 +7,8 @@ import '/core/dictionary/app_strings.dart';
 
 const String kDeveloperName = 'Sepehr Amini';
 const String kDeveloperWebsite = 'https://jsepehr.github.io/';
-const String kPrivacyPolicyUrl = 'https://jsepehr.github.io/pwd-gen-privacy-policy.html';
+const String kPrivacyPolicyUrl =
+    'https://jsepehr.github.io/pwd_gen/pwd-gen-privacy-policy.html';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
