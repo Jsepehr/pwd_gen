@@ -4,8 +4,11 @@ class AppStrings {
   static late String about;
   static late String addAHintForEachPassword;
   static late String apply;
+  static late String autoSaveImageMessage;
+  static late String autoSaveImageTitle;
   static late String cancel;
   static late String changeLanguage;
+  static late String chooseImage;
   static late String chooseYourPreferredSecurityMethod;
   static late String confirm;
   static late String corruptedFile;
@@ -81,8 +84,11 @@ class AppStrings {
     about = json['about'] ?? '';
     addAHintForEachPassword = json['add_a_hint_for_each_password'] ?? '';
     apply = json['apply'] ?? '';
+    autoSaveImageMessage = json['auto_save_image_message'] ?? '';
+    autoSaveImageTitle = json['auto_save_image_title'] ?? '';
     cancel = json['cancel'] ?? '';
     changeLanguage = json['change_language'] ?? '';
+    chooseImage = json['choose_image'] ?? '';
     chooseYourPreferredSecurityMethod =
         json['choose_your_preferred_security_method'] ?? '';
     confirm = json['confirm'] ?? '';

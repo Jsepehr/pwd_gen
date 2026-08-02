@@ -1,5 +1,6 @@
 package com.example.pwd_gen
 
+import android.content.ContentUris
 import android.content.ContentValues
 import android.content.pm.PackageManager
 import android.os.Build
@@ -45,18 +46,40 @@ class MainActivity : FlutterFragmentActivity() {
      * narrower than MANAGE_EXTERNAL_STORAGE, which Play Store scrutinizes
      * heavily and this app has no real justification for.
      *
+     * [fileName] is a fixed name (not timestamped): every export is meant to
+     * replace the previous one, not pile up. MediaStore.insert() won't
+     * overwrite an existing DISPLAY_NAME on its own — it silently renames the
+     * new file instead — so any previous row with this name is deleted first.
+     *
      * Returns "ok", or "permission_needed" if the caller should request
      * WRITE_EXTERNAL_STORAGE and retry (only possible pre-Android 10).
      */
     private fun saveKmgFile(fileName: String, bytes: ByteArray): String {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val resolver = applicationContext.contentResolver
+            val collection = MediaStore.Downloads.EXTERNAL_CONTENT_URI
+            val relativePath = "Download/Keymage/"
+
+            resolver.query(
+                collection,
+                arrayOf(MediaStore.Downloads._ID),
+                "${MediaStore.Downloads.DISPLAY_NAME} = ? AND ${MediaStore.Downloads.RELATIVE_PATH} = ?",
+                arrayOf(fileName, relativePath),
+                null
+            )?.use { cursor ->
+                val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Downloads._ID)
+                while (cursor.moveToNext()) {
+                    val existingUri = ContentUris.withAppendedId(collection, cursor.getLong(idColumn))
+                    resolver.delete(existingUri, null, null)
+                }
+            }
+
             val values = ContentValues().apply {
                 put(MediaStore.Downloads.DISPLAY_NAME, fileName)
                 put(MediaStore.Downloads.MIME_TYPE, "application/octet-stream")
-                put(MediaStore.Downloads.RELATIVE_PATH, "Download/Keymage")
+                put(MediaStore.Downloads.RELATIVE_PATH, relativePath)
             }
-            val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
+            val uri = resolver.insert(collection, values)
                 ?: throw IOException("MediaStore insert failed")
             resolver.openOutputStream(uri)?.use { it.write(bytes) }
                 ?: throw IOException("Could not open output stream for $uri")

@@ -48,10 +48,13 @@ Future<bool> confirmIdentity(BuildContext context, PwdListCubit cubit) async {
   return confirmed ?? false;
 }
 
-/// Picks a secret image and writes the whole vault to an encrypted .kmg
-/// backup file in Downloads. Saving goes through MediaStore on Android 10+
-/// (no permission needed); on older versions [_saveWithPermissionRetry]
-/// requests storage permission only if the write actually needs it.
+/// Picks a secret image and writes the whole vault to a new, dated .kmg
+/// snapshot in Downloads. This image is independent of the one protecting
+/// the automatic backup (see [autoSaveImageSetupFlow]) — each manual export
+/// can use its own image without changing what unlocks Keymage.kmg. Saving
+/// goes through MediaStore on Android 10+ (no permission needed); on older
+/// versions [_saveWithPermissionRetry] requests storage permission only if
+/// the write actually needs it.
 Future<void> exportVaultFlow(BuildContext context, PwdListCubit cubit) async {
   cubit.setIsLoadingState(true);
   KeymageState.applyState(KeymageStateEnums.showNotificationSecretImageEncrypt);
@@ -67,9 +70,9 @@ Future<void> exportVaultFlow(BuildContext context, PwdListCubit cubit) async {
     return;
   }
   final imageHash = generateImageHash(image);
-  await AppSharedPreferences.savedImageHash(imageHash);
   if (!context.mounted) return;
-  final status = await cubit.wrightContentToFile(imageHash);
+  final status =
+      await cubit.wrightContentToFile(imageHash, asNewSnapshot: true);
   if (!context.mounted) return;
 
   if (status == 'permission_needed') {
@@ -77,7 +80,8 @@ Future<void> exportVaultFlow(BuildContext context, PwdListCubit cubit) async {
     final granted = await Permission.storage.request().isGranted;
     if (granted) {
       if (!context.mounted) return;
-      final retryStatus = await cubit.wrightContentToFile(imageHash);
+      final retryStatus =
+          await cubit.wrightContentToFile(imageHash, asNewSnapshot: true);
       if (!context.mounted) return;
       cubit.setIsLoadingState(false);
       KeymageState.applyState(retryStatus == 'ok'
@@ -115,6 +119,37 @@ Future<void> exportVaultFlow(BuildContext context, PwdListCubit cubit) async {
       ? KeymageStateEnums.fileGenSuccess
       : KeymageStateEnums.somethingWentWrong);
   await appDialogV(context: context);
+}
+
+/// Offers to set up the image that protects the automatic backup
+/// (Keymage.kmg), the first time an edit needs one — independent of whatever
+/// image gets chosen for manual export snapshots. Skipping is harmless: the
+/// user is just asked again the next time they edit a password.
+Future<void> autoSaveImageSetupFlow(
+    BuildContext context, PwdListCubit cubit) async {
+  final proceed = await showDialog<bool>(
+    context: context,
+    builder: (dialogContext) => AlertDialog(
+      title: Text(AppStrings.autoSaveImageTitle),
+      content: Text(AppStrings.autoSaveImageMessage),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(dialogContext).pop(false),
+          child: Text(AppStrings.cancel),
+        ),
+        ElevatedButton(
+          onPressed: () => Navigator.of(dialogContext).pop(true),
+          child: Text(AppStrings.chooseImage),
+        ),
+      ],
+    ),
+  );
+  if (proceed != true) return;
+  final image = await selectImage();
+  if (image == null) return;
+  final imageHash = generateImageHash(image);
+  await AppSharedPreferences.savedImageHash(imageHash);
+  await cubit.wrightContentToFile(imageHash);
 }
 
 /// Picks a .kmg backup file (or legacy export) plus the secret image used to

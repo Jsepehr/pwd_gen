@@ -183,6 +183,7 @@ class _PwdConfigureBottomSheetState extends State<PwdConfigureBottomSheet> {
                                               WidgetsBinding.instance
                                                   .addPostFrameCallback(
                                                       (_) async {
+                                                if (!context.mounted) return;
                                                 Navigator.pop(context);
                                               });
                                             }

@@ -139,11 +139,14 @@ class PwdListCubit extends Cubit<PwdListState> {
   }
 
   Future<void> selectImageFileForPWDGenerator() async {
+    // Covers both the image picker and the actual decrypt (PBKDF2 + AES-GCM
+    // in a background isolate) — without this the list sits unchanged for a
+    // moment after picking the image, with no indication anything's happening.
+    setIsLoadingState(true);
     KeymageState.applyState(KeymageStateEnums.start);
     final res = await _readFileGeneratePwds.imageSelectionAndGenPwds();
     if (res.isEmpty) {
-      _isLoading = false;
-      _emitState(_pwdListShow);
+      setIsLoadingState(false);
       return;
     }
 
@@ -203,15 +206,24 @@ class PwdListCubit extends Cubit<PwdListState> {
     }
   }
 
-  Future<void> updateHintAndPwds(
+  /// Returns `true` if no image is set up yet for the automatic backup —
+  /// the caller (the edit bottom sheet) should then offer to set one up via
+  /// [autoSaveImageSetupFlow]. Returns `false` once one exists (the backup
+  /// was already re-saved with it) or if the update itself failed.
+  Future<bool> updateHintAndPwds(
     PwdEntity pwdModified,
   ) async {
+    // Saving to the DB plus the automatic re-export below (when a secret
+    // image is set) can take a moment — without this, the list sits
+    // unchanged after tapping Apply with no sign that anything's happening.
+    setIsLoadingState(true);
     _usageCount = DateTime.now().millisecondsSinceEpoch;
     final index = _pwdListShow.indexWhere((e) => e.id == pwdModified.id);
     final indexSaved = _pwdListSaved.indexWhere((e) => e.id == pwdModified.id);
     if (index == -1) {
       debugPrint("Error: Password not found in the list.");
-      return;
+      setIsLoadingState(false);
+      return false;
     }
     final updatedPwd = _pwdListShow[index].copyWith(
       usageDate: _usageCount.toString(),
@@ -232,6 +244,7 @@ class PwdListCubit extends Cubit<PwdListState> {
     if (imageHash != null) {
       await wrightContentToFile(imageHash);
     }
+    _isLoading = false;
     if (_currentSearchString.isNotEmpty) {
       _pwdListShow = newListShow;
       _emitState(_pwdListShow);
@@ -240,6 +253,7 @@ class PwdListCubit extends Cubit<PwdListState> {
       _pwdListSaved = newListShow;
       _emitState(_pwdListSaved);
     }
+    return imageHash == null;
   }
 
   Future<void> updateDateTime(int index) async {
@@ -295,20 +309,31 @@ class PwdListCubit extends Cubit<PwdListState> {
     await prefs.setString('imageHash', imageHsh);
   } */
 
-  String _createFileName() {
-    DateTime now = DateTime.now();
-    String formattedDate = DateFormat('yyyyMMddkkmm').format(now);
-    return 'Keymage$formattedDate.kmg';
+  /// The automatic re-save after editing a password always overwrites this
+  /// same file — a continuously up-to-date safety net between manual exports.
+  static const String _autoSaveFileName = 'Keymage.kmg';
+
+  /// A manual Export instead creates a new dated snapshot each time — a
+  /// deliberate checkpoint that's never silently overwritten later.
+  String _createSnapshotFileName() {
+    final formattedDate = DateFormat('yyyyMMddHHmmss').format(DateTime.now());
+    return 'Keymage_$formattedDate.kmg';
   }
 
   /// Returns `"ok"`, `"permission_needed"`, or `"error"` — see
-  /// [BinaryEncrypt.saveBinaryEncryptedFile].
-  Future<String> wrightContentToFile(String imageHash) async {
+  /// [BinaryEncrypt.saveBinaryEncryptedFile]. Pass [asNewSnapshot] for a
+  /// manual export the user explicitly asked for (dated, kept forever);
+  /// leave it false for the automatic re-save after an edit (always
+  /// overwrites the same file).
+  Future<String> wrightContentToFile(
+    String imageHash, {
+    bool asNewSnapshot = false,
+  }) async {
     try {
       final status = await BinaryEncrypt.saveBinaryEncryptedFile(
         passwords: _pwdListSaved,
         imageHash: imageHash,
-        fileName: _createFileName(),
+        fileName: asNewSnapshot ? _createSnapshotFileName() : _autoSaveFileName,
       );
       setIsLoadingState(false);
       return status;

@@ -91,6 +91,7 @@ class DialogGenerateOrImport extends StatelessWidget {
                   await appDialogV(
                     context: context,
                   );
+                  if (!context.mounted) return;
                   Navigator.of(context).pop();
                   return;
                 }
@@ -100,6 +101,7 @@ class DialogGenerateOrImport extends StatelessWidget {
                 await appDialogV(context: context, barrierDismissible: true);
                 await pwdListCubit.selectImageFileForPWDGenerator();
                 if (KeymageState.currentState == KeymageStateEnums.endOk) {
+                  if (!context.mounted) return;
                   Navigator.of(context).pop();
                   return;
                 } else {

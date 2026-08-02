@@ -7,6 +7,7 @@ import '/domain/pwd_entity.dart';
 
 import 'package:pwd_gen/view/widgets/pwd_edit/cubit_pwd_editor/pwd_editor_cubit.dart';
 import 'package:pwd_gen/view/widgets/shared/edit_pwd_textfield.dart';
+import 'package:pwd_gen/view/widgets/shared/vault_actions.dart';
 
 class PwdEditorBottomSheet extends StatefulWidget {
   final PwdEntity pwd;
@@ -23,6 +24,10 @@ class _PwdEditorBottomSheetState extends State<PwdEditorBottomSheet> {
   TextEditingController hintController = TextEditingController();
   TextEditingController pwdController = TextEditingController();
   FocusNode focusNode = FocusNode();
+  // The bottom sheet is still on top of the list while saving (it only
+  // closes afterward), so the list's own loading overlay isn't visible —
+  // this is the only feedback the user sees during that gap.
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -111,28 +116,47 @@ class _PwdEditorBottomSheetState extends State<PwdEditorBottomSheet> {
                     children: [
                       state is PwdEditorLoaded
                           ? ElevatedButton(
-                              onPressed: () async {
-                                final updatedPwd = widget.pwd.copyWith(
-                                  hint: cubit.hint,
-                                  password: cubit.pwd,
-                                );
-                                await cubitPwdsList.updateHintAndPwds(
-                                  updatedPwd,
-                                );
-                                Navigator.pop(context);
-                              },
-                              child: Text(
-                                AppStrings.apply,
-                                style: TextStyle(
-                                  fontSize: 16,
-                                ),
-                              ),
+                              onPressed: _isSaving
+                                  ? null
+                                  : () async {
+                                      setState(() => _isSaving = true);
+                                      final updatedPwd = widget.pwd.copyWith(
+                                        hint: cubit.hint,
+                                        password: cubit.pwd,
+                                      );
+                                      final needsAutoSaveSetup =
+                                          await cubitPwdsList
+                                              .updateHintAndPwds(updatedPwd);
+                                      if (!context.mounted) return;
+                                      if (needsAutoSaveSetup) {
+                                        await autoSaveImageSetupFlow(
+                                            context, cubitPwdsList);
+                                        if (!context.mounted) return;
+                                      }
+                                      Navigator.pop(context);
+                                    },
+                              child: _isSaving
+                                  ? const SizedBox(
+                                      height: 20,
+                                      width: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    )
+                                  : Text(
+                                      AppStrings.apply,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                      ),
+                                    ),
                             )
                           : CircularProgressIndicator(),
                       ElevatedButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
+                        onPressed: _isSaving
+                            ? null
+                            : () {
+                                Navigator.pop(context);
+                              },
                         child: Text(
                           AppStrings.cancel,
                           style: TextStyle(
