@@ -53,6 +53,7 @@ dependencies:
   local_auth:
   vibration:
   encrypt:
+  pointycastle: ^3.9.1
   app_settings: ^5.1.1
   url_launcher:
   package_info_plus:

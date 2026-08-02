@@ -102,7 +102,10 @@ Future<void> importVaultFlow(BuildContext context, PwdListCubit cubit) async {
       if (!context.mounted) return;
       await appDialogV(context: context, barrierDismissible: true);
     }
-  } on Exception catch (e) {
+  } catch (e) {
+    // Broad catch, not `on Exception`: a malformed/malicious .kmg file can
+    // trigger errors (e.g. RangeError) that don't extend Exception, and this
+    // flow must never let one escape uncaught and crash the app.
     debugPrint('$e');
   }
 }
