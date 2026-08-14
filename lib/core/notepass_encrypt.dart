@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:crypto/crypto.dart' as legacy_crypto;
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/foundation.dart';
 import 'package:pointycastle/digests/sha256.dart';
@@ -17,11 +18,20 @@ const int _pbkdf2Iterations = 150000;
 const int _saltLength = 16;
 const int _ivLength = 16;
 
+/// Magic word used by the pre-v2 format to confirm the derived key was
+/// right, kept only so [_decryptLegacyVault] can still validate old files.
+const String _legacyMagicWord = 'VALID_KEY';
+
 encrypt.Key _deriveKey(String keyword, Uint8List salt) {
   final derivator = PBKDF2KeyDerivator(HMac(SHA256Digest(), 64))
     ..init(Pbkdf2Parameters(salt, _pbkdf2Iterations, 32));
   final keyBytes = derivator.process(Uint8List.fromList(utf8.encode(keyword)));
   return encrypt.Key(keyBytes);
+}
+
+encrypt.Key _deriveLegacyKey(String keyword) {
+  final hash = legacy_crypto.sha256.convert(utf8.encode(keyword));
+  return encrypt.Key(Uint8List.fromList(hash.bytes));
 }
 
 List<int> _intToBytes(int value) {
@@ -94,10 +104,22 @@ const _statusOk = 'ok';
 const _statusWrongImage = 'wrongImage';
 const _statusCorrupted = 'corrupted';
 
+/// Files exported by the pre-PBKDF2/GCM version of the app have no version
+/// byte at all — they start directly with a 16-byte IV, so the first byte is
+/// effectively random. Only dispatch to the legacy reader when the first
+/// byte doesn't match the current version, keeping the (near-impossible)
+/// collision case on the stricter, authenticated v2 path.
 Map<String, dynamic> _decryptVaultIsolate(Map<String, dynamic> args) {
   final bytes = args['bytes'] as Uint8List;
   final imageHash = args['imageHash'] as String;
 
+  if (bytes.isNotEmpty && bytes[0] == _formatVersion) {
+    return _decryptV2Vault(bytes, imageHash);
+  }
+  return _decryptLegacyVault(bytes, imageHash);
+}
+
+Map<String, dynamic> _decryptV2Vault(Uint8List bytes, String imageHash) {
   try {
     var offset = 0;
 
@@ -176,6 +198,78 @@ Map<String, dynamic> _decryptVaultIsolate(Map<String, dynamic> args) {
     // Catch-all safety net: any truncated/malformed/malicious file (e.g.
     // any arbitrary file renamed to `.kmg`, since the file picker only
     // filters by extension) must never crash the app.
+    return {'status': _statusCorrupted};
+  }
+}
+
+/// Reads the pre-v2 format: unsalted SHA-256 key, AES-SIC (default mode of
+/// `encrypt.AES(key)`), single shared IV, and a plaintext image hash plus
+/// encrypted magic word used to validate the key instead of an auth tag.
+/// Kept only so vaults exported by versions of the app already in users'
+/// hands still import instead of being rejected as corrupted.
+Map<String, dynamic> _decryptLegacyVault(Uint8List bytes, String imageHash) {
+  try {
+    var offset = 0;
+
+    int readLength() {
+      _ensureBounds(bytes, offset, 4);
+      final v = ByteData.sublistView(bytes, offset, offset + 4)
+          .getInt32(0, Endian.big);
+      offset += 4;
+      if (v < 0) throw const CorruptedVaultFileException();
+      return v;
+    }
+
+    Uint8List readBytes(int length) {
+      _ensureBounds(bytes, offset, length);
+      final v = Uint8List.sublistView(bytes, offset, offset + length);
+      offset += length;
+      return v;
+    }
+
+    final iv = encrypt.IV(readBytes(_ivLength));
+    final encryptedDataBytes = readBytes(readLength());
+    final encryptedAesKeyBytes = readBytes(readLength());
+    final encryptedMagicBytes = readBytes(readLength());
+    final savedImageHash = utf8.decode(readBytes(readLength()));
+
+    if (savedImageHash != imageHash) {
+      return {'status': _statusWrongImage};
+    }
+
+    final keyword = json.encode(imageHash);
+    final userKey = _deriveLegacyKey(keyword);
+    final keyEncrypter = encrypt.Encrypter(encrypt.AES(userKey));
+
+    try {
+      final decryptedMagic = keyEncrypter.decrypt(
+        encrypt.Encrypted(encryptedMagicBytes),
+        iv: iv,
+      );
+      if (decryptedMagic != _legacyMagicWord) {
+        return {'status': _statusCorrupted};
+      }
+
+      final aesKeyBytes = keyEncrypter.decryptBytes(
+        encrypt.Encrypted(encryptedAesKeyBytes),
+        iv: iv,
+      );
+      final aesKey = encrypt.Key(Uint8List.fromList(aesKeyBytes));
+      final dataEncrypter = encrypt.Encrypter(encrypt.AES(aesKey));
+      final decryptedJson = dataEncrypter.decrypt(
+        encrypt.Encrypted(encryptedDataBytes),
+        iv: iv,
+      );
+
+      final decoded = (jsonDecode(decryptedJson) as List)
+          .cast<Map<String, dynamic>>();
+      return {'status': _statusOk, 'passwords': decoded};
+    } catch (_) {
+      // Right image hash but the magic word/data failed to decrypt or
+      // decode — treat as corrupted rather than crashing.
+      return {'status': _statusCorrupted};
+    }
+  } catch (_) {
     return {'status': _statusCorrupted};
   }
 }
